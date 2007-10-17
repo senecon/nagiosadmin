@@ -53,7 +53,7 @@ class generatorActions extends sfActions
     $params = array($old, $new);
     $diff = new Text_Diff('auto',$params);
 
-    $diffrender =& new Text_Diff_Renderer_inline();
+    $diffrender = new Text_Diff_Renderer_inline();
     return $diffrender->render($diff);
   }
   
