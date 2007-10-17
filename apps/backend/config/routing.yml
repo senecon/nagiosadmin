@@ -1,0 +1,19 @@
+# default rules
+homepage:
+  url:   /
+  param: { module: host, action: index }
+
+default_symfony:
+  url:   /symfony/:action/*
+  param: { module: default }
+
+default_index:
+  url:   /:module
+  param: { action: index }
+
+config_download:
+  url:   /generator/nagiosadmin.cfg
+  param: { module: generator, action: download }
+
+default:
+  url:   /:module/:action/*

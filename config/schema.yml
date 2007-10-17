@@ -1,0 +1,91 @@
+propel:
+  contact:
+    _attributes: { phpName: Contact }
+    id:
+    name:        { type: varchar(255), index: true, required: true }
+    alias:       { type: varchar(255), index: true, required: true }
+    email:       { type: varchar(255), index: true, required: true }
+    special:     { type: longvarchar, required: false }
+    created_at:
+    updated_at:
+
+  contact_group:
+    _attributes: { phpName: ContactGroup }
+    id:
+    name:        { type: varchar(255), index: true, required: true }
+    alias:       { type: varchar(255), index: true, required: true }
+    special:     { type: longvarchar, required: false }
+    created_at:
+    updated_at:
+
+  group_to_contact:
+    group_id:    { type: integer, required: true, primaryKey: true, foreignTable: contact_group, foreignReference: id, onDelete: cascade }
+    contact_id:  { type: integer, required: true, primaryKey: true, foreignTable: contact, foreignReference: id, onDelete: cascade }
+
+  os:
+    id:
+    name:        { type: varchar(255), required: true }
+    image:       { type: varchar(255), required: true }
+    created_at:
+    updated_at:
+
+  host:
+    id:
+    group_id:    { type: integer, required: true, foreignTable: host_group, foreignReference: id, onDelete: cascade }
+    name:        { type: varchar(255), index: true, required: true }
+    alias:       { type: varchar(255), index: true, required: true }
+    address:     { type: varchar(255), required: true }
+    special:     { type: longvarchar, required: false }
+    os_id:       { type: integer, foreignTable: os, foreignReference: id, onDelete: setnull }
+    created_at:
+    updated_at:
+
+  host_group:
+    id:
+    name:        { type: varchar(255), index: true, required: true }
+    alias:       { type: varchar(255), index: true, required: true }
+    created_at:
+    updated_at:
+
+  host_service_param:
+    host_id:     { type: integer, required: true, primaryKey: true, foreignTable: host, foreignReference: id, onDelete: cascade }
+    service_id:  { type: integer, required: true, primaryKey: true, foreignTable: service, foreignReference: id, onDelete: cascade }
+    parameter:   { type: varchar(255), required: false }
+    special:     { type: longvarchar, required: false }
+    created_at:
+    updated_at:
+
+  host_to_contact_group:
+    host_id:     { type: integer, required: true, primaryKey: true, foreignTable: host, foreignReference: id, onDelete: cascade }
+    contact_group_id:  { type: integer, required: true, primaryKey: true, foreignTable: contact_group, foreignReference: id, onDelete: cascade }
+
+  template:
+    id:
+    type:        { type: integer, required: true, index: true, default: 0 } # 0 = dynamic, 1 = static (generic)
+    name:        { type: varchar(255), index: true, required: true }
+    alias:       { type: varchar(255), index: true, required: true }
+    content:     { type: longvarchar, required: true }
+    created_at:
+    updated_at:
+
+  service:
+    id:
+    name:        { type: varchar(255), index: true, required: true }
+    alias:       { type: varchar(255), index: true, required: true }
+    command_id:  { type: integer, required: true, foreignTable: command, foreignReference: id, onDelete: cascade }
+    port:        { type: integer, index: true }
+    special:     { type: longvarchar, required: false }
+    created_at:
+    updated_at:
+
+  service_to_host:
+    service_id:  { type: integer, required: true, primaryKey: true, foreignTable: service, foreignReference: id, onDelete: cascade }
+    host_id:     { type: integer, required: true, primaryKey: true, foreignTable: host, foreignReference: id, onDelete: cascade }
+
+  command:
+    id:
+    name:        { type: varchar(255), index: true, required: true }
+    alias:       { type: varchar(255), index: true, required: true }
+    command:     { type: longvarchar, required: true }
+    created_at:
+    updated_at:

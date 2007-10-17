@@ -1,0 +1,26 @@
+generator:
+  class:              sfPropelAdminGenerator
+  param:
+    model_class:      Os
+    theme:            default
+
+    fields:
+      image:
+        help:         Please upload a square jpeg image (will be resized to 20x20)
+        type:         admin_input_file_tag
+        upload_dir:   os_images
+        params:       include_link=os_images include_remove=true
+      hosts_count:    { name: Number of hosts }
+
+    list:
+      title:   OS list
+      display: [ =name, _image, hosts_count ]
+      filters: [ name ]
+      object_actions:
+        _edit:        ~
+        _delete:      ~
+
+    edit:
+      fields:
+        created_at:   { type: plain }
+        updated_at:   { type: plain }

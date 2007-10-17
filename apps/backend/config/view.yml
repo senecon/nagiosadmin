@@ -1,0 +1,20 @@
+#dev:
+#  layout:         layout_dev
+
+default:
+  http_metas:
+    content-type: text/html
+
+  metas:
+    title:        nagios admin
+    robots:       index, follow
+    description:  symfony project
+    keywords:     symfony, project
+    language:     en
+
+  stylesheets:    [main, styles: { position: last }]
+
+  javascripts:    []
+
+  has_layout:     on
+  layout:         layout

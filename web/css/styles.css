@@ -1,0 +1,58 @@
+#sf_admin_container select.sf_admin_multiple, #sf_admin_container select.sf_admin_multiple-selected {
+	width: 24em;
+}
+
+div#header {
+	border-bottom:8px solid #CCCCFF;
+	height: 25px;
+}
+
+ul#topmenu {
+	clear:both;
+	/*float:right;*/
+	list-style-image:none;
+	list-style-position:outside;
+	list-style-type:none;
+	position:relative;
+	/*top:3px;*/
+}
+
+ul#topmenu li {
+	float:left;
+	line-height:1.4;
+	margin-right:5px;
+}
+
+ul#topmenu li a {
+	/*background-image:url(../images/tab.gif);
+	background-position:left center;
+	background-repeat:no-repeat;*/
+	background-color:#EEEEFF;
+	color:#000000;
+	display:block;
+	font-weight:bold;
+	height:15px;
+	padding:5px;
+	text-align:center;
+	text-decoration:none;
+	text-shadow:#2A2A2F 2px 2px 1px;
+	/*width:85px;*/
+}
+
+ul#topmenu li a:hover, ul#topmenu li a:active {
+	background-position:left top;
+	background-color:#CCCCFF;
+}
+
+ul#topmenu li a.selected {
+	background-position:left bottom;
+	background-color:#CCCCFF;
+}
+
+del {
+	background-color: #FF8080;
+}
+
+ins {
+	background-color: #80FF80;
+}

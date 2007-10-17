@@ -1,0 +1,17 @@
+<?php echo link_to_remote('Scan for open ports', array(
+    'url'    => 'host/portscan?id='.$host->getId(),
+    'with'   => "'ip=' + \$F('host_address')",
+    'before' => "$('indicator').innerHTML = 'Please wait...'",
+    'complete' => "$('indicator').innerHTML = ''",
+    'condition' => "\$F('host_address') != ''",
+    'success' => "updateJSON(request, json)"
+)) ?> 
+<span id="indicator"></span>
+<?php echo javascript_tag("
+function updateJSON(request, json)
+{
+  json.services.each(function(elementId){
+    $(elementId).checked = 'checked';
+  });
+}
+") ?>

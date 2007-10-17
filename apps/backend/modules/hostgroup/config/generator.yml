@@ -1,0 +1,27 @@
+generator:
+  class:              sfPropelAdminGenerator
+  param:
+    model_class:      HostGroup
+    theme:            default
+
+    fields:
+      hosts_count:    { name: Number of hosts }
+
+    list:
+      title:   Hostgroup list
+      display: [ =name, alias, hosts_count ]
+      filters: [ name, alias ]
+      object_actions:
+        _edit:        ~
+        _delete:      ~
+
+    edit:
+      fields:
+        created_at:   { type: plain }
+        updated_at:   { type: plain }
+#        hosts:        { name: Hosts, type: admin_double_list, params: through_class=Host }
+      display:
+        "NONE":                   [ name, alias ]
+        "Information":            [ created_at, updated_at ]
+#        "Hosts":      [ hosts ]
+    

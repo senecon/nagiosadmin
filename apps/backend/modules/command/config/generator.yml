@@ -1,0 +1,23 @@
+generator:
+  class:              sfPropelAdminGenerator
+  param:
+    model_class:      Command
+    theme:            default
+
+    list:
+      title:   Command list
+      display: [ =name, alias, command ]
+      filters: [ name, alias ]
+      object_actions:
+        _edit:        ~
+        _delete:      ~
+
+    edit:
+      fields:
+        created_at:   { type: plain }
+        updated_at:   { type: plain }
+        command:      { type: input_tag, params: size=80 }
+
+      display:
+        "NONE":                   [ name, alias, command ]
+        "Information":            [ created_at, updated_at ]

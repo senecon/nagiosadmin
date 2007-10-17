@@ -1,0 +1,32 @@
+generator:
+  class:              sfPropelAdminGenerator
+  param:
+    model_class:      ContactGroup
+    theme:            default
+    
+    fields:
+      contacts_count: { name: Number of contacts }
+      hosts_count: { name: Number of hosts }
+
+    list:
+      title:   Contactgroup list
+      display: [ =name, alias, contacts_count, hosts_count ]
+      filters: [ name, alias ]
+      object_actions:
+        _edit:        ~
+        _delete:      ~
+#        debug:        { name: Debug, action: debug }
+
+    edit:
+      fields:
+        name:
+        alias:
+        created_at:   { type: plain }
+        updated_at:   { type: plain }
+        contacts:     { name: Contacts, type: admin_double_list, params: through_class=GroupToContact }
+
+      display:
+        "NONE":                   [ name, alias ]
+        "Information":            [ created_at, updated_at ]
+        "Contacts": [ contacts ]
+    

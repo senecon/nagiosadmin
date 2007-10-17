@@ -1,0 +1,9 @@
+all:
+  command_config_name:            commands.cfg
+  contact_config_name:            contacts.cfg
+  contactgroup_config_name:       contactgroups.cfg
+  template_config_name:           templates.cfg
+  host_config_name:               hosts.cfg
+  hostgroup_config_name:          hostgroups.cfg
+  config_check_command:           /usr/nagios/bin/nagios -v /etc/nagios/nagios.cfg 2>&1
+  reload_nagios_command:          /usr/bin/sudo /usr/bin/killall -HUP nagios

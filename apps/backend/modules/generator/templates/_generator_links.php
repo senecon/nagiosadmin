@@ -1,0 +1,1 @@
+<p><?=link_to('Download','@config_download')?> | <?=link_to('Save','generator/dump')?><!-- | <?=link_to('Check','generator/check')?> | <?=link_to('Reload','generator/reload')?> --></p>

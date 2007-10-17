@@ -1,0 +1,27 @@
+generator:
+  class:              sfPropelAdminGenerator
+  param:
+    model_class:      Template
+    theme:            default
+
+#    fields:
+#      type:
+#        help:         0 = dynamic / 1 = static (generic)
+
+    list:
+      title:   Template list
+      display: [ =name, alias, content ]
+      filters: [ name, alias, content ]
+      object_actions:
+        _edit:        ~
+        _delete:      ~
+
+    edit:
+      fields:
+        content:      { type: textarea_tag, params: cols=80 rows=10 class=fixed }
+        created_at:   { type: plain }
+        updated_at:   { type: plain }
+      display:
+        "NONE":                   [ _type, name, alias, content ]
+        "Information":            [ created_at, updated_at ]
+        

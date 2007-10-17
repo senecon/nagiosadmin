@@ -1,0 +1,21 @@
+visudo:
+
+	%nagios ALL= NOPASSWD: /usr/bin/killall -HUP nagios
+
+/etc/group
+
+	apache:x:81:
+	nagios:x:441:apache
+	nagcmd:x:442:nagios,apache
+
+/etc/apache2/nagios.conf
+
+	Alias /nagios/images/logos/nagiosimages /var/www/localhost/htdocs/NagiosAdmin/web/uploads/os_images
+	Alias /nagios "/usr/nagios/share"
+
+PEAR Pakete:
+PEAR_Info
+Text_Diff pear install "channel://pear.php.net/Text_Diff-0.3.0"
+
+apps/backend/modules/generator/config/module.yml
+

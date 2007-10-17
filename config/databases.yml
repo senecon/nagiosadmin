@@ -1,0 +1,24 @@
+#all:
+#  propel:
+#    class:          sfPropelDatabase
+#    param:
+#      dsn:          mysql://root:@localhost/dbname
+prod:
+  propel:
+    param:
+      host:               localhost
+      username:           root
+      password:           
+
+all:
+  propel:
+    class:                sfPropelDatabase
+    param:
+      phptype:            mysql     # Database vendor
+      hostspec:           localhost
+      database:           nagiosadmin
+      username:           root
+      password:           
+      port:               
+      encoding:           utf8      # Default charset for table creation
+      persistent:         true      # Use persistent connections

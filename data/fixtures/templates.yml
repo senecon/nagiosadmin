@@ -1,0 +1,157 @@
+---
+Template: 
+  Template_1: 
+    type: 0
+    name: host
+    alias: Host
+    content: |
+      define host {
+      host_name                       %NAME%
+      alias                           %ALIAS%
+      address                         %ADDRESS%
+      contact_groups                  %CONTACTGROUPS%
+      
+      use                             generic-host
+      %SPECIAL%
+      }
+    created_at: 2007-08-16 14:30:00
+    updated_at: 2007-08-16 14:30:00
+  Template_2: 
+    type: 0
+    name: contact
+    alias: Contact
+    content: |
+      define contact {
+      contact_name                    %NAME%
+      alias                           %ALIAS%
+      email                           %EMAIL%
+      use                             generic-contact
+      %SPECIAL%
+      }
+    created_at: 2007-08-16 14:30:22
+    updated_at: 2007-08-16 14:30:22
+  Template_3: 
+    type: 0
+    name: contactgroup
+    alias: Contact Group
+    content: |
+      define contactgroup {
+      contactgroup_name               %NAME%
+      alias                           %ALIAS%
+      members                         %CONTACTS%
+      }
+    created_at: 2007-08-16 14:30:45
+    updated_at: 2007-08-16 14:30:45
+  Template_4: 
+    type: 0
+    name: hostgroup
+    alias: Host Group
+    content: |
+      define hostgroup {
+      hostgroup_name                  %NAME%
+      alias                           %ALIAS%
+      members                         %HOSTS%
+      }
+    created_at: 2007-08-16 14:31:03
+    updated_at: 2007-08-16 14:31:03
+  Template_5: 
+    type: 0
+    name: hostextinfo
+    alias: Extended Host Info
+    content: |
+      define hostextinfo {
+      host_name                       %NAME%
+      icon_image                      %IMAGE%
+      statusmap_image                 %IMAGE%
+      notes_url                       /nagios2mwiki.php?host=$HOSTNAME
+      }
+    created_at: 2007-08-16 14:31:22
+    updated_at: 2007-08-16 14:31:22
+  Template_6: 
+    type: 0
+    name: service
+    alias: Service
+    content: |
+      define service {
+      use                             generic-service
+      host_name                       %HOSTNAME%
+      service_description             %NAME%
+      display_name                    %ALIAS%
+      check_command                   %COMMAND%%PARAMETERS%
+      contact_groups                  %CONTACTGROUPS%
+      %SPECIAL%
+      %HOSTSPECIAL%
+      }
+    created_at: 2007-08-16 14:31:46
+    updated_at: 2007-08-17 13:24:21
+  Template_7: 
+    type: 1
+    name: generic-contact
+    alias: Generic Contact Template
+    content: |
+      define contact {
+      name                            generic-contact
+      host_notification_period        24x7
+      service_notification_period     24x7
+      host_notification_options       d,u,r,f,s
+      service_notification_options    w,u,c,r,f,s
+      host_notification_commands      notify-host-by-email
+      service_notification_commands   notify-service-by-email
+      register                        0
+      }
+    created_at: 2007-08-16 14:32:11
+    updated_at: 2007-08-17 12:59:27
+  Template_8: 
+    type: 1
+    name: generic-service
+    alias: Generic Service Template
+    content: |
+      define service {
+      name                            generic-service
+      active_checks_enabled           1
+      passive_checks_enabled          1
+      parallelize_check               1
+      obsess_over_service             1
+      check_freshness                 0
+      notifications_enabled           1
+      event_handler_enabled           1
+      flap_detection_enabled          1
+      failure_prediction_enabled      1
+      process_perf_data               1
+      retain_status_information       1
+      retain_nonstatus_information    1
+      register                        0
+      is_volatile                     0
+      check_period                    24x7
+      max_check_attempts              3
+      normal_check_interval           3
+      retry_check_interval            1
+      notification_interval           60
+      notification_period             24x7
+      notification_options            w,u,c,r
+      first_notification_delay        2
+      }
+    created_at: 2007-08-16 14:32:39
+    updated_at: 2007-08-17 13:25:45
+  Template_9: 
+    type: 1
+    name: generic-host
+    alias: Generic Host Template
+    content: |
+      define host {
+      name                            generic-host
+      register                        0
+      max_check_attempts              10
+      check_command                   check-host-alive
+      notifications_enabled           1
+      notification_interval           60
+      notification_period             24x7
+      notification_options            d,u,r
+      event_handler_enabled           1
+      flap_detection_enabled          0
+      process_perf_data               1
+      retain_status_information       1
+      retain_nonstatus_information    1
+      }
+    created_at: 2007-08-16 14:33:28
+    updated_at: 2007-08-17 13:03:30
