@@ -12,9 +12,9 @@ class HostPeer extends BaseHostPeer
   public static function getConfig()
   {
     require_once('lib/helper/TemplateTokenHelper.php');
+    // may be better via: sfLoader::loadHelpers(array('TemplateToken'));
     
     $tpl = getTemplate('host');
-    //$tpl_ext = getTemplate('hostextinfo');
     $tpl_service = getTemplate('service');
     
     $cfg = '';
@@ -28,7 +28,6 @@ class HostPeer extends BaseHostPeer
       $ha['lastupdate'] = $host->getUpdatedAt();
       
       $cfg .= replace_template_tokens($tpl->getContent(), $ha, '%')."\n\n";
-      //$cfg .= replace_template_tokens($tpl_ext->getContent(), $ha, '%')."\n\n";
       
       foreach($host->getServices() as $s2h)
       {
