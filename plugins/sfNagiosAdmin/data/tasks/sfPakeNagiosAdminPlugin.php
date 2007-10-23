@@ -1,6 +1,6 @@
 <?php
 
-pake_desc( 'Checks for requirements' );
+pake_desc( 'Checks for requirements and file permissions' );
 pake_task( 'check', 'project_exists' );
 
 function check_extension_func($ext, $func = null)
@@ -30,6 +30,7 @@ function run_check( $task, $args )
   check_class_include('Text_Diff','Text/Diff.php');
   check_class_include('Text_Diff_Renderer','Text/Diff/Renderer.php');
   check_class_include('Text_Diff_Renderer_inline','Text/Diff/Renderer/inline.php');
+  pake_chmod(sfConfig::get('sf_data_dir_name').DIRECTORY_SEPARATOR.'nagios', sfConfig::get('sf_root_dir'), 0777);
 }
 
 ?>
