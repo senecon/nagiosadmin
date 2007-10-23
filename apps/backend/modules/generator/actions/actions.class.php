@@ -165,8 +165,16 @@ class generatorActions extends sfActions
   
   public function executeCheck()
   {
+    $this->error = false;
     $this->result = shell_exec(sfConfig::get('mod_generator_config_check_command'));
     $this->ok = $this->isOk($this->result);
+    if($this->ok == false)
+    {
+      if(preg_match('#Reading configuration data#', $this->result) == false)
+      {
+        $this->error = 'Be sure that the settings for <em>config_check_command</em> in the file <em>'.sfConfig::get('sf_app_module_dir').DIRECTORY_SEPARATOR.'generator'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'module.yml'.'</em> are set correctly.';
+      }
+    }
     $this->forwardIf($this->ok,'generator','reload');
   }
   
