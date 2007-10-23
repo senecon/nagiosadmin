@@ -77,7 +77,7 @@ class generatorActions extends sfActions
         $changed[] = $file;
       }
     }
-    if(count($changed) > 0) return '<ul><li>'.implode('</li><li>',$changed).'</li></ul>';
+    return $changed;
   }
   
   private function checkMd5($file)
