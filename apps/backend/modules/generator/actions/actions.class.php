@@ -20,26 +20,36 @@ class generatorActions extends sfActions
     $this->diff = array();
     
     $this->config['contacts'] = ContactPeer::getConfig();
-    $this->diff['contacts'] = $this->getDifference($this->config['contacts'],file(sfConfig::get('sf_data_dir').DIRECTORY_SEPARATOR.'nagios'.DIRECTORY_SEPARATOR.sfConfig::get('mod_generator_contact_config_name')));
+    $this->diff['contacts'] = $this->getDifference($this->config['contacts'],sfConfig::get('sf_data_dir').DIRECTORY_SEPARATOR.'nagios'.DIRECTORY_SEPARATOR.sfConfig::get('mod_generator_contact_config_name'),false,true);
     $this->config['contactgroups'] = ContactGroupPeer::getConfig();
-    $this->diff['contactgroups'] = $this->getDifference($this->config['contactgroups'],file(sfConfig::get('sf_data_dir').DIRECTORY_SEPARATOR.'nagios'.DIRECTORY_SEPARATOR.sfConfig::get('mod_generator_contactgroup_config_name')));
+    $this->diff['contactgroups'] = $this->getDifference($this->config['contactgroups'],sfConfig::get('sf_data_dir').DIRECTORY_SEPARATOR.'nagios'.DIRECTORY_SEPARATOR.sfConfig::get('mod_generator_contactgroup_config_name'),false,true);
     $this->config['hosts'] = HostPeer::getConfig();
-    $this->diff['hosts'] = $this->getDifference($this->config['hosts'],file(sfConfig::get('sf_data_dir').DIRECTORY_SEPARATOR.'nagios'.DIRECTORY_SEPARATOR.sfConfig::get('mod_generator_host_config_name')));
+    $this->diff['hosts'] = $this->getDifference($this->config['hosts'],sfConfig::get('sf_data_dir').DIRECTORY_SEPARATOR.'nagios'.DIRECTORY_SEPARATOR.sfConfig::get('mod_generator_host_config_name'),false,true);
     $this->config['hostgroups'] = HostGroupPeer::getConfig();
-    $this->diff['hostgroups'] = $this->getDifference($this->config['hostgroups'],file(sfConfig::get('sf_data_dir').DIRECTORY_SEPARATOR.'nagios'.DIRECTORY_SEPARATOR.sfConfig::get('mod_generator_hostgroup_config_name')));
+    $this->diff['hostgroups'] = $this->getDifference($this->config['hostgroups'],sfConfig::get('sf_data_dir').DIRECTORY_SEPARATOR.'nagios'.DIRECTORY_SEPARATOR.sfConfig::get('mod_generator_hostgroup_config_name'),false,true);
     $this->config['generics'] = TemplatePeer::getConfig();
-    $this->diff['generics'] = $this->getDifference($this->config['generics'],file(sfConfig::get('sf_data_dir').DIRECTORY_SEPARATOR.'nagios'.DIRECTORY_SEPARATOR.sfConfig::get('mod_generator_template_config_name')));
+    $this->diff['generics'] = $this->getDifference($this->config['generics'],sfConfig::get('sf_data_dir').DIRECTORY_SEPARATOR.'nagios'.DIRECTORY_SEPARATOR.sfConfig::get('mod_generator_template_config_name'),false,true);
     $this->config['commands'] = CommandPeer::getConfig();
-    $this->diff['commands'] = $this->getDifference($this->config['commands'],file(sfConfig::get('sf_data_dir').DIRECTORY_SEPARATOR.'nagios'.DIRECTORY_SEPARATOR.sfConfig::get('mod_generator_command_config_name')));
+    $this->diff['commands'] = $this->getDifference($this->config['commands'],sfConfig::get('sf_data_dir').DIRECTORY_SEPARATOR.'nagios'.DIRECTORY_SEPARATOR.sfConfig::get('mod_generator_command_config_name'),false,true);
     
     $this->changed = $this->checkFilesModified();
   }
   
-  private function getDifference($new, $old)
+  private function getDifference($new, $old, $new_is_file = false, $old_is_file = false)
   {
     require_once('Text/Diff.php');
     require_once('Text/Diff/Renderer.php');
     require_once('Text/Diff/Renderer/inline.php');
+    
+    if($new_is_file)
+    {
+      $new = is_readable($new) ? file($new) : '';
+    }
+    
+    if($old_is_file)
+    {
+      $old = is_readable($old) ? file($old) : '';
+    }
     
     if(!is_array($new))
     {
