@@ -1,12 +1,12 @@
 fields:
-  hostgroup{name}:
+  host_group{name}:
     required:
       msg: You must provide a name
     sfPropelUniqueValidator:
       class: HostGroup
       column: name
       unique_error: This host group name already exists
-  hostgroup{alias}:
+  host_group{alias}:
     required:
       msg: You must provide an alias
     sfPropelUniqueValidator:

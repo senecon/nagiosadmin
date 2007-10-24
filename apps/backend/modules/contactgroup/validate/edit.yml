@@ -1,12 +1,12 @@
 fields:
-  contactgroup{name}:
+  contact_group{name}:
     required:
       msg: You must provide a name
     sfPropelUniqueValidator:
       class: ContactGroup
       column: name
       unique_error: This contact group name already exists
-  contactgroup{alias}:
+  contact_group{alias}:
     required:
       msg: You must provide an alias
     sfPropelUniqueValidator:
