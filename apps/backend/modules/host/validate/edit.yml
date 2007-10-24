@@ -20,4 +20,10 @@ fields:
       address_error: This host address is invalid
   host{group_id}:
     required:
-      msg: You must assign a group (create a host group if needed)
+      msg: You must assign a host group (create one if needed)
+  associated_contactgroups:
+    required:
+      msg: You must assign at least one contact group
+  associated_services:
+    required:
+      msg: You must assign at least one service
