@@ -13,7 +13,7 @@ generator:
       hosts_count:    { name: Number of hosts }
 
     list:
-      title:   OS list
+      title:   Operating system list
       display: [ =name, _image, hosts_count ]
       filters: [ name ]
       object_actions:
@@ -21,6 +21,10 @@ generator:
         _delete:      ~
 
     edit:
+      title:          edit operating system
       fields:
         created_at:   { type: plain }
         updated_at:   { type: plain }
+      display:
+        "NONE":       [ name, image ]
+        "Information":[ created_at, updated_at ]
