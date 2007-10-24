@@ -15,7 +15,7 @@ fields:
       unique_error: This host alias already exists
   host{address}:
     required:
-      msg: You must provide an IP address
+      msg: You must provide an IP address or domain name
     sfHostAddressValidator:
       address_error: This host address is invalid
   host{group_id}:
