@@ -6,7 +6,7 @@ generator:
 
     list:
       title:   Command list
-      display: [ =name, alias, command ]
+      display: [ =name, alias, command_summary ]
       filters: [ name, alias ]
       object_actions:
         _edit:        ~
