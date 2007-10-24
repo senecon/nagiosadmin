@@ -33,4 +33,10 @@ class Template extends BaseTemplate
       parent::delete($con);
     }
   }
+
+  public function getContentSummary()
+  {
+    return strlen($this->getContent()) > 60 ? substr($this->getContent(),0,60).'...' : $this->getContent();
+  }
+
 }

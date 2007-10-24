@@ -4,13 +4,12 @@ generator:
     model_class:      Template
     theme:            default
 
-#    fields:
-#      type:
-#        help:         0 = dynamic / 1 = static (generic)
+    fields:
+      content_summary: { name: Content }
 
     list:
       title:   Template list
-      display: [ =name, alias, content ]
+      display: [ =name, alias, content_summary ]
       filters: [ name, alias, content ]
       object_actions:
         _edit:        ~
