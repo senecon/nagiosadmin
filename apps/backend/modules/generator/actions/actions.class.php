@@ -180,6 +180,8 @@ class generatorActions extends sfActions
   
   public function executeReload()
   {
-    system(sfConfig::get('mod_generator_reload_nagios_command'),$this->exitcode);
+    $this->command = sfConfig::get('mod_generator_reload_nagios_command');
+    system($this->command,$exitcode);
+    $this->exitcode = $exitcode;
   }
 }
