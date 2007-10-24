@@ -1,0 +1,19 @@
+fields:
+  os{name}:
+    required:
+      msg: You must provide a name
+    sfPropelUniqueValidator:
+      class: Os
+      column: name
+      unique_error: This operating system already exists
+  os{image}:
+    file: true
+    required:
+      msg: You must provide an image
+    sfFileValidator:
+      mime_types:
+        - 'image/jpeg'
+        - 'image/pjpeg'
+      mime_types_error: Only JPEG images are allowed
+      max_size:         512000
+      max_size_error:   Max size is 512Kb

@@ -1,0 +1,25 @@
+fields:
+  template{name}:
+    required:
+      msg: You must provide a name
+    sfPropelUniqueValidator:
+      class: Template
+      column: name
+      unique_error: This template name already exists
+  template{alias}:
+    required:
+      msg: You must provide an alias
+    sfPropelUniqueValidator:
+      class: Template
+      column: alias
+      unique_error: This template alias already exists
+  template{content}:
+    required:
+      msg: You must provide a template definition
+    sfRegexValidator:
+      match: yes
+      match_error: Template definitions should look like "define templatename { ... }"
+      pattern: /define\s+\S*\s+\{.*}\s*/
+  template{type}:
+    required:
+      msg: You must assign a type

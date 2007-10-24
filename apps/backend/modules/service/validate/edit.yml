@@ -1,0 +1,25 @@
+fields:
+  service{name}:
+    required:
+      msg: You must provide a name
+    sfPropelUniqueValidator:
+      class: Service
+      column: name
+      unique_error: This service name already exists
+  service{alias}:
+    required:
+      msg: You must provide an alias
+    sfPropelUniqueValidator:
+      class: Service
+      column: alias
+      unique_error: This service alias already exists
+  service{port}:
+    sfNumberValidator:
+      nan_error:    Please enter an integer
+      min:          1
+      min_error:    The value must be at least 1
+      max:          65535
+      max_error:    The value must be less than or equal to 65535
+  service{command_id}:
+    required:
+      msg: You must assign a command

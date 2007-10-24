@@ -1,0 +1,21 @@
+fields:
+  contact{name}:
+    required:
+      msg: You must provide a name
+    sfPropelUniqueValidator:
+      class: Contact
+      column: name
+      unique_error: This contact name already exists
+  contact{alias}:
+    required:
+      msg: You must provide an alias
+    sfPropelUniqueValidator:
+      class: Contact
+      column: alias
+      unique_error: This contact alias already exists
+  contact{email}:
+    required:
+      msg: You must provide an email
+    sfEmailValidator:
+      strict: true
+      email_error: This email address is invalid

@@ -1,0 +1,15 @@
+fields:
+  hostgroup{name}:
+    required:
+      msg: You must provide a name
+    sfPropelUniqueValidator:
+      class: HostGroup
+      column: name
+      unique_error: This host group name already exists
+  hostgroup{alias}:
+    required:
+      msg: You must provide an alias
+    sfPropelUniqueValidator:
+      class: HostGroup
+      column: alias
+      unique_error: This host group alias already exists

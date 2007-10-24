@@ -1,0 +1,25 @@
+fields:
+  host{name}:
+    required:
+      msg: You must provide a name
+    sfPropelUniqueValidator:
+      class: Host
+      column: name
+      unique_error: This host name already exists
+  host{alias}:
+    required:
+      msg: You must provide an alias
+    sfPropelUniqueValidator:
+      class: Host
+      column: alias
+      unique_error: This host alias already exists
+  host{address}:
+    required:
+      msg: You must provide an IP address
+    sfRegexValidator:
+      match: yes
+      match_error: This IP address is invalid
+      pattern: /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/
+  host{group_id}:
+    required:
+      msg: You must assign a group (create a host group if needed)
