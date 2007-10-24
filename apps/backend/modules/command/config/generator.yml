@@ -3,6 +3,9 @@ generator:
   param:
     model_class:      Command
     theme:            default
+    
+    fields:
+      command_summary: { name: Command }
 
     list:
       title:   Command list
