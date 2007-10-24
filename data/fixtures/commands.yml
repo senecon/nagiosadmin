@@ -1,0 +1,197 @@
+---
+Command: 
+  Command_1: 
+    name: check_ftp
+    alias: check_ftp
+    command: >
+      $USER1$/check_ftp -H $HOSTADDRESS$
+      $ARG1$
+  Command_2: 
+    name: check_http
+    alias: check_http
+    command: >
+      $USER1$/check_http -I $HOSTADDRESS$
+      $ARG1$
+  Command_3: 
+    name: notify-host-by-email
+    alias: notify-host-by-email
+    command: >
+      /usr/bin/printf "%b" "***** Nagios
+      *****\n\nNotification Type:
+      $NOTIFICATIONTYPE$\nHost:
+      $HOSTNAME$\nState: $HOSTSTATE$\nAddress:
+      $HOSTADDRESS$\nInfo:
+      $HOSTOUTPUT$\n\nDate/Time:
+      $LONGDATETIME$\n" | /bin/mail -s "**
+      $NOTIFICATIONTYPE$ Host Alert:
+      $HOSTNAME$ is $HOSTSTATE$ **"
+      $CONTACTEMAIL$
+  Command_4: 
+    name: notify-service-by-email
+    alias: notify-service-by-email
+    command: >
+      /usr/bin/printf "%b" "***** Nagios
+      *****\n\nNotification Type:
+      $NOTIFICATIONTYPE$\n\nService:
+      $SERVICEDESC$\nHost:
+      $HOSTALIAS$\nAddress:
+      $HOSTADDRESS$\nState:
+      $SERVICESTATE$\n\nDate/Time:
+      $LONGDATETIME$\n\nAdditional
+      Info:\n\n$SERVICEOUTPUT$" | /bin/mail -s
+      "** $NOTIFICATIONTYPE$ Service Alert:
+      $HOSTALIAS$/$SERVICEDESC$ is
+      $SERVICESTATE$ **" $CONTACTEMAIL$
+  Command_5: 
+    name: check-host-alive
+    alias: check-host-alive
+    command: >
+      $USER1$/check_ping -H $HOSTADDRESS$ -w
+      3000.0,80% -c 5000.0,100% -p 5
+  Command_6: 
+    name: check_local_disk
+    alias: check_local_disk
+    command: >
+      $USER1$/check_disk -w $ARG1$ -c $ARG2$
+      -p $ARG3$
+  Command_7: 
+    name: check_local_load
+    alias: check_local_load
+    command: $USER1$/check_load -w $ARG1$ -c $ARG2$
+  Command_8: 
+    name: check_local_procs
+    alias: check_local_procs
+    command: >
+      $USER1$/check_procs -w $ARG1$ -c $ARG2$
+      -s $ARG3$
+  Command_9: 
+    name: check_local_users
+    alias: check_local_users
+    command: $USER1$/check_users -w $ARG1$ -c $ARG2$
+  Command_10: 
+    name: check_local_swap
+    alias: check_local_swap
+    command: $USER1$/check_swap -w $ARG1$ -c $ARG2$
+  Command_11: 
+    name: check_local_mrtgtraf
+    alias: check_local_mrtgtraf
+    command: >
+      $USER1$/check_mrtgtraf -F $ARG1$ -a
+      $ARG2$ -w $ARG3$ -c $ARG4$ -e $ARG5$
+  Command_12: 
+    name: check_snmp
+    alias: check_snmp
+    command: >
+      $USER1$/check_snmp -H $HOSTADDRESS$
+      $ARG1$
+  Command_13: 
+    name: check_ssh
+    alias: check_ssh
+    command: $USER1$/check_ssh $ARG1$ $HOSTADDRESS$
+  Command_14: 
+    name: check_dhcp
+    alias: check_dhcp
+    command: $USER1$/check_dhcp $ARG1$
+  Command_15: 
+    name: check_ping
+    alias: check_ping
+    command: >
+      $USER1$/check_ping -H $HOSTADDRESS$ -w
+      250.0,20% -c 500.0,60% -p 5
+  Command_16: 
+    name: check_pop
+    alias: check_pop
+    command: >
+      $USER1$/check_pop -H $HOSTADDRESS$
+      $ARG1$
+  Command_17: 
+    name: check_imap
+    alias: check_imap
+    command: >
+      $USER1$/check_imap -H $HOSTADDRESS$
+      $ARG1$
+  Command_18: 
+    name: check_smtp
+    alias: check_smtp
+    command: >
+      $USER1$/check_smtp -H $HOSTADDRESS$
+      $ARG1$
+  Command_19: 
+    name: check_tcp
+    alias: check_tcp
+    command: >
+      $USER1$/check_tcp -H $HOSTADDRESS$ -p
+      $ARG1$ $ARG2$
+  Command_20: 
+    name: check_udp
+    alias: check_udp
+    command: >
+      $USER1$/check_udp -H $HOSTADDRESS$ -p
+      $ARG1$ $ARG2$
+  Command_21: 
+    name: check_nt
+    alias: check_nt
+    command: >
+      $USER1$/check_nt -H $HOSTADDRESS$ -p
+      12489 -v $ARG1$ $ARG2$
+  Command_22: 
+    name: process-host-perfdata
+    alias: process-host-perfdata
+    command: >
+      /usr/bin/printf "%b"
+      "$LASTHOSTCHECK$\t$HOSTNAME$\t$HOSTSTATE$\t$HOSTATTEMPT$\t$HOSTSTATETYPE$\t$HOSTEXECUTIONTIME$\t$HOSTOUTPUT$\t$HOSTPERFDATA$\n"
+      >> /var/nagios/host-perfdata.out
+  Command_23: 
+    name: process-service-perfdata
+    alias: process-service-perfdata
+    command: >
+      /usr/bin/printf "%b"
+      "$LASTSERVICECHECK$\t$HOSTNAME$\t$SERVICEDESC$\t$SERVICESTATE$\t$SERVICEATTEMPT$\t$SERVICESTATETYPE$\t$SERVICEEXECUTIONTIME$\t$SERVICELATENCY$\t$SERVICEOUTPUT$\t$SERVICEPERFDATA$\n"
+      >> /var/nagios/service-perfdata.out
+  Command_28: 
+    name: check_https
+    alias: check_https
+    command: >
+      $USER1$/check_http -I $HOSTADDRESS$ -p
+      443 -S $ARG1$
+  Command_29: 
+    name: check_simap
+    alias: |
+      check_simap
+      
+    command: >
+      $USER1$/check_simap -H $HOSTADDRESS$ -p
+      993
+  Command_31: 
+    name: check_spop
+    alias: check_spop
+    command: >
+      $USER1$/check_spop -H $HOSTADDRESS$ -p
+      995
+  Command_32: 
+    name: check_vmware-console
+    alias: check_vmware-console
+    command: >
+      $USER1$/check_http -H $HOSTADDRESS$ -p
+      8333 -S
+  Command_35: 
+    name: check_https_host
+    alias: check_https_host
+    command: $USER1$/check_http -p 443 -S -H $ARG1$
+  Command_36: 
+    name: check_dns
+    alias: check_dns
+    command: >
+      $USER1$/check_dns -H www.google.com -s
+      $HOSTADDRESS$
+  Command_37: 
+    name: check_http_host
+    alias: check_http_host
+    command: $USER1$/check_http -H $ARG1$
+  Command_39: 
+    name: check_snmp_storage
+    alias: check_snmp_storage
+    command: >
+      $USER1$/check_snmp_storage -H
+      $HOSTADDRESS$ -l $_HOSTSNMP_USER$ -x
+      $_HOSTSNMP_PASS$ -m / -w 85% -c 95%

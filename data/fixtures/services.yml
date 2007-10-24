@@ -1,0 +1,86 @@
+---
+Service: 
+  Service_1: 
+    name: http
+    alias: Webserver
+    command_id: Command_2
+    port: 80
+    special: 
+  Service_2: 
+    name: ftp
+    alias: FTP
+    command_id: Command_1
+    port: 21
+    special: 
+  Service_4: 
+    name: https
+    alias: Webserver (SSL)
+    command_id: Command_28
+    port: 443
+    special: 
+  Service_5: 
+    name: imaps
+    alias: IMAP (SSL)
+    command_id: Command_29
+    port: 993
+    special: 
+  Service_6: 
+    name: pop3s
+    alias: POP (SSL)
+    command_id: Command_31
+    port: 995
+    special: 
+  Service_7: 
+    name: ping
+    alias: Ping
+    command_id: Command_15
+    port: 0
+    special: 
+  Service_8: 
+    name: smtp
+    alias: Mailserver
+    command_id: Command_18
+    port: 25
+    special: 
+  Service_9: 
+    name: ssh
+    alias: OpenSSH
+    command_id: Command_13
+    port: 22
+    special: 
+  Service_11: 
+    name: pop
+    alias: POP
+    command_id: Command_16
+    port: 110
+    special: 
+  Service_12: 
+    name: imap
+    alias: IMAP
+    command_id: Command_17
+    port: 143
+    special: 
+  Service_13: 
+    name: load
+    alias: Local Load
+    command_id: Command_7
+    port: 0
+    special: 
+  Service_15: 
+    name: dns
+    alias: DNS
+    command_id: Command_36
+    port: 53
+    special: 
+  Service_17: 
+    name: vmwc
+    alias: VMware Server Console
+    command_id: Command_32
+    port: 8333
+    special: 
+  Service_19: 
+    name: storage
+    alias: Storage
+    command_id: Command_39
+    port: 0
+    special: 
