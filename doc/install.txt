@@ -106,7 +106,7 @@ Check your PHP for requirements (look for "not found")
 Configure Apache to access NagiosAdmin
 --------------------------------------
 
-You can find a sample virtual host in doc/contrib/apache.
+You can find a sample virtual host in doc/contrib/apache. Be sure to protect NagiosAdmin (but not the upload dir) via http auth or anything else.
 
 Configure PHP
 -------------
