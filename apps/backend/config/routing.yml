@@ -12,7 +12,7 @@ default_index:
   param: { action: index }
 
 config_download:
-  url:   /generator/nagiosadmin.cfg
+  url:   /generator/download
   param: { module: generator, action: download }
 
 default:
