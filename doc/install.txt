@@ -4,14 +4,14 @@ NagiosAdmin
 Requirements
 ------------
 
- * PHP 5 (cli and mod_php or cgi) with the following extensions enabled:
+ * PHP 5 (cli AND mod_php or cgi) with the following extensions enabled:
    - json
    - gd (with jpeg support)
    - mysql
    - ctype
    - xml
    - ionCube Loader (http://www.ioncube.com/loaders.php)
- * Apache (or any other webserver with php support)
+ * Apache (with php support and mod_rewrite)
  * MySQL 5 (4 may also work)
  * sudo
  * Nagios 3.x with Plugins
@@ -50,7 +50,7 @@ Creating the database and mysql user
 NagiosAdmin currently uses a mysql database to store your configuration. You have to create a database and an user.
 
  > mysqladmin -u root -p create nagiosadmin
- > mysql -p
+ > mysql -u root -p
 
  mysql> GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,ALTER,INDEX,DROP
         ON nagiosadmin.*
@@ -77,7 +77,7 @@ Edit config/databases.yml
 
       database:           nagiosadmin
       username:           nagiosadmin
-      password:           jNU7yVjNU7yV
+      password:           yourpassword
  
 Edit apps/backend/modules/generator/config/module.yml
 
