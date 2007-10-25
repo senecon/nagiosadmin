@@ -7,8 +7,6 @@ prod:
   propel:
     param:
       host:               localhost
-      username:           root
-      password:           
 
 all:
   propel:
