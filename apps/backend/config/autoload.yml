@@ -98,6 +98,6 @@ autoload:
     files:
       myUser:    %SF_APP_LIB_DIR%/myUser.class.php
 
-  ioncube_module:
-    name:        ioncube module
-    files:
+#  ioncube_module:
+#    name:        ioncube module
+#    files:
