@@ -14,15 +14,15 @@
 
 <div id="header">
 <ul id="topmenu">
-<li><?=link_to('Contacts','contact')?></li>
-<li><?=link_to('Contact Groups','contactgroup')?></li>
-<li><?=link_to('Operating Systems','os')?></li>
-<li><?=link_to('Services','service')?></li>
-<li><?=link_to('Host Groups','hostgroup')?></li>
-<li><?=link_to('Hosts','host')?></li>
-<li><?=link_to('Commands','command')?></li>
-<li><?=link_to('Templates','template')?></li>
-<li><?=link_to('Generator','generator')?></li>
+<li><?php echo link_to('Contacts','contact'); ?></li>
+<li><?php echo link_to('Contact Groups','contactgroup'); ?></li>
+<li><?php echo link_to('Operating Systems','os'); ?></li>
+<li><?php echo link_to('Services','service'); ?></li>
+<li><?php echo link_to('Host Groups','hostgroup'); ?></li>
+<li><?php echo link_to('Hosts','host'); ?></li>
+<li><?php echo link_to('Commands','command'); ?></li>
+<li><?php echo link_to('Templates','template'); ?></li>
+<li><?php echo link_to('Generator','generator'); ?></li>
 </ul>
 </div>
 

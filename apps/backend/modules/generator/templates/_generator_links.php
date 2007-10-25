@@ -1,1 +1,1 @@
-<p><?=link_to('Download','@config_download')?> | <?=link_to('Save','generator/dump')?><!-- | <?=link_to('Check','generator/check')?> | <?=link_to('Reload','generator/reload')?> --></p>
+<p><?php echo link_to('Download','@config_download'); ?> | <?php echo link_to('Save','generator/dump'); ?><!-- | <?php echo link_to('Check','generator/check'); ?> | <?php echo link_to('Reload','generator/reload'); ?> --></p>
