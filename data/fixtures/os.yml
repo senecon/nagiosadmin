@@ -1,0 +1,17 @@
+---
+Os: 
+  Os_1: 
+    name: Gentoo
+    image: gentoo.jpg
+  Os_2: 
+    name: Windows Server 2003
+    image: windows.jpg
+  Os_3: 
+    name: SuSE
+    image: suse.jpg
+  Os_4: 
+    name: Redhat
+    image: redhat.jpg
+  Os_5: 
+    name: Router
+    image: router.jpg
