@@ -1,21 +1,114 @@
-visudo:
+NagiosAdmin
+===========
 
-	%nagios ALL= NOPASSWD: /usr/bin/killall -HUP nagios
+Requirements
+------------
 
-/etc/group
+ * PHP 5 (cli and mod_php or cgi) with the following extensions enabled:
+   - json
+   - gd (with jpeg support)
+   - mysql
+   - ctype
+   - xml
+   - ionCube Loader (http://www.ioncube.com/loaders.php)
+ * Apache (or any other webserver with php support)
+ * MySQL 5 (4 may also work)
+ * sudo
+ * Nagios 3.x with Plugins
+ * traceroute (for nagios)
+ * mailx (for nagios)
 
-	apache:x:81:
-	nagios:x:441:apache
-	nagcmd:x:442:nagios,apache
+Notes for Nagios installation
+-----------------------------
 
-/etc/apache2/nagios.conf
+Nagios should be configured to run with an own user and group.
+Be sure that you create a user "nagios" with group "nagios" (example) before installing.
 
-	Alias /nagios/images/logos/nagiosimages /var/www/localhost/htdocs/NagiosAdmin/web/uploads/os_images
-	Alias /nagios "/usr/nagios/share"
+ > useradd -d /var/nagios/home -s /bin/bash -n nagios
 
-PEAR Pakete:
-PEAR_Info
-Text_Diff pear install "channel://pear.php.net/Text_Diff-0.3.0"
+Add the user running the webserver to the "nagios" group. This is needed because this user has to reload nagios.
 
-apps/backend/modules/generator/config/module.yml
+ > usermod -a -G nagios apache
 
+Now run "visudo" and add the followling line to the end of the file
+
+ %nagios ALL= NOPASSWD: /usr/bin/killall -HUP nagios
+
+Edit the Apache config holding your nagios settings and add this line (change to your path) before any other alias:
+
+ Alias /nagios/images/logos/nagiosimages /var/www/localhost/htdocs/nagiosadmin/web/uploads/os_images
+
+You can find a sample nagios configuration in the doc/contrib/nagios directory.
+The important line is "cfg_dir=/var/www/localhost/htdocs/nagiosadmin/data/nagios".
+
+Be sure that the webserver user has write permissions to the "check_result_path" directory defined in nagios.cfg.
+This user also need read permissions to /etc/nagios/.
+
+Creating the database and mysql user
+------------------------------------
+
+NagiosAdmin currently uses a mysql database to store your configuration. You have to create a database and an user.
+
+ > mysqladmin -u root -p create nagiosadmin
+ > mysql -p
+
+ mysql> GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,ALTER,INDEX,DROP
+        ON nagiosadmin.*
+        TO 'nagiosadmin'@'localhost'
+        IDENTIFIED BY 'yourpassword';
+
+Unpack NagiosAdmin
+------------------
+
+Extract the archive where you want, for example "/var/www/localhost/htdocs/".
+
+Update the application config files
+-----------------------------------
+
+Change to the nagiosadmin directory.
+
+You have to set your mysql settings:
+
+Edit config/propel.ini
+
+ propel.database.url        = mysql://nagiosadmin:yourpassword@localhost/nagiosadmin
+
+Edit config/databases.yml
+
+      database:           nagiosadmin
+      username:           nagiosadmin
+      password:           jNU7yVjNU7yV
+ 
+Edit apps/backend/modules/generator/config/module.yml
+
+  config_check_command:           /usr/nagios/bin/nagios -v /etc/nagios/nagios.cfg 2>&1
+  reload_nagios_command:          /usr/bin/sudo /usr/bin/killall -HUP nagios
+
+Finalize installation
+---------------------
+
+Fix permissions (should be optional)
+
+ > ./symfony fix-perms
+ 
+Insert the table structure
+
+ > ./symfony propel-insert-sql
+ 
+Load table data
+
+ > ./symfony propel-load-data backend
+ 
+Check your PHP for requirements (look for "not found")
+
+ > ./symfony check
+
+Configure Apache to access NagiosAdmin
+--------------------------------------
+
+You can find a sample virtual host in doc/contrib/apache.
+
+Configure PHP
+-------------
+
+Set the "magic_quotes_gpc" key to "Off". The sample virtual hosts mentioned above includes this setting.
