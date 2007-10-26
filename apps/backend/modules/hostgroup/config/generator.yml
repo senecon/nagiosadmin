@@ -8,7 +8,7 @@ generator:
       hosts_count:    { name: Number of hosts }
 
     list:
-      title:   Hostgroup list
+      title:   Host Groups
       display: [ =name, alias, hosts_count ]
       filters: [ name, alias ]
       object_actions:

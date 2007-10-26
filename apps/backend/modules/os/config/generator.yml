@@ -13,7 +13,7 @@ generator:
       hosts_count:    { name: Number of hosts }
 
     list:
-      title:   Operating system list
+      title:   Operating Systems
       display: [ =name, _image, hosts_count ]
       filters: [ name ]
       object_actions:

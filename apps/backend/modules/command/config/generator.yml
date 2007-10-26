@@ -8,7 +8,7 @@ generator:
       command_summary: { name: Command }
 
     list:
-      title:   Command list
+      title:   Commands
       display: [ =name, alias, command_summary ]
       filters: [ name, alias ]
       object_actions:

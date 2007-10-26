@@ -5,7 +5,7 @@ generator:
     theme:            default
 
     list:
-      title:   Service list
+      title:   Services
       display: [ =name, alias, port ]
       filters: [ name, alias, port ]
       object_actions:

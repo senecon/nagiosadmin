@@ -9,7 +9,7 @@ generator:
 #      services:       { help: When deselecting any service the command parameters get lost! }
 
     list:
-      title:          Host list
+      title:          Hosts
       display:        [ =name, alias, address, group_name]
       filters:        [ name, alias, address ]
       object_actions:

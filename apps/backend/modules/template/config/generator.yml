@@ -8,7 +8,7 @@ generator:
       content_summary: { name: Content }
 
     list:
-      title:   Template list
+      title:   Templates
       display: [ =name, alias, content_summary ]
       filters: [ name, alias, content ]
       object_actions:

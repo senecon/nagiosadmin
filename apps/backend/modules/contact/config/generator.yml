@@ -8,7 +8,7 @@ generator:
       contact_groups_count: { name: Number of contact groups }
 
     list:
-      title:   Contact list
+      title:   Contacts
       display: [ =name, alias, email, contact_groups_count ]
       filters: [ name, alias, email ]
       object_actions:
