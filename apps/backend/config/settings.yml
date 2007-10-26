@@ -1,6 +1,10 @@
 prod:
+  .actions
+    error_404_module:         error
+    error_404_action:         error404
   .settings:
     no_script_name:           on
+    enabled_modules:          []
 
 dev:
   .settings:
@@ -23,6 +27,10 @@ test:
 all:
   .settings:
     i18n: off
+    use_security:           off
+    use_flash:              off
+    compressed:             on
+    
 #all:
 #  .actions:
 #    default_module:         default   # Default module and action to be called when

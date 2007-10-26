@@ -10,6 +10,12 @@ test:
   storage:
     class: sfSessionTestStorage
 
+all:
+  storage:
+    class: sfSessionStorage
+    param:
+      session_name: nagiosadmin
+
 #all:
 #  controller:
 #    class: sfFrontWebController
