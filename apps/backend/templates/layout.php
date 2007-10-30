@@ -14,7 +14,7 @@
 
 <div id="header">
 <?php
-echo topMenu::render();
+echo topMenu::render($sf_context->getInstance()->getModuleName());
 ?>
 </div>
 

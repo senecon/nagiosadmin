@@ -22,8 +22,8 @@ class topMenu
       $result .= '<ul id="topmenu">';
       foreach(self::$items as $module => $label)
       {
-        $stag = $active == $module ? '<li class="active">' : '<li>';
-        $result .= $stag.link_to($label,$module).'</li>';
+        $opts = $active == $module ? array('class' => 'selected') : array();
+        $result .= '<li>'.link_to($label,$module,$opts).'</li>';
       }
       $result .= '</ul>';
     }
