@@ -28,7 +28,7 @@ all:
   .settings:
     i18n: off
     use_security:           off
-    use_flash:              off
+    use_flash:              on
     compressed:             on
     
 #all:
