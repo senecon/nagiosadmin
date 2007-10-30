@@ -13,17 +13,9 @@
 <body>
 
 <div id="header">
-<ul id="topmenu">
-<li><?php echo link_to('Contacts','contact'); ?></li>
-<li><?php echo link_to('Contact Groups','contactgroup'); ?></li>
-<li><?php echo link_to('Operating Systems','os'); ?></li>
-<li><?php echo link_to('Services','service'); ?></li>
-<li><?php echo link_to('Host Groups','hostgroup'); ?></li>
-<li><?php echo link_to('Hosts','host'); ?></li>
-<li><?php echo link_to('Commands','command'); ?></li>
-<li><?php echo link_to('Templates','template'); ?></li>
-<li><?php echo link_to('Generator','generator'); ?></li>
-</ul>
+<?php
+echo topMenu::render();
+?>
 </div>
 
 <?php echo $sf_data->getRaw('sf_content') ?>
