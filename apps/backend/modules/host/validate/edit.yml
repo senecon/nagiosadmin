@@ -21,6 +21,9 @@ fields:
   host{group_id}:
     required:
       msg: You must assign a host group (create one if needed)
+  host{special}:
+    sfNagiosDirectivesValidator:
+      class: Host
   associated_contactgroups:
     required:
       msg: You must assign at least one contact group

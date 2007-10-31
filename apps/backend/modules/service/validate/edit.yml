@@ -23,3 +23,6 @@ fields:
   service{command_id}:
     required:
       msg: You must assign a command
+  service{special}:
+    sfNagiosDirectivesValidator:
+      class: Service

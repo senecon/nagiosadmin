@@ -9,6 +9,16 @@
  */ 
 class HostGroup extends BaseHostGroup
 {
+  private static $VALID_DIRECTIVES = array(
+    'hostgroup_name',
+    'alias',
+    'members',
+    'hostgroup_members',
+    'notes',
+    'notes_url',
+    'action_url'
+  );
+
   public function __toString()
   {
     return $this->getAlias();
@@ -32,5 +42,10 @@ class HostGroup extends BaseHostGroup
   public function getHostsCount()
   {
     return $this->countHosts();
+  }
+  
+  public function getValidDirectives()
+  {
+    return self::$VALID_DIRECTIVES;
   }
 }

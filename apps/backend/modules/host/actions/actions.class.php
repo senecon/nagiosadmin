@@ -54,6 +54,19 @@ class hostActions extends autohostActions
     $this->services = $this->host->getServices();
   }
 
+  /*
+  public function handleErrorSaveserviceparameters()
+  {
+    $this->preExecute();
+    $this->host = $this->getHostOrCreate();
+    $this->updateHostFromRequest();
+
+    $this->labels = $this->getLabels();
+
+    return sfView::SUCCESS;
+  }
+*/
+  
   public function executeSaveserviceparameters()
   {
     $host = $this->getHostOrCreate();

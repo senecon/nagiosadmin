@@ -19,3 +19,6 @@ fields:
     sfEmailValidator:
       strict: true
       email_error: This email address is invalid
+  contact{special}:
+    sfNagiosDirectivesValidator:
+      class: Contact

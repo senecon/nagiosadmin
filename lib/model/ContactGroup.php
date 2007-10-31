@@ -7,6 +7,13 @@
  */ 
 class ContactGroup extends BaseContactGroup
 {
+  private static $VALID_DIRECTIVES = array(
+    'contactgroup_name',
+    'alias',
+    'members',
+    'contactgroup_members'
+  );
+
   public function __toString()
   {
     return $this->getAlias().' ('.$this->getName().')';
@@ -45,5 +52,10 @@ class ContactGroup extends BaseContactGroup
   public function getHostsCount()
   {
     return $this->countHostToContactGroups();
+  }
+  
+  public function getValidDirectives()
+  {
+    return self::$VALID_DIRECTIVES;
   }
 }
