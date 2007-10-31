@@ -1,0 +1,2 @@
+all:
+  nagios_help:                    http://nagios.sourceforge.net/docs/3_0/objectdefinitions.html#hostgroup
