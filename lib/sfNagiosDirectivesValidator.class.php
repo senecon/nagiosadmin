@@ -16,7 +16,7 @@ class sfNagiosDirectivesValidator extends sfValidator
         $error = $this->getParameter('directive_error').' (define statements not allowed here)';
         return false;
       }
-      elseif(preg_match('#(\S+)\s+(.*)#',$line,$matches) && substr($line,0,1) != '_')
+      elseif(preg_match('#(\S+)\s*(.*)#',$line,$matches) && substr($line,0,1) != '_')
       {
         $ld[] = $matches[1];
       }
