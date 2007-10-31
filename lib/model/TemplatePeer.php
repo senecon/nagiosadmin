@@ -14,7 +14,7 @@ class TemplatePeer extends BaseTemplatePeer
 
   public static function getConfig()
   {
-    require_once('lib/helper/TemplateTokenHelper.php');
+    sfLoader::loadHelpers('TemplateToken');
     
     $c = new Criteria();
     $c->add(TemplatePeer::TYPE,TemplatePeer::T_STATIC,Criteria::EQUAL);

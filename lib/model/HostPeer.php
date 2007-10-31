@@ -11,8 +11,7 @@ class HostPeer extends BaseHostPeer
 {
   public static function getConfig()
   {
-    require_once('lib/helper/TemplateTokenHelper.php');
-    // may be better via: sfLoader::loadHelpers(array('TemplateToken'));
+    sfLoader::loadHelpers('TemplateToken');
     
     $tpl = getTemplate('host');
     $tpl_service = getTemplate('service');
