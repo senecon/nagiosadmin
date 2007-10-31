@@ -11,6 +11,7 @@ class sfNagiosDirectivesValidator extends sfValidator
     foreach($sl as $line)
     {
       $line = trim($line);
+      if(strpos($line,'#') === 0) continue;
       if(preg_match('#^define\s+\S+\s+#',$line) || preg_match('#\s*[\{\}]\s*#',$line))
       {
         $error = $this->getParameter('directive_error').' (define statements not allowed here)';
