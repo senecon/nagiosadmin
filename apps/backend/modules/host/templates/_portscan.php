@@ -1,3 +1,4 @@
+<?php if(function_exists('json_encode')): ?>
 <?php echo link_to_remote('Scan for open ports', array(
     'url'    => 'host/portscan?id='.$host->getId(),
     'with'   => "'ip=' + \$F('host_address')",
@@ -15,3 +16,6 @@ function updateJSON(request, json)
   });
 }
 ") ?>
+<?php else: ?>
+Portscan disabled (JSON extension not found)
+<?php endif; ?>
