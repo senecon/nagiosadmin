@@ -111,4 +111,6 @@ You can find a sample virtual host in doc/contrib/apache. Be sure to protect Nag
 Configure PHP
 -------------
 
-Set the "magic_quotes_gpc" key to "Off". The sample virtual hosts mentioned above includes this setting.
+Set the "magic_quotes_gpc" key to "Off".
+Set the "memory_limit" variable to "32M".
+The sample virtual hosts mentioned above includes this settings.
