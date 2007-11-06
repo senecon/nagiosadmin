@@ -23,7 +23,7 @@ class topMenu
       foreach(self::$items as $module => $label)
       {
         $opts = $active == $module ? array('class' => 'selected') : array();
-        $result .= '<li>'.link_to($label,$module,$opts).'</li>';
+        $result .= '<li class="'.$module.'">'.link_to($label,$module,$opts).'</li>';
       }
       $result .= '</ul>';
     }

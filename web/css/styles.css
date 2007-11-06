@@ -24,15 +24,16 @@ ul#topmenu li {
 }
 
 ul#topmenu li a {
-	/*background-image:url(../images/tab.gif);
-	background-position:left center;
-	background-repeat:no-repeat;*/
+	background-image:url(../images/backend/tab.png);
+	background-position: 4px center;
+	background-repeat:no-repeat;
 	background-color:#EEEEFF;
 	color:#000000;
 	display:block;
 	font-weight:bold;
 	height:15px;
 	padding:5px;
+	padding-left: 24px;
 	text-align:center;
 	text-decoration:none;
 	text-shadow:#2A2A2F 2px 2px 1px;
@@ -40,13 +41,49 @@ ul#topmenu li a {
 }
 
 ul#topmenu li a:hover, ul#topmenu li a:active {
-	background-position:left top;
+	/*background-position:left top;*/
 	background-color:#CCCCFF;
 }
 
 ul#topmenu li a.selected {
-	background-position:left bottom;
+	/*background-position:left bottom;*/
 	background-color:#CCCCFF;
+}
+
+ul#topmenu li.contact a {
+  background-image:url(../images/backend/user_suit.png);
+}
+
+ul#topmenu li.contactgroup a {
+  background-image:url(../images/backend/group.png);
+}
+
+ul#topmenu li.os a {
+  background-image:url(../images/backend/tux.png);
+}
+
+ul#topmenu li.service a {
+  background-image:url(../images/backend/bricks.png);
+}
+
+ul#topmenu li.hostgroup a {
+  background-image:url(../images/backend/computer_link.png);
+}
+
+ul#topmenu li.host a {
+  background-image:url(../images/backend/computer.png);
+}
+
+ul#topmenu li.command a {
+  background-image:url(../images/backend/application_xp_terminal.png);
+}
+
+ul#topmenu li.template a {
+  background-image:url(../images/backend/script_code.png);
+}
+
+ul#topmenu li.generator a {
+  background-image:url(../images/backend/cog.png);
 }
 
 del {

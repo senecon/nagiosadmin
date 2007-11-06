@@ -15,7 +15,7 @@ generator:
       object_actions:
         _edit:        ~
         _delete:      ~
-        params:       { name: Customize host services, action: serviceparameters }
+        params:       { name: Customize host services, action: serviceparameters, icon: backend/wrench_orange.png }
 
     edit:
       fields:
