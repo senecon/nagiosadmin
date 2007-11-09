@@ -27,6 +27,7 @@ autoload:
       upload: %SF_LIB_DIR%/upload/class.upload.php
       Net_Portscan: %SF_LIB_DIR%/Net/Portscan.php
       sfHostAddressValidator: %SF_LIB_DIR%/sfHostAddressValidator.class.php
+      sfNagiosDirectivesValidator: %SF_LIB_DIR%/sfNagiosDirectivesValidator.class.php
   
   ioncube_project_model:
     name:        ioncube project model
@@ -97,6 +98,7 @@ autoload:
     name:        ioncube application
     files:
       myUser:    %SF_APP_LIB_DIR%/myUser.class.php
+      topMenu:   %SF_APP_LIB_DIR%/topMenu.class.php
 
 #  ioncube_module:
 #    name:        ioncube module
