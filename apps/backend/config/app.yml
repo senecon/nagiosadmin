@@ -1,3 +1,5 @@
 # default values
 all:
-    version:          1.0
+  version: 1.0
+  help:
+    objects: http://nagios.sourceforge.net/docs/3_0/objectdefinitions.html
