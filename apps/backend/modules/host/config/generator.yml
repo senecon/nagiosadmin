@@ -25,7 +25,8 @@ generator:
         updated_at:   { type: plain }
         os_id:        { params: include_custom=Choose... }
         special:      { type: textarea_tag, params: cols=80 rows=10 class=fixed }
+        nagios_help:  { name: Nagios help }
       display:
-        "NONE":       [ name, alias, address, group_id, os_id, contactgroups, special ]
+        "NONE":       [ name, alias, address, group_id, os_id, contactgroups, special, _nagios_help ]
         "Services":   [ services, _portscan, _serviceparameters ]
         "Information":[ created_at, updated_at ]

@@ -6,7 +6,6 @@ generator:
 
     fields:
       image:
-        help:         Please upload a square jpeg image (will be resized to 20x20)
         type:         admin_input_file_tag
         upload_dir:   os_images
         params:       include_link=os_images include_remove=true
@@ -23,6 +22,8 @@ generator:
     edit:
       title:          edit operating system
       fields:
+        image:
+          help:       Please upload a square JPEG image (will be resized to 20x20)
         created_at:   { type: plain }
         updated_at:   { type: plain }
       display:

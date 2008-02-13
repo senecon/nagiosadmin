@@ -9,8 +9,8 @@ generator:
 
     list:
       title:   Commands
-      display: [ =name, alias, command_summary ]
-      filters: [ name, alias ]
+      display: [ =name, command_summary ]
+      filters: [ name ]
       object_actions:
         _edit:        ~
         _delete:      ~
@@ -20,7 +20,8 @@ generator:
         created_at:   { type: plain }
         updated_at:   { type: plain }
         command:      { type: input_tag, params: size=80 }
+        nagios_help:  { name: Nagios help }
 
       display:
-        "NONE":                   [ name, alias, command ]
+        "NONE":                   [ name, command, _nagios_help ]
         "Information":            [ created_at, updated_at ]

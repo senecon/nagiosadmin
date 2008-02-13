@@ -24,9 +24,10 @@ generator:
         created_at:   { type: plain }
         updated_at:   { type: plain }
         contacts:     { name: Contacts, type: admin_double_list, params: through_class=GroupToContact }
+        nagios_help:  { name: Nagios help }
 
       display:
-        "NONE":                   [ name, alias ]
+        "NONE":                   [ name, alias, _nagios_help ]
         "Information":            [ created_at, updated_at ]
         "Contacts": [ contacts ]
     

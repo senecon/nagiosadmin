@@ -24,7 +24,8 @@ generator:
         special:      { type: textarea_tag, params: cols=80 rows=10 class=fixed }
         created_at:   { type: plain }
         updated_at:   { type: plain }
+        nagios_help:  { name: Nagios help }
       display:
-        "NONE":                   [ name, alias, email, special ]
+        "NONE":                   [ name, alias, email, special, _nagios_help ]
         "Information":            [ created_at, updated_at ]
         "Groups": [ groups ]

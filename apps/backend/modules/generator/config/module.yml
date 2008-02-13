@@ -1,5 +1,4 @@
 all:
-  nagios_help:                    http://nagios.sourceforge.net/docs/3_0/objectdefinitions.html
   command_config_name:            commands.cfg
   contact_config_name:            contacts.cfg
   contactgroup_config_name:       contactgroups.cfg

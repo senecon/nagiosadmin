@@ -19,9 +19,10 @@ generator:
       fields:
         created_at:   { type: plain }
         updated_at:   { type: plain }
+        nagios_help:  { name: Nagios help }
 #        hosts:        { name: Hosts, type: admin_double_list, params: through_class=Host }
       display:
-        "NONE":                   [ name, alias ]
+        "NONE":                   [ name, alias, _nagios_help ]
         "Information":            [ created_at, updated_at ]
 #        "Hosts":      [ hosts ]
     

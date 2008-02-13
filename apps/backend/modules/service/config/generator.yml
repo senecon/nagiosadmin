@@ -18,8 +18,9 @@ generator:
         hosts:        { type: admin_check_list, params: through_class=ServiceToHost }
         created_at:   { type: plain }
         updated_at:   { type: plain }
+        nagios_help:  { name: Nagios help }
       display:
-        "NONE":                   [ name, alias, command_id, port, special ]
+        "NONE":                   [ name, alias, command_id, port, special, _nagios_help ]
         "Hosts":                  [ hosts ]
         "Information":            [ created_at, updated_at ]
         
