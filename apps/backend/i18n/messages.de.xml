@@ -553,6 +553,86 @@
 <target>Bitte prüfen Sie ob die Einstellungen für config_check_command in der Datei %1% korrekt sind.</target>
 </trans-unit>
 
+<trans-unit id="111">
+<source>Group name</source>
+<target>Gruppenname</target>
+</trans-unit>
+
+<trans-unit id="112">
+<source>Address</source>
+<target>Adresse</target>
+</trans-unit>
+
+<trans-unit id="113">
+<source>Address</source>
+<target>Adresse</target>
+</trans-unit>
+
+<trans-unit id="114">
+<source>Address:</source>
+<target>Adresse:</target>
+</trans-unit>
+
+<trans-unit id="115">
+<source>Group:</source>
+<target>Gruppe:</target>
+</trans-unit>
+
+<trans-unit id="116">
+<source>Operating System:</source>
+<target>Betriebssystem:</target>
+</trans-unit>
+
+<trans-unit id="117">
+<source>Serviceparameters:</source>
+<target>Service-Parameter:</target>
+</trans-unit>
+
+<trans-unit id="118">
+<source>Customize services for this host</source>
+<target>Erweiterte Einstellungen für Server-Dienste</target>
+</trans-unit>
+
+<trans-unit id="119">
+<source>Scan for open ports</source>
+<target>Sucht nach offenen Ports um die Server-Dienste zu identifizieren</target>
+</trans-unit>
+
+<trans-unit id="120">
+<source>Portscan disabled (JSON extension not found)</source>
+<target>Portscan nicht möglich (JSON Erweiterung nicht gefunden)</target>
+</trans-unit>
+
+<trans-unit id="121">
+<source>edit host</source>
+<target>Host bearbeiten</target>
+</trans-unit>
+
+<trans-unit id="122">
+<source>edit hostgroup</source>
+<target>Hostgruppe bearbeiten</target>
+</trans-unit>
+
+<trans-unit id="123">
+<source>edit contactgroup</source>
+<target>Kontaktgruppe bearbeiten</target>
+</trans-unit>
+
+<trans-unit id="124">
+<source>Contacts:</source>
+<target>Kontakte:</target>
+</trans-unit>
+
+<trans-unit id="125">
+<source>edit template</source>
+<target>Vorlage bearbeiten</target>
+</trans-unit>
+
+<trans-unit id="126">
+<source>Content:</source>
+<target>Inhalt:</target>
+</trans-unit>
+
 </body>
 </file>
 </xliff>

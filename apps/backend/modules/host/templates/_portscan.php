@@ -1,5 +1,5 @@
 <?php if(function_exists('json_encode')): ?>
-<?php echo link_to_remote('Scan for open ports', array(
+<?php echo link_to_remote(__('Scan for open ports'), array(
     'url'    => 'host/portscan?id='.$host->getId(),
     'with'   => "'ip=' + \$F('host_address')",
     'before' => "$('indicator').innerHTML = 'Please wait...'",
@@ -17,5 +17,5 @@ function updateJSON(request, json)
 }
 ") ?>
 <?php else: ?>
-Portscan disabled (JSON extension not found)
+<?php echo __('Portscan disabled (JSON extension not found)'); ?>
 <?php endif; ?>
