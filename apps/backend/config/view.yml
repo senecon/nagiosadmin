@@ -6,10 +6,10 @@ default:
     content-type: text/html
 
   metas:
-    title:        nagios admin
+    title:        Nagios Administrator
     robots:       index, follow
-    description:  symfony project
-    keywords:     symfony, project
+    description:  Nagios Administrator
+    keywords:     nagios, administrator
     language:     en
 
   stylesheets:    [main, styles: { position: last }]

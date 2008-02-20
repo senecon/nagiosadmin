@@ -12,6 +12,8 @@
 </head>
 <body>
 
+<div id="logo"><?php echo image_tag('backend/logo.png', array('alt' => 'Nagios Administator')); ?></div>
+
 <div id="header">
 <?php
 echo topMenu::render($sf_context->getInstance()->getModuleName());

@@ -172,7 +172,8 @@ class generatorActions extends sfActions
     {
       if(preg_match('#Reading configuration data#', $this->result) == false)
       {
-        $this->error = 'Be sure that the settings for <em>config_check_command</em> in the file <em>'.sfConfig::get('sf_app_module_dir').DIRECTORY_SEPARATOR.'generator'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'module.yml'.'</em> are set correctly.';
+        $this->error = 'Be sure that the settings for config_check_command in the file %1% are set correctly.';
+        $this->cfgfile = sfConfig::get('sf_app_module_dir').DIRECTORY_SEPARATOR.'generator'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'module.yml';
       }
     }
     $this->forwardIf($this->ok,'generator','reload');

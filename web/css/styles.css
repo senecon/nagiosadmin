@@ -7,29 +7,35 @@ div#header {
 	height: 25px;
 }
 
-ul#topmenu {
-	clear:both;
-	/*float:right;*/
-	list-style-image:none;
-	list-style-position:outside;
-	list-style-type:none;
-	position:relative;
-	/*top:3px;*/
+div#topright {
+  float: right;
 }
 
-ul#topmenu li {
-	float:left;
+div#logo {
+	margin-bottom: 10px;
+}
+
+div#header ul {
+	list-style-image: none;
+	list-style-position: outside;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+div#header ul li {
+	display: inline;
 	line-height:1.4;
-	margin-right:5px;
 }
 
-ul#topmenu li a {
+div#header ul li a {
 	background-image:url(../images/backend/tab.png);
 	background-position: 4px center;
 	background-repeat:no-repeat;
 	background-color:#EEEEFF;
 	color:#000000;
 	display:block;
+	float: left;
 	font-weight:bold;
 	height:15px;
 	padding:5px;
@@ -37,53 +43,68 @@ ul#topmenu li a {
 	text-align:center;
 	text-decoration:none;
 	text-shadow:#2A2A2F 2px 2px 1px;
-	/*width:85px;*/
 }
 
-ul#topmenu li a:hover, ul#topmenu li a:active {
+div#header ul#topmenu li a {
+	margin-right:5px;
+}
+
+div#header ul#toprightmenu li a {
+	margin-left:5px;
+}
+
+div#header ul li a:hover, div#header ul li a:active {
 	/*background-position:left top;*/
 	background-color:#CCCCFF;
 }
 
-ul#topmenu li a.selected {
+div#header ul li a.selected {
 	/*background-position:left bottom;*/
 	background-color:#CCCCFF;
 }
 
-ul#topmenu li.contact a {
+div#header ul li.contact a {
   background-image:url(../images/backend/user_suit.png);
 }
 
-ul#topmenu li.contactgroup a {
+div#header ul li.contactgroup a {
   background-image:url(../images/backend/group.png);
 }
 
-ul#topmenu li.os a {
+div#header ul li.os a {
   background-image:url(../images/backend/tux.png);
 }
 
-ul#topmenu li.service a {
+div#header ul li.service a {
   background-image:url(../images/backend/bricks.png);
 }
 
-ul#topmenu li.hostgroup a {
+div#header ul li.hostgroup a {
   background-image:url(../images/backend/computer_link.png);
 }
 
-ul#topmenu li.host a {
+div#header ul li.host a {
   background-image:url(../images/backend/computer.png);
 }
 
-ul#topmenu li.command a {
+div#header ul li.command a {
   background-image:url(../images/backend/application_xp_terminal.png);
 }
 
-ul#topmenu li.template a {
+div#header ul li.template a {
   background-image:url(../images/backend/script_code.png);
 }
 
-ul#topmenu li.generator a {
+div#header ul li.generator a {
   background-image:url(../images/backend/cog.png);
+}
+
+div#header ul li.language a {
+  background-image:url(../images/backend/world.png);
+}
+
+div#header ul li.help a {
+  background-image:url(../images/backend/help.png);
 }
 
 del {

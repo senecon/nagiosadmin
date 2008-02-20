@@ -1,5 +1,6 @@
 # default values
 all:
-  version: 1.0
+  version: "1.0"
+  revision: 666 # TODO
   help:
     objects: http://nagios.sourceforge.net/docs/3_0/objectdefinitions.html

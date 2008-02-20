@@ -26,10 +26,12 @@ test:
 
 all:
   .settings:
-    i18n: off
+    i18n:                   on
     use_security:           off
     use_flash:              on
     compressed:             on
+    charset:                utf-8
+    standard_helpers:       [ Partial, I18N ]
     
 #all:
 #  .actions:
