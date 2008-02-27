@@ -16,7 +16,7 @@ class Command extends BaseCommand
 
   public function __toString()
   {
-    return $this->getAlias();
+    return $this->getName();
   }
   
   public function getCommandSummary()
