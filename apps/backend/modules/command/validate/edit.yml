@@ -6,13 +6,13 @@ fields:
       class: Command
       column: name
       unique_error: This command name already exists
-  command{alias}:
-    required:
-      msg: You must provide an alias
-    sfPropelUniqueValidator:
-      class: Command
-      column: alias
-      unique_error: This command alias already exists
+#  command{alias}:
+#    required:
+#      msg: You must provide an alias
+#    sfPropelUniqueValidator:
+#      class: Command
+#      column: alias
+#      unique_error: This command alias already exists
   command{command}:
     required:
       msg: You must provide a command
