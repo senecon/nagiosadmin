@@ -1,16 +1,24 @@
 <?php
 /**
- * Class used internally by Diff to actually compute the diffs.  This class
- * uses the xdiff PECL package (http://pecl.php.net/package/xdiff) to compute
- * the differences between the two input arrays.
+ * Class used internally by Diff to actually compute the diffs.
+ *
+ * This class uses the xdiff PECL package (http://pecl.php.net/package/xdiff)
+ * to compute the differences between the two input arrays.
+ *
+ * $Horde: framework/Text_Diff/Diff/Engine/xdiff.php,v 1.6 2008/01/04 10:07:50 jan Exp $
+ *
+ * Copyright 2004-2008 The Horde Project (http://www.horde.org/)
+ *
+ * See the enclosed file COPYING for license information (LGPL). If you did
+ * not receive this file, see http://opensource.org/licenses/lgpl-license.php.
  *
  * @author  Jon Parise <jon@horde.org>
  * @package Text_Diff
- *
- * @access private
  */
 class Text_Diff_Engine_xdiff {
 
+    /**
+     */
     function diff($from_lines, $to_lines)
     {
         array_walk($from_lines, array('Text_Diff', 'trimNewlines'));

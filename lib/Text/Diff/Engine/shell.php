@@ -1,15 +1,20 @@
 <?php
 /**
- * Class used internally by Diff to actually compute the diffs.  This
- * class uses the Unix `diff` program via shell_exec to compute the
+ * Class used internally by Diff to actually compute the diffs.
+ *
+ * This class uses the Unix `diff` program via shell_exec to compute the
  * differences between the two input arrays.
+ *
+ * $Horde: framework/Text_Diff/Diff/Engine/shell.php,v 1.8 2008/01/04 10:07:50 jan Exp $
+ *
+ * Copyright 2007-2008 The Horde Project (http://www.horde.org/)
+ *
+ * See the enclosed file COPYING for license information (LGPL). If you did
+ * not receive this file, see http://opensource.org/licenses/lgpl-license.php.
  *
  * @author  Milian Wolff <mail@milianw.de>
  * @package Text_Diff
- * @since   0.2.1
- * @copyright (C) 2007  Milian Wolff
- *
- * @access private
+ * @since   0.3.0
  */
 class Text_Diff_Engine_shell {
 
@@ -38,8 +43,12 @@ class Text_Diff_Engine_shell {
         // Execute gnu diff or similar to get a standard diff file.
         $from_file = tempnam($temp_dir, 'Text_Diff');
         $to_file = tempnam($temp_dir, 'Text_Diff');
-        file_put_contents($from_file, implode("\n", $from_lines));
-        file_put_contents($to_file, implode("\n", $to_lines));
+        $fp = fopen($from_file, 'w');
+        fwrite($fp, implode("\n", $from_lines));
+        fclose($fp);
+        $fp = fopen($to_file, 'w');
+        fwrite($fp, implode("\n", $to_lines));
+        fclose($fp);
         $diff = shell_exec($this->_diffCommand . ' ' . $from_file . ' ' . $to_file);
         unlink($from_file);
         unlink($to_file);
@@ -65,31 +74,33 @@ class Text_Diff_Engine_shell {
                 // This paren is not set every time (see regex).
                 $match[5] = false;
             }
+
             if ($match[3] == 'a') {
-                // We need this for copied lines.
-                $match[1]++;
+                $from_line_no--;
             }
-            if ($from_line_no < $match[1]) {
+
+            if ($match[3] == 'd') {
+                $to_line_no--;
+            }
+
+            if ($from_line_no < $match[1] || $to_line_no < $match[4]) {
                 // copied lines
-                assert('$match[1] - $from_line_no - (($match[3] == "d") ? 1 : 0) == $match[4] - $to_line_no');
+                assert('$match[1] - $from_line_no == $match[4] - $to_line_no');
                 array_push($edits,
                     new Text_Diff_Op_copy(
                         $this->_getLines($from_lines, $from_line_no, $match[1] - 1),
                         $this->_getLines($to_lines, $to_line_no, $match[4] - 1)));
             }
-            if ($match[3] == 'd') {
+
+            switch ($match[3]) {
+            case 'd':
                 // deleted lines
                 array_push($edits,
                     new Text_Diff_Op_delete(
                         $this->_getLines($from_lines, $from_line_no, $match[2])));
-                // voodoo for copied lines
-                if (!$match[2]) {
-                    $from_line_no--;
-                }
-                continue;
-            }
+                $to_line_no++;
+                break;
 
-            switch ($match[3]) {
             case 'c':
                 // changed lines
                 array_push($edits,
@@ -103,12 +114,13 @@ class Text_Diff_Engine_shell {
                 array_push($edits,
                     new Text_Diff_Op_add(
                         $this->_getLines($to_lines, $to_line_no, $match[5])));
+                $from_line_no++;
                 break;
             }
         }
 
         if (!empty($from_lines)) {
-            // Some lines might still be pending.  Add them as copied
+            // Some lines might still be pending. Add them as copied
             array_push($edits,
                 new Text_Diff_Op_copy(
                     $this->_getLines($from_lines, $from_line_no,
@@ -130,19 +142,20 @@ class Text_Diff_Engine_shell {
      * @param int   $end         Optional end line, when we want to chop more
      *                           than one line.
      *
-     * @return array  The chopped lines
+     * @return array The chopped lines
      */
     function _getLines(&$text_lines, &$line_no, $end = false)
     {
-        // At least one line must be shifted
-        $lines = array(array_shift($text_lines));
-        $line_no++;
         if (!empty($end)) {
+            $lines = array();
             // We can shift even more
             while ($line_no <= $end) {
                 array_push($lines, array_shift($text_lines));
                 $line_no++;
             }
+        } else {
+            $lines = array(array_shift($text_lines));
+            $line_no++;
         }
 
         return $lines;

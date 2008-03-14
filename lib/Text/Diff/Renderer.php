@@ -5,7 +5,12 @@
  * This class renders the diff in classic diff format. It is intended that
  * this class be customized via inheritance, to obtain fancier outputs.
  *
- * $Horde: framework/Text_Diff/Diff/Renderer.php,v 1.15 2007/02/18 01:38:32 selsky Exp $
+ * $Horde: framework/Text_Diff/Diff/Renderer.php,v 1.21 2008/01/04 10:07:50 jan Exp $
+ *
+ * Copyright 2004-2008 The Horde Project (http://www.horde.org/)
+ *
+ * See the enclosed file COPYING for license information (LGPL). If you did
+ * not receive this file, see http://opensource.org/licenses/lgpl-license.php.
  *
  * @package Text_Diff
  */
@@ -182,6 +187,13 @@ class Text_Diff_Renderer {
         }
         if ($ylen > 1) {
             $ybeg .= ',' . ($ybeg + $ylen - 1);
+        }
+
+        // this matches the GNU Diff behaviour
+        if ($xlen && !$ylen) {
+            $ybeg--;
+        } elseif (!$xlen) {
+            $xbeg--;
         }
 
         return $xbeg . ($xlen ? ($ylen ? 'c' : 'd') : 'a') . $ybeg;

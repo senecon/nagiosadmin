@@ -1,14 +1,18 @@
 <?php
 /**
- * Text_Diff
- *
  * General API for generating and formatting diffs - the differences between
  * two sequences of strings.
  *
- * The PHP diff code used in this package was originally written by Geoffrey
- * T. Dairiki and is used with his permission.
+ * The original PHP version of this code was written by Geoffrey T. Dairiki
+ * <dairiki@dairiki.org>, and is used/adapted with his permission.
  *
- * $Horde: framework/Text_Diff/Diff.php,v 1.20 2007/09/21 01:17:59 chuck Exp $
+ * $Horde: framework/Text_Diff/Diff.php,v 1.26 2008/01/04 10:07:49 jan Exp $
+ *
+ * Copyright 2004 Geoffrey T. Dairiki <dairiki@dairiki.org>
+ * Copyright 2004-2008 The Horde Project (http://www.horde.org/)
+ *
+ * See the enclosed file COPYING for license information (LGPL). If you did
+ * not receive this file, see http://opensource.org/licenses/lgpl-license.php.
  *
  * @package Text_Diff
  * @author  Geoffrey T. Dairiki <dairiki@dairiki.org>
@@ -47,7 +51,7 @@ class Text_Diff {
 
         require_once 'Text/Diff/Engine/' . $engine . '.php';
         $class = 'Text_Diff_Engine_' . $engine;
-        $diff_engine = &new $class();
+        $diff_engine = new $class();
 
         $this->_edits = call_user_func_array(array($diff_engine, 'diff'), $params);
     }
@@ -65,7 +69,7 @@ class Text_Diff {
      *
      * Example:
      * <code>
-     * $diff = &new Text_Diff($lines1, $lines2);
+     * $diff = new Text_Diff($lines1, $lines2);
      * $rev = $diff->reverse();
      * </code>
      *
@@ -242,8 +246,6 @@ class Text_Diff {
 }
 
 /**
- * $Horde: framework/Text_Diff/Diff.php,v 1.20 2007/09/21 01:17:59 chuck Exp $
- *
  * @package Text_Diff
  * @author  Geoffrey T. Dairiki <dairiki@dairiki.org>
  */

@@ -5,16 +5,22 @@
  * Example:
  * <code>
  * $patch = file_get_contents('example.patch');
- * $diff = &new Text_Diff('string', array($patch));
- * $renderer = &new Text_Diff_Renderer_inline();
+ * $diff = new Text_Diff('string', array($patch));
+ * $renderer = new Text_Diff_Renderer_inline();
  * echo $renderer->render($diff);
  * </code>
  *
- * @author    Örjan Persson <o@42mm.org>
- * @copyright Copyright 2005 Örjan Persson
- * @package   Text_Diff
- * @since     0.2.0
- * @access    private
+ * $Horde: framework/Text_Diff/Diff/Engine/string.php,v 1.7 2008/01/04 10:07:50 jan Exp $
+ *
+ * Copyright 2005 Örjan Persson <o@42mm.org>
+ * Copyright 2005-2008 The Horde Project (http://www.horde.org/)
+ *
+ * See the enclosed file COPYING for license information (LGPL). If you did
+ * not receive this file, see http://opensource.org/licenses/lgpl-license.php.
+ *
+ * @author  Örjan Persson <o@42mm.org>
+ * @package Text_Diff
+ * @since   0.2.0
  */
 class Text_Diff_Engine_string {
 
@@ -81,6 +87,7 @@ class Text_Diff_Engine_string {
                 } while (++$i < $end && substr($diff[$i], 0, 1) == ' ');
                 $edits[] = &new Text_Diff_Op_copy($diff1);
                 break;
+
             case '+':
                 // get all new lines
                 do {
@@ -88,12 +95,14 @@ class Text_Diff_Engine_string {
                 } while (++$i < $end && substr($diff[$i], 0, 1) == '+');
                 $edits[] = &new Text_Diff_Op_add($diff1);
                 break;
+
             case '-':
                 // get changed or removed lines
                 $diff2 = array();
                 do {
                     $diff1[] = substr($diff[$i], 1);
                 } while (++$i < $end && substr($diff[$i], 0, 1) == '-');
+
                 while ($i < $end && substr($diff[$i], 0, 1) == '+') {
                     $diff2[] = substr($diff[$i++], 1);
                 }
@@ -103,11 +112,13 @@ class Text_Diff_Engine_string {
                     $edits[] = &new Text_Diff_Op_change($diff1, $diff2);
                 }
                 break;
+
             default:
                 $i++;
                 break;
             }
         }
+
         return $edits;
     }
 
@@ -125,7 +136,7 @@ class Text_Diff_Engine_string {
         $end = count($diff) - 1;
         while ($i < $end && $j < $end) {
             while ($i >= $max_i && $j >= $max_j) {
-                // find the boundaries of the diff output of the two files
+                // Find the boundaries of the diff output of the two files
                 for ($i = $j;
                      $i < $end && substr($diff[$i], 0, 3) == '***';
                      $i++);
@@ -149,12 +160,14 @@ class Text_Diff_Engine_string {
                 $i++;
                 $j++;
             }
+
             while ($i < $max_i && ($max_j-$j) <= 1) {
                 if ($diff[$i] != '' && substr($diff[$i], 0, 1) != ' ') {
                     break;
                 }
                 $array[] = substr($diff[$i++], 2);
             }
+
             while ($j < $max_j && ($max_i-$i) <= 1) {
                 if ($diff[$j] != '' && substr($diff[$j], 0, 1) != ' ') {
                     break;
@@ -178,12 +191,14 @@ class Text_Diff_Engine_string {
                     } while (++$i < $max_i && substr($diff[$i], 0, 1) == '!');
                     $edits[] = &new Text_Diff_Op_change($diff1, $diff2);
                     break;
+
                 case '+':
                     do {
                         $diff1[] = substr($diff[$i], 2);
                     } while (++$i < $max_i && substr($diff[$i], 0, 1) == '+');
                     $edits[] = &new Text_Diff_Op_add($diff1);
                     break;
+
                 case '-':
                     do {
                         $diff1[] = substr($diff[$i], 2);
@@ -202,6 +217,7 @@ class Text_Diff_Engine_string {
                     } while ($j < $max_j && substr($diff[$j], 0, 1) == '+');
                     $edits[] = &new Text_Diff_Op_add($diff2);
                     break;
+
                 case '-':
                     do {
                         $diff2[] = substr($diff[$j++], 2);
@@ -211,6 +227,8 @@ class Text_Diff_Engine_string {
                 }
             }
         }
+
         return $edits;
     }
+
 }
