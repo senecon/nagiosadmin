@@ -1,3 +1,5 @@
+$Id$
+
 NagiosAdmin
 ===========
 
@@ -10,7 +12,6 @@ Requirements
    - mysql
    - ctype
    - xml
-   - ionCube Loader (http://www.ioncube.com/loaders.php)
  * Apache (with php support and mod_rewrite)
  * MySQL 5 (4 may also work)
  * sudo

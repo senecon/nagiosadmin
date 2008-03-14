@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * $Id$
  *
  * Copyright 2008 secure-net-concepts <info@secure-net-concepts.de>
@@ -19,10 +19,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Nagios Administrator. If not, see <http://www.gnu.org/licenses/>.
  *
- * @license  http://www.gnu.org/licenses/gpl.html
- * @link     www.nagiosadmin.de
- * @version  $Revision$
- * @author   Henrik Westphal <westphal@secure-net-concepts.de>
+ * @package    nagiosadmin
+ * @subpackage menu
+ * @license    http://www.gnu.org/licenses/gpl.html
+ * @link       www.nagiosadmin.de
+ * @version    $Revision$
+ * @author     Henrik Westphal <westphal@secure-net-concepts.de>
  */
 
 class topMenu
