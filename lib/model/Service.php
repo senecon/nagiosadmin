@@ -91,4 +91,16 @@ class Service extends BaseService
   {
     return self::$VALID_DIRECTIVES;
   }
+  
+  public function setPort($v)
+  {
+    if(trim($v) == '') $v = null;
+    parent::setPort($v);
+  }
+
+  public function setSpecial($v)
+  {
+    if(trim($v) == '') $v = null;
+    parent::setSpecial($v);
+  }
 }

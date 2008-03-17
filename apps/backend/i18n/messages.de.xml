@@ -644,6 +644,11 @@
 <target>Befehl Parameter:</target>
 </trans-unit>
 
+<trans-unit id="129">
+<source>edit service</source>
+<target>Dienst bearbeiten</target>
+</trans-unit>
+
 </body>
 </file>
 </xliff>
