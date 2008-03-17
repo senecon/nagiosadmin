@@ -32,8 +32,4 @@
  */
 class contactgroupActions extends autocontactgroupActions
 {
-  public function executeDebug()
-  {
-    $this->grp = $this->getContactGroupOrCreate();
-  }
 }
