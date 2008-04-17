@@ -115,11 +115,19 @@ class generatorActions extends sfActions
     }
   }
   
+  private function setCharsetToIso()
+  {
+    $connection = Propel::getConnection();
+    $statement = $connection->prepareStatement("SET NAMES 'latin1';");
+    $result = $statement->executeQuery();
+  }
+  
   public function executeDownload()
   {
     $this->getResponse()->setContentType('application/octet-stream');
     $this->getResponse()->setHttpHeader('Content-Disposition', 'attachment; filename=nagiosadmin.cfg');
     $this->getResponse()->addCacheControlHttpHeader('no-cache');
+    $this->setCharsetToIso();
     $this->config = CommandPeer::getConfig().ContactPeer::getConfig().ContactGroupPeer::getConfig().HostPeer::getConfig().HostGroupPeer::getConfig().TemplatePeer::getConfig();
     $this->setLayout(false);
   }
@@ -138,6 +146,7 @@ class generatorActions extends sfActions
   
   public function executeDump()
   {
+    $this->setCharsetToIso();
     $target = sfConfig::get('sf_data_dir').DIRECTORY_SEPARATOR.'nagios';
     $backup = $target.DIRECTORY_SEPARATOR.'backups';
     if(!is_dir($backup))
@@ -146,7 +155,7 @@ class generatorActions extends sfActions
     }
 
     $files = $this->getFileNames();
-    
+
     foreach($files as $file)
     {
       $pre = date('Y-m-d_His-');
@@ -155,7 +164,7 @@ class generatorActions extends sfActions
         copy($target.DIRECTORY_SEPARATOR.$file,$backup.DIRECTORY_SEPARATOR.$pre.$file.'.bak');
       }
     }
-    
+
     $this->command_cfg = file_put_contents($target.DIRECTORY_SEPARATOR.sfConfig::get('mod_generator_command_config_name'),CommandPeer::getConfig());
     $this->contact_cfg = file_put_contents($target.DIRECTORY_SEPARATOR.sfConfig::get('mod_generator_contact_config_name'),ContactPeer::getConfig());
     $this->contactgroup_cfg = file_put_contents($target.DIRECTORY_SEPARATOR.sfConfig::get('mod_generator_contactgroup_config_name'),ContactGroupPeer::getConfig());
