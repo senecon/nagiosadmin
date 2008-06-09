@@ -282,7 +282,7 @@ abstract class BaseHostPeer {
 		$startcol = (HostPeer::NUM_COLUMNS - HostPeer::NUM_LAZY_LOAD_COLUMNS) + 1;
 		HostGroupPeer::addSelectColumns($c);
 
-		$c->addJoin(HostPeer::GROUP_ID, HostGroupPeer::ID, Criteria::JOIN);
+		$c->addJoin(HostPeer::GROUP_ID, HostGroupPeer::ID);
 		$rs = BasePeer::doSelect($c, $con);
 		$results = array();
 
@@ -329,7 +329,7 @@ abstract class BaseHostPeer {
 		$startcol = (HostPeer::NUM_COLUMNS - HostPeer::NUM_LAZY_LOAD_COLUMNS) + 1;
 		OsPeer::addSelectColumns($c);
 
-		$c->addJoin(HostPeer::OS_ID, OsPeer::ID, Criteria::JOIN);
+		$c->addJoin(HostPeer::OS_ID, OsPeer::ID);
 		$rs = BasePeer::doSelect($c, $con);
 		$results = array();
 

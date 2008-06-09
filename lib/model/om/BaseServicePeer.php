@@ -249,7 +249,7 @@ abstract class BaseServicePeer {
 		$startcol = (ServicePeer::NUM_COLUMNS - ServicePeer::NUM_LAZY_LOAD_COLUMNS) + 1;
 		CommandPeer::addSelectColumns($c);
 
-		$c->addJoin(ServicePeer::COMMAND_ID, CommandPeer::ID, Criteria::JOIN);
+		$c->addJoin(ServicePeer::COMMAND_ID, CommandPeer::ID);
 		$rs = BasePeer::doSelect($c, $con);
 		$results = array();
 

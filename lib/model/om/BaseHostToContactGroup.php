@@ -45,7 +45,9 @@ abstract class BaseHostToContactGroup extends BaseObject  implements Persistent 
 	public function setHostId($v)
 	{
 
-						if ($v !== null && !is_int($v) && is_numeric($v)) {
+		
+		
+		if ($v !== null && !is_int($v) && is_numeric($v)) {
 			$v = (int) $v;
 		}
 
@@ -63,7 +65,9 @@ abstract class BaseHostToContactGroup extends BaseObject  implements Persistent 
 	public function setContactGroupId($v)
 	{
 
-						if ($v !== null && !is_int($v) && is_numeric($v)) {
+		
+		
+		if ($v !== null && !is_int($v) && is_numeric($v)) {
 			$v = (int) $v;
 		}
 
@@ -388,9 +392,8 @@ abstract class BaseHostToContactGroup extends BaseObject  implements Persistent 
 	
 	public function getHost($con = null)
 	{
-				include_once 'lib/model/om/BaseHostPeer.php';
-
 		if ($this->aHost === null && ($this->host_id !== null)) {
+						include_once 'lib/model/om/BaseHostPeer.php';
 
 			$this->aHost = HostPeer::retrieveByPK($this->host_id, $con);
 
@@ -418,9 +421,8 @@ abstract class BaseHostToContactGroup extends BaseObject  implements Persistent 
 	
 	public function getContactGroup($con = null)
 	{
-				include_once 'lib/model/om/BaseContactGroupPeer.php';
-
 		if ($this->aContactGroup === null && ($this->contact_group_id !== null)) {
+						include_once 'lib/model/om/BaseContactGroupPeer.php';
 
 			$this->aContactGroup = ContactGroupPeer::retrieveByPK($this->contact_group_id, $con);
 

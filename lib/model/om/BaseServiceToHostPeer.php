@@ -247,7 +247,7 @@ abstract class BaseServiceToHostPeer {
 		$startcol = (ServiceToHostPeer::NUM_COLUMNS - ServiceToHostPeer::NUM_LAZY_LOAD_COLUMNS) + 1;
 		ServicePeer::addSelectColumns($c);
 
-		$c->addJoin(ServiceToHostPeer::SERVICE_ID, ServicePeer::ID, Criteria::JOIN);
+		$c->addJoin(ServiceToHostPeer::SERVICE_ID, ServicePeer::ID);
 		$rs = BasePeer::doSelect($c, $con);
 		$results = array();
 
@@ -294,7 +294,7 @@ abstract class BaseServiceToHostPeer {
 		$startcol = (ServiceToHostPeer::NUM_COLUMNS - ServiceToHostPeer::NUM_LAZY_LOAD_COLUMNS) + 1;
 		HostPeer::addSelectColumns($c);
 
-		$c->addJoin(ServiceToHostPeer::HOST_ID, HostPeer::ID, Criteria::JOIN);
+		$c->addJoin(ServiceToHostPeer::HOST_ID, HostPeer::ID);
 		$rs = BasePeer::doSelect($c, $con);
 		$results = array();
 

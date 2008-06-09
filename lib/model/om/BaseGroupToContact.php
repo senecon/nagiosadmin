@@ -45,7 +45,9 @@ abstract class BaseGroupToContact extends BaseObject  implements Persistent {
 	public function setGroupId($v)
 	{
 
-						if ($v !== null && !is_int($v) && is_numeric($v)) {
+		
+		
+		if ($v !== null && !is_int($v) && is_numeric($v)) {
 			$v = (int) $v;
 		}
 
@@ -63,7 +65,9 @@ abstract class BaseGroupToContact extends BaseObject  implements Persistent {
 	public function setContactId($v)
 	{
 
-						if ($v !== null && !is_int($v) && is_numeric($v)) {
+		
+		
+		if ($v !== null && !is_int($v) && is_numeric($v)) {
 			$v = (int) $v;
 		}
 
@@ -388,9 +392,8 @@ abstract class BaseGroupToContact extends BaseObject  implements Persistent {
 	
 	public function getContactGroup($con = null)
 	{
-				include_once 'lib/model/om/BaseContactGroupPeer.php';
-
 		if ($this->aContactGroup === null && ($this->group_id !== null)) {
+						include_once 'lib/model/om/BaseContactGroupPeer.php';
 
 			$this->aContactGroup = ContactGroupPeer::retrieveByPK($this->group_id, $con);
 
@@ -418,9 +421,8 @@ abstract class BaseGroupToContact extends BaseObject  implements Persistent {
 	
 	public function getContact($con = null)
 	{
-				include_once 'lib/model/om/BaseContactPeer.php';
-
 		if ($this->aContact === null && ($this->contact_id !== null)) {
+						include_once 'lib/model/om/BaseContactPeer.php';
 
 			$this->aContact = ContactPeer::retrieveByPK($this->contact_id, $con);
 

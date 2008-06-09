@@ -272,13 +272,12 @@ CREATE TABLE `command`
 	`id` INTEGER  NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(255)  NOT NULL,
 	`alias` VARCHAR(255)  NOT NULL,
-	`command` VARCHAR(255)  NOT NULL,
+	`command` TEXT  NOT NULL,
 	`created_at` DATETIME,
 	`updated_at` DATETIME,
 	PRIMARY KEY (`id`),
 	KEY `command_name_index`(`name`),
-	KEY `command_alias_index`(`alias`),
-	KEY `command_command_index`(`command`)
+	KEY `command_alias_index`(`alias`)
 )Type=MyISAM;
 
 # This restores the fkey checks, after having unset them earlier

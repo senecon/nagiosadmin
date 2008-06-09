@@ -119,7 +119,9 @@ abstract class BaseHostServiceParam extends BaseObject  implements Persistent {
 	public function setHostId($v)
 	{
 
-						if ($v !== null && !is_int($v) && is_numeric($v)) {
+		
+		
+		if ($v !== null && !is_int($v) && is_numeric($v)) {
 			$v = (int) $v;
 		}
 
@@ -137,7 +139,9 @@ abstract class BaseHostServiceParam extends BaseObject  implements Persistent {
 	public function setServiceId($v)
 	{
 
-						if ($v !== null && !is_int($v) && is_numeric($v)) {
+		
+		
+		if ($v !== null && !is_int($v) && is_numeric($v)) {
 			$v = (int) $v;
 		}
 
@@ -155,7 +159,9 @@ abstract class BaseHostServiceParam extends BaseObject  implements Persistent {
 	public function setParameter($v)
 	{
 
-						if ($v !== null && !is_string($v)) {
+		
+		
+		if ($v !== null && !is_string($v)) {
 			$v = (string) $v; 
 		}
 
@@ -169,7 +175,9 @@ abstract class BaseHostServiceParam extends BaseObject  implements Persistent {
 	public function setSpecial($v)
 	{
 
-						if ($v !== null && !is_string($v)) {
+		
+		
+		if ($v !== null && !is_string($v)) {
 			$v = (string) $v; 
 		}
 
@@ -586,9 +594,8 @@ abstract class BaseHostServiceParam extends BaseObject  implements Persistent {
 	
 	public function getHost($con = null)
 	{
-				include_once 'lib/model/om/BaseHostPeer.php';
-
 		if ($this->aHost === null && ($this->host_id !== null)) {
+						include_once 'lib/model/om/BaseHostPeer.php';
 
 			$this->aHost = HostPeer::retrieveByPK($this->host_id, $con);
 
@@ -616,9 +623,8 @@ abstract class BaseHostServiceParam extends BaseObject  implements Persistent {
 	
 	public function getService($con = null)
 	{
-				include_once 'lib/model/om/BaseServicePeer.php';
-
 		if ($this->aService === null && ($this->service_id !== null)) {
+						include_once 'lib/model/om/BaseServicePeer.php';
 
 			$this->aService = ServicePeer::retrieveByPK($this->service_id, $con);
 

@@ -170,7 +170,9 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 	public function setId($v)
 	{
 
-						if ($v !== null && !is_int($v) && is_numeric($v)) {
+		
+		
+		if ($v !== null && !is_int($v) && is_numeric($v)) {
 			$v = (int) $v;
 		}
 
@@ -184,7 +186,9 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 	public function setGroupId($v)
 	{
 
-						if ($v !== null && !is_int($v) && is_numeric($v)) {
+		
+		
+		if ($v !== null && !is_int($v) && is_numeric($v)) {
 			$v = (int) $v;
 		}
 
@@ -202,7 +206,9 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 	public function setName($v)
 	{
 
-						if ($v !== null && !is_string($v)) {
+		
+		
+		if ($v !== null && !is_string($v)) {
 			$v = (string) $v; 
 		}
 
@@ -216,7 +222,9 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 	public function setAlias($v)
 	{
 
-						if ($v !== null && !is_string($v)) {
+		
+		
+		if ($v !== null && !is_string($v)) {
 			$v = (string) $v; 
 		}
 
@@ -230,7 +238,9 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 	public function setAddress($v)
 	{
 
-						if ($v !== null && !is_string($v)) {
+		
+		
+		if ($v !== null && !is_string($v)) {
 			$v = (string) $v; 
 		}
 
@@ -244,7 +254,9 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 	public function setSpecial($v)
 	{
 
-						if ($v !== null && !is_string($v)) {
+		
+		
+		if ($v !== null && !is_string($v)) {
 			$v = (string) $v; 
 		}
 
@@ -258,7 +270,9 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 	public function setOsId($v)
 	{
 
-						if ($v !== null && !is_int($v) && is_numeric($v)) {
+		
+		
+		if ($v !== null && !is_int($v) && is_numeric($v)) {
 			$v = (int) $v;
 		}
 
@@ -774,9 +788,8 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 	
 	public function getHostGroup($con = null)
 	{
-				include_once 'lib/model/om/BaseHostGroupPeer.php';
-
 		if ($this->aHostGroup === null && ($this->group_id !== null)) {
+						include_once 'lib/model/om/BaseHostGroupPeer.php';
 
 			$this->aHostGroup = HostGroupPeer::retrieveByPK($this->group_id, $con);
 
@@ -804,9 +817,8 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 	
 	public function getOs($con = null)
 	{
-				include_once 'lib/model/om/BaseOsPeer.php';
-
 		if ($this->aOs === null && ($this->os_id !== null)) {
+						include_once 'lib/model/om/BaseOsPeer.php';
 
 			$this->aOs = OsPeer::retrieveByPK($this->os_id, $con);
 

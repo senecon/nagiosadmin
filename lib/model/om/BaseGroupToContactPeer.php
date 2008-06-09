@@ -247,7 +247,7 @@ abstract class BaseGroupToContactPeer {
 		$startcol = (GroupToContactPeer::NUM_COLUMNS - GroupToContactPeer::NUM_LAZY_LOAD_COLUMNS) + 1;
 		ContactGroupPeer::addSelectColumns($c);
 
-		$c->addJoin(GroupToContactPeer::GROUP_ID, ContactGroupPeer::ID, Criteria::JOIN);
+		$c->addJoin(GroupToContactPeer::GROUP_ID, ContactGroupPeer::ID);
 		$rs = BasePeer::doSelect($c, $con);
 		$results = array();
 
@@ -294,7 +294,7 @@ abstract class BaseGroupToContactPeer {
 		$startcol = (GroupToContactPeer::NUM_COLUMNS - GroupToContactPeer::NUM_LAZY_LOAD_COLUMNS) + 1;
 		ContactPeer::addSelectColumns($c);
 
-		$c->addJoin(GroupToContactPeer::CONTACT_ID, ContactPeer::ID, Criteria::JOIN);
+		$c->addJoin(GroupToContactPeer::CONTACT_ID, ContactPeer::ID);
 		$rs = BasePeer::doSelect($c, $con);
 		$results = array();
 

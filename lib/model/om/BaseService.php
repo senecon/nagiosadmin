@@ -150,7 +150,9 @@ abstract class BaseService extends BaseObject  implements Persistent {
 	public function setId($v)
 	{
 
-						if ($v !== null && !is_int($v) && is_numeric($v)) {
+		
+		
+		if ($v !== null && !is_int($v) && is_numeric($v)) {
 			$v = (int) $v;
 		}
 
@@ -164,7 +166,9 @@ abstract class BaseService extends BaseObject  implements Persistent {
 	public function setName($v)
 	{
 
-						if ($v !== null && !is_string($v)) {
+		
+		
+		if ($v !== null && !is_string($v)) {
 			$v = (string) $v; 
 		}
 
@@ -178,7 +182,9 @@ abstract class BaseService extends BaseObject  implements Persistent {
 	public function setAlias($v)
 	{
 
-						if ($v !== null && !is_string($v)) {
+		
+		
+		if ($v !== null && !is_string($v)) {
 			$v = (string) $v; 
 		}
 
@@ -192,7 +198,9 @@ abstract class BaseService extends BaseObject  implements Persistent {
 	public function setCommandId($v)
 	{
 
-						if ($v !== null && !is_int($v) && is_numeric($v)) {
+		
+		
+		if ($v !== null && !is_int($v) && is_numeric($v)) {
 			$v = (int) $v;
 		}
 
@@ -210,7 +218,9 @@ abstract class BaseService extends BaseObject  implements Persistent {
 	public function setPort($v)
 	{
 
-						if ($v !== null && !is_int($v) && is_numeric($v)) {
+		
+		
+		if ($v !== null && !is_int($v) && is_numeric($v)) {
 			$v = (int) $v;
 		}
 
@@ -224,7 +234,9 @@ abstract class BaseService extends BaseObject  implements Persistent {
 	public function setSpecial($v)
 	{
 
-						if ($v !== null && !is_string($v)) {
+		
+		
+		if ($v !== null && !is_string($v)) {
 			$v = (string) $v; 
 		}
 
@@ -690,9 +702,8 @@ abstract class BaseService extends BaseObject  implements Persistent {
 	
 	public function getCommand($con = null)
 	{
-				include_once 'lib/model/om/BaseCommandPeer.php';
-
 		if ($this->aCommand === null && ($this->command_id !== null)) {
+						include_once 'lib/model/om/BaseCommandPeer.php';
 
 			$this->aCommand = CommandPeer::retrieveByPK($this->command_id, $con);
 
