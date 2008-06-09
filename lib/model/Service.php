@@ -71,7 +71,8 @@ class Service extends BaseService
     'notes_url',
     'action_url',
     'icon_image',
-    'icon_image_alt'
+    'icon_image_alt',
+    'use'
   );
 
   public function __toString()

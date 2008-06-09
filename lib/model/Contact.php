@@ -46,10 +46,16 @@ class Contact extends BaseContact
     'service_notification_commands',
     'email',
     'pager',
-    'addressx',
+    'address1',
+    'address2',
+    'address3',
+    'address4',
+    'address5',
+    'address6',
     'can_submit_commands',
     'retain_status_information',
-    'retain_nonstatus_information'
+    'retain_nonstatus_information',
+    'use'
   );
 
   public function __toString()

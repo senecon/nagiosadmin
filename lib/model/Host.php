@@ -75,7 +75,8 @@ class Host extends BaseHost
     'vrml_image',
     'statusmap_image',
     '2d_coords',
-    '3d_coords'
+    '3d_coords',
+    'use'
   );
 
   public function __toString()
