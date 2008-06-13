@@ -649,6 +649,11 @@
 <target>Dienst bearbeiten</target>
 </trans-unit>
 
+<trans-unit id="130">
+<source>Customize host services</source>
+<target>Dienste dieses Hosts anpassen</target>
+</trans-unit>
+
 </body>
 </file>
 </xliff>
