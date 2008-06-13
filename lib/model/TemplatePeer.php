@@ -47,7 +47,7 @@ class TemplatePeer extends BaseTemplatePeer
 
     foreach($tpls as $tpl)
     {
-      $cfg .= beautyContent($tpl->getContent())."\n\n";
+      $cfg .= kill_doubles(beautyContent($tpl->getContent()))."\n\n";
     }
     
     return $cfg;
