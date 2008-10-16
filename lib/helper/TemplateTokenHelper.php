@@ -83,7 +83,7 @@ function kill_doubles($content)
   $lines = explode("\n",$tmp);
   foreach($lines as $nr => $line)
   {
-    if(preg_match('#^([ \t]*)([a-zA-Z-_]+)[ \t]*(.*)$#',$line,$matches))
+    if(preg_match('#^([ \t]*)([a-zA-Z-_0-9]+)[ \t]*(.*)$#',$line,$matches))
     {
       if(strpos(trim($line),'#') === 0) continue;
       if(array_key_exists($matches[2], $params))
