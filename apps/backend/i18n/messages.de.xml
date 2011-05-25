@@ -654,6 +654,11 @@
 <target>Dienste dieses Hosts anpassen</target>
 </trans-unit>
 
+<trans-unit id="131">
+<source>The form is not valid because it contains some errors.</source>
+<target>Das Formular enthält einige Fehler.</target>
+</trans-unit>
+
 </body>
 </file>
 </xliff>

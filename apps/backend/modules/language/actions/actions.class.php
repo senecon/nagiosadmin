@@ -52,12 +52,12 @@ class languageActions extends sfActions
   {
     $this->getUser()->setCulture('en');
     //$this->getRequest()->getReferer() TODO go to last active module
-    $this->redirect('contact', 'index');
+    $this->redirect('contact/index');
   }
 
   public function executeDe()
   {
     $this->getUser()->setCulture('de');
-    $this->redirect('contact', 'index');
+    $this->redirect('contact/index');
   }
 }

@@ -62,7 +62,7 @@ class generatorActions extends sfActions
     require_once('Text/Diff.php');
     require_once('Text/Diff/Renderer.php');
     require_once('Text/Diff/Renderer/inline.php');
-    
+
     if($new_is_file)
     {
       $new = is_readable($new) ? file($new) : '';

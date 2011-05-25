@@ -1,5 +1,5 @@
 prod:
-  .actions
+  .actions:
     error_404_module:         error
     error_404_action:         error404
   .settings:
@@ -18,7 +18,7 @@ dev:
 test:
   .settings:
     # E_ALL | E_STRICT & ~E_NOTICE = 2047
-    error_reporting:        2047
+    error_reporting:        <?php echo ((E_ALL | E_STRICT) ^ E_NOTICE)."\n" ?>
     cache:                  off
     web_debug:              off
     no_script_name:         off
@@ -32,7 +32,7 @@ all:
     compressed:             on
     charset:                utf-8
     standard_helpers:       [ Partial, I18N ]
-    
+
 #all:
 #  .actions:
 #    default_module:         default   # Default module and action to be called when

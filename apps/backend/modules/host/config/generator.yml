@@ -29,4 +29,4 @@ generator:
       display:
         "NONE":       [ name, alias, address, group_id, os_id, contactgroups, special, _nagios_help ]
         "Services":   [ services, _portscan, _serviceparameters ]
-        "Information":[ created_at, updated_at ]
+        "Information": [ created_at, updated_at ]

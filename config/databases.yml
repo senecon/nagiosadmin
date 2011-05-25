@@ -14,9 +14,9 @@ all:
     param:
       phptype:            mysql     # Database vendor
       hostspec:           localhost
-      database:           nagiosadmin
+      database:           na
       username:           root
-      password:           
+      password:           root
       port:               
       encoding:           utf8      # Default charset for table creation
       persistent:         true      # Use persistent connections

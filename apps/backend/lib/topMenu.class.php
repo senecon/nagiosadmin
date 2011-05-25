@@ -65,7 +65,7 @@ class topMenu
       foreach(self::$items as $module => $label)
       {
         $opts = $active == $module ? array('class' => 'selected') : array();
-        $result .= '<li class="'.$module.'">'.link_to(__($label),$module,$opts).'</li>';
+        $result .= '<li class="'.$module.'">'.link_to(__($label),$module.'/index',$opts).'</li>';
       }
       $result .= '</ul>';
     }
@@ -75,7 +75,7 @@ class topMenu
       foreach(self::$right_items as $module => $label)
       {
         $opts = $active == $module ? array('class' => 'selected') : array();
-        $result .= '<li class="'.$module.'">'.link_to(__($label),$module,$opts).'</li>';
+        $result .= '<li class="'.$module.'">'.link_to(__($label),$module.'/index',$opts).'</li>';
       }
       $result .= '</ul></div>';
     }

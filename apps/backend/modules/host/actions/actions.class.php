@@ -107,7 +107,7 @@ class hostActions extends autohostActions
       $s2h->save();
     }
 
-    $this->setFlash('notice', 'Your modifications have been saved');
+    $this->getUser()->setFlash('notice', 'Your modifications have been saved');
 
     if($this->getRequestParameter('save')) $this->redirect('host/serviceparameters?id='.$host->getId());
     if($this->getRequestParameter('save_and_list')) $this->redirect('host/list?id='.$host->getId());

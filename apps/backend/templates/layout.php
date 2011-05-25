@@ -48,7 +48,7 @@ echo topMenu::render($sf_context->getInstance()->getModuleName());
 ?>
 </div>
 
-<?php echo $sf_data->getRaw('sf_content') ?>
+<?php echo $sf_content ?>
 
 </body>
 </html>
