@@ -18,7 +18,6 @@ abstract class BaseHostPeer {
 	
 	const NUM_LAZY_LOAD_COLUMNS = 0;
 
-
 	
 	const ID = 'host.ID';
 
@@ -47,13 +46,16 @@ abstract class BaseHostPeer {
 	const UPDATED_AT = 'host.UPDATED_AT';
 
 	
-	private static $phpNameMap = null;
+	public static $instances = array();
 
+	
+	private static $mapBuilder = null;
 
 	
 	private static $fieldNames = array (
 		BasePeer::TYPE_PHPNAME => array ('Id', 'GroupId', 'Name', 'Alias', 'Address', 'Special', 'OsId', 'CreatedAt', 'UpdatedAt', ),
-		BasePeer::TYPE_COLNAME => array (HostPeer::ID, HostPeer::GROUP_ID, HostPeer::NAME, HostPeer::ALIAS, HostPeer::ADDRESS, HostPeer::SPECIAL, HostPeer::OS_ID, HostPeer::CREATED_AT, HostPeer::UPDATED_AT, ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'groupId', 'name', 'alias', 'address', 'special', 'osId', 'createdAt', 'updatedAt', ),
+		BasePeer::TYPE_COLNAME => array (self::ID, self::GROUP_ID, self::NAME, self::ALIAS, self::ADDRESS, self::SPECIAL, self::OS_ID, self::CREATED_AT, self::UPDATED_AT, ),
 		BasePeer::TYPE_FIELDNAME => array ('id', 'group_id', 'name', 'alias', 'address', 'special', 'os_id', 'created_at', 'updated_at', ),
 		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, )
 	);
@@ -61,7 +63,8 @@ abstract class BaseHostPeer {
 	
 	private static $fieldKeys = array (
 		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'GroupId' => 1, 'Name' => 2, 'Alias' => 3, 'Address' => 4, 'Special' => 5, 'OsId' => 6, 'CreatedAt' => 7, 'UpdatedAt' => 8, ),
-		BasePeer::TYPE_COLNAME => array (HostPeer::ID => 0, HostPeer::GROUP_ID => 1, HostPeer::NAME => 2, HostPeer::ALIAS => 3, HostPeer::ADDRESS => 4, HostPeer::SPECIAL => 5, HostPeer::OS_ID => 6, HostPeer::CREATED_AT => 7, HostPeer::UPDATED_AT => 8, ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'groupId' => 1, 'name' => 2, 'alias' => 3, 'address' => 4, 'special' => 5, 'osId' => 6, 'createdAt' => 7, 'updatedAt' => 8, ),
+		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::GROUP_ID => 1, self::NAME => 2, self::ALIAS => 3, self::ADDRESS => 4, self::SPECIAL => 5, self::OS_ID => 6, self::CREATED_AT => 7, self::UPDATED_AT => 8, ),
 		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'group_id' => 1, 'name' => 2, 'alias' => 3, 'address' => 4, 'special' => 5, 'os_id' => 6, 'created_at' => 7, 'updated_at' => 8, ),
 		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, )
 	);
@@ -69,22 +72,10 @@ abstract class BaseHostPeer {
 	
 	public static function getMapBuilder()
 	{
-		include_once 'lib/model/map/HostMapBuilder.php';
-		return BasePeer::getMapBuilder('lib.model.map.HostMapBuilder');
-	}
-	
-	public static function getPhpNameMap()
-	{
-		if (self::$phpNameMap === null) {
-			$map = HostPeer::getTableMap();
-			$columns = $map->getColumns();
-			$nameMap = array();
-			foreach ($columns as $column) {
-				$nameMap[$column->getPhpName()] = $column->getColumnName();
-			}
-			self::$phpNameMap = $nameMap;
+		if (self::$mapBuilder === null) {
+			self::$mapBuilder = new HostMapBuilder();
 		}
-		return self::$phpNameMap;
+		return self::$mapBuilder;
 	}
 	
 	static public function translateFieldName($name, $fromType, $toType)
@@ -102,7 +93,7 @@ abstract class BaseHostPeer {
 	static public function getFieldNames($type = BasePeer::TYPE_PHPNAME)
 	{
 		if (!array_key_exists($type, self::$fieldNames)) {
-			throw new PropelException('Method getFieldNames() expects the parameter $type to be one of the class constants TYPE_PHPNAME, TYPE_COLNAME, TYPE_FIELDNAME, TYPE_NUM. ' . $type . ' was given.');
+			throw new PropelException('Method getFieldNames() expects the parameter $type to be one of the class constants BasePeer::TYPE_PHPNAME, BasePeer::TYPE_STUDLYPHPNAME, BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM. ' . $type . ' was given.');
 		}
 		return self::$fieldNames[$type];
 	}
@@ -137,35 +128,37 @@ abstract class BaseHostPeer {
 
 	}
 
-	const COUNT = 'COUNT(host.ID)';
-	const COUNT_DISTINCT = 'COUNT(DISTINCT host.ID)';
-
 	
-	public static function doCount(Criteria $criteria, $distinct = false, $con = null)
+	public static function doCount(Criteria $criteria, $distinct = false, PropelPDO $con = null)
 	{
 				$criteria = clone $criteria;
 
-				$criteria->clearSelectColumns()->clearOrderByColumns();
-		if ($distinct || in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
-			$criteria->addSelectColumn(HostPeer::COUNT_DISTINCT);
-		} else {
-			$criteria->addSelectColumn(HostPeer::COUNT);
+								$criteria->setPrimaryTableName(HostPeer::TABLE_NAME);
+
+		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
+			$criteria->setDistinct();
 		}
 
-				foreach($criteria->getGroupByColumns() as $column)
-		{
-			$criteria->addSelectColumn($column);
+		if (!$criteria->hasSelectClause()) {
+			HostPeer::addSelectColumns($criteria);
 		}
 
-		$rs = HostPeer::doSelectRS($criteria, $con);
-		if ($rs->next()) {
-			return $rs->getInt(1);
-		} else {
-						return 0;
+		$criteria->clearOrderByColumns(); 		$criteria->setDbName(self::DATABASE_NAME); 
+		if ($con === null) {
+			$con = Propel::getConnection(HostPeer::DATABASE_NAME, Propel::CONNECTION_READ);
 		}
+
+				$stmt = BasePeer::doCount($criteria, $con);
+
+		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$count = (int) $row[0];
+		} else {
+			$count = 0; 		}
+		$stmt->closeCursor();
+		return $count;
 	}
 	
-	public static function doSelectOne(Criteria $criteria, $con = null)
+	public static function doSelectOne(Criteria $criteria, PropelPDO $con = null)
 	{
 		$critcopy = clone $criteria;
 		$critcopy->setLimit(1);
@@ -176,367 +169,444 @@ abstract class BaseHostPeer {
 		return null;
 	}
 	
-	public static function doSelect(Criteria $criteria, $con = null)
+	public static function doSelect(Criteria $criteria, PropelPDO $con = null)
 	{
-		return HostPeer::populateObjects(HostPeer::doSelectRS($criteria, $con));
+		return HostPeer::populateObjects(HostPeer::doSelectStmt($criteria, $con));
 	}
 	
-	public static function doSelectRS(Criteria $criteria, $con = null)
+	public static function doSelectStmt(Criteria $criteria, PropelPDO $con = null)
 	{
 		if ($con === null) {
-			$con = Propel::getConnection(self::DATABASE_NAME);
+			$con = Propel::getConnection(HostPeer::DATABASE_NAME, Propel::CONNECTION_READ);
 		}
 
-		if (!$criteria->getSelectColumns()) {
+		if (!$criteria->hasSelectClause()) {
 			$criteria = clone $criteria;
 			HostPeer::addSelectColumns($criteria);
 		}
 
 				$criteria->setDbName(self::DATABASE_NAME);
 
-						return BasePeer::doSelect($criteria, $con);
+				return BasePeer::doSelect($criteria, $con);
 	}
 	
-	public static function populateObjects(ResultSet $rs)
+	public static function addInstanceToPool(Host $obj, $key = null)
+	{
+		if (Propel::isInstancePoolingEnabled()) {
+			if ($key === null) {
+				$key = (string) $obj->getId();
+			} 			self::$instances[$key] = $obj;
+		}
+	}
+
+	
+	public static function removeInstanceFromPool($value)
+	{
+		if (Propel::isInstancePoolingEnabled() && $value !== null) {
+			if (is_object($value) && $value instanceof Host) {
+				$key = (string) $value->getId();
+			} elseif (is_scalar($value)) {
+								$key = (string) $value;
+			} else {
+				$e = new PropelException("Invalid value passed to removeInstanceFromPool().  Expected primary key or Host object; got " . (is_object($value) ? get_class($value) . ' object.' : var_export($value,true)));
+				throw $e;
+			}
+
+			unset(self::$instances[$key]);
+		}
+	} 
+	
+	public static function getInstanceFromPool($key)
+	{
+		if (Propel::isInstancePoolingEnabled()) {
+			if (isset(self::$instances[$key])) {
+				return self::$instances[$key];
+			}
+		}
+		return null; 	}
+	
+	
+	public static function clearInstancePool()
+	{
+		self::$instances = array();
+	}
+	
+	
+	public static function getPrimaryKeyHashFromRow($row, $startcol = 0)
+	{
+				if ($row[$startcol + 0] === null) {
+			return null;
+		}
+		return (string) $row[$startcol + 0];
+	}
+
+	
+	public static function populateObjects(PDOStatement $stmt)
 	{
 		$results = array();
 	
 				$cls = HostPeer::getOMClass();
-		$cls = Propel::import($cls);
-				while($rs->next()) {
+		$cls = substr('.'.$cls, strrpos('.'.$cls, '.') + 1);
+				while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$key = HostPeer::getPrimaryKeyHashFromRow($row, 0);
+			if (null !== ($obj = HostPeer::getInstanceFromPool($key))) {
+																$results[] = $obj;
+			} else {
 		
-			$obj = new $cls();
-			$obj->hydrate($rs);
-			$results[] = $obj;
+				$obj = new $cls();
+				$obj->hydrate($row);
+				$results[] = $obj;
+				HostPeer::addInstanceToPool($obj, $key);
+			} 		}
+		$stmt->closeCursor();
+		return $results;
+	}
+
+	
+	public static function doCountJoinHostGroup(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	{
+				$criteria = clone $criteria;
+
+								$criteria->setPrimaryTableName(HostPeer::TABLE_NAME);
+
+		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
+			$criteria->setDistinct();
+		}
+
+		if (!$criteria->hasSelectClause()) {
+			HostPeer::addSelectColumns($criteria);
+		}
+
+		$criteria->clearOrderByColumns(); 
+				$criteria->setDbName(self::DATABASE_NAME);
+
+		if ($con === null) {
+			$con = Propel::getConnection(HostPeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+
+		$criteria->addJoin(array(HostPeer::GROUP_ID,), array(HostGroupPeer::ID,), $join_behavior);
+
+		$stmt = BasePeer::doCount($criteria, $con);
+
+		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$count = (int) $row[0];
+		} else {
+			$count = 0; 		}
+		$stmt->closeCursor();
+		return $count;
+	}
+
+
+	
+	public static function doCountJoinOs(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	{
+				$criteria = clone $criteria;
+
+								$criteria->setPrimaryTableName(HostPeer::TABLE_NAME);
+
+		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
+			$criteria->setDistinct();
+		}
+
+		if (!$criteria->hasSelectClause()) {
+			HostPeer::addSelectColumns($criteria);
+		}
+
+		$criteria->clearOrderByColumns(); 
+				$criteria->setDbName(self::DATABASE_NAME);
+
+		if ($con === null) {
+			$con = Propel::getConnection(HostPeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+
+		$criteria->addJoin(array(HostPeer::OS_ID,), array(OsPeer::ID,), $join_behavior);
+
+		$stmt = BasePeer::doCount($criteria, $con);
+
+		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$count = (int) $row[0];
+		} else {
+			$count = 0; 		}
+		$stmt->closeCursor();
+		return $count;
+	}
+
+
+	
+	public static function doSelectJoinHostGroup(Criteria $c, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	{
+		$c = clone $c;
+
+				if ($c->getDbName() == Propel::getDefaultDB()) {
+			$c->setDbName(self::DATABASE_NAME);
+		}
+
+		HostPeer::addSelectColumns($c);
+		$startcol = (HostPeer::NUM_COLUMNS - HostPeer::NUM_LAZY_LOAD_COLUMNS);
+		HostGroupPeer::addSelectColumns($c);
+
+		$c->addJoin(array(HostPeer::GROUP_ID,), array(HostGroupPeer::ID,), $join_behavior);
+		$stmt = BasePeer::doSelect($c, $con);
+		$results = array();
+
+		while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$key1 = HostPeer::getPrimaryKeyHashFromRow($row, 0);
+			if (null !== ($obj1 = HostPeer::getInstanceFromPool($key1))) {
+															} else {
+
+				$omClass = HostPeer::getOMClass();
+
+				$cls = substr('.'.$omClass, strrpos('.'.$omClass, '.') + 1);
+				$obj1 = new $cls();
+				$obj1->hydrate($row);
+				HostPeer::addInstanceToPool($obj1, $key1);
+			} 
+			$key2 = HostGroupPeer::getPrimaryKeyHashFromRow($row, $startcol);
+			if ($key2 !== null) {
+				$obj2 = HostGroupPeer::getInstanceFromPool($key2);
+				if (!$obj2) {
+
+					$omClass = HostGroupPeer::getOMClass();
+
+					$cls = substr('.'.$omClass, strrpos('.'.$omClass, '.') + 1);
+					$obj2 = new $cls();
+					$obj2->hydrate($row, $startcol);
+					HostGroupPeer::addInstanceToPool($obj2, $key2);
+				} 
+								$obj2->addHost($obj1);
+
+			} 
+			$results[] = $obj1;
+		}
+		$stmt->closeCursor();
+		return $results;
+	}
+
+
+	
+	public static function doSelectJoinOs(Criteria $c, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	{
+		$c = clone $c;
+
+				if ($c->getDbName() == Propel::getDefaultDB()) {
+			$c->setDbName(self::DATABASE_NAME);
+		}
+
+		HostPeer::addSelectColumns($c);
+		$startcol = (HostPeer::NUM_COLUMNS - HostPeer::NUM_LAZY_LOAD_COLUMNS);
+		OsPeer::addSelectColumns($c);
+
+		$c->addJoin(array(HostPeer::OS_ID,), array(OsPeer::ID,), $join_behavior);
+		$stmt = BasePeer::doSelect($c, $con);
+		$results = array();
+
+		while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$key1 = HostPeer::getPrimaryKeyHashFromRow($row, 0);
+			if (null !== ($obj1 = HostPeer::getInstanceFromPool($key1))) {
+															} else {
+
+				$omClass = HostPeer::getOMClass();
+
+				$cls = substr('.'.$omClass, strrpos('.'.$omClass, '.') + 1);
+				$obj1 = new $cls();
+				$obj1->hydrate($row);
+				HostPeer::addInstanceToPool($obj1, $key1);
+			} 
+			$key2 = OsPeer::getPrimaryKeyHashFromRow($row, $startcol);
+			if ($key2 !== null) {
+				$obj2 = OsPeer::getInstanceFromPool($key2);
+				if (!$obj2) {
+
+					$omClass = OsPeer::getOMClass();
+
+					$cls = substr('.'.$omClass, strrpos('.'.$omClass, '.') + 1);
+					$obj2 = new $cls();
+					$obj2->hydrate($row, $startcol);
+					OsPeer::addInstanceToPool($obj2, $key2);
+				} 
+								$obj2->addHost($obj1);
+
+			} 
+			$results[] = $obj1;
+		}
+		$stmt->closeCursor();
+		return $results;
+	}
+
+
+	
+	public static function doCountJoinAll(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	{
+				$criteria = clone $criteria;
+
+								$criteria->setPrimaryTableName(HostPeer::TABLE_NAME);
+
+		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
+			$criteria->setDistinct();
+		}
+
+		if (!$criteria->hasSelectClause()) {
+			HostPeer::addSelectColumns($criteria);
+		}
+
+		$criteria->clearOrderByColumns(); 
+				$criteria->setDbName(self::DATABASE_NAME);
+
+		if ($con === null) {
+			$con = Propel::getConnection(HostPeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+
+		$criteria->addJoin(array(HostPeer::GROUP_ID,), array(HostGroupPeer::ID,), $join_behavior);
+		$criteria->addJoin(array(HostPeer::OS_ID,), array(OsPeer::ID,), $join_behavior);
+		$stmt = BasePeer::doCount($criteria, $con);
+
+		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$count = (int) $row[0];
+		} else {
+			$count = 0; 		}
+		$stmt->closeCursor();
+		return $count;
+	}
+
+	
+	public static function doSelectJoinAll(Criteria $c, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	{
+		$c = clone $c;
+
+				if ($c->getDbName() == Propel::getDefaultDB()) {
+			$c->setDbName(self::DATABASE_NAME);
+		}
+
+		HostPeer::addSelectColumns($c);
+		$startcol2 = (HostPeer::NUM_COLUMNS - HostPeer::NUM_LAZY_LOAD_COLUMNS);
+
+		HostGroupPeer::addSelectColumns($c);
+		$startcol3 = $startcol2 + (HostGroupPeer::NUM_COLUMNS - HostGroupPeer::NUM_LAZY_LOAD_COLUMNS);
+
+		OsPeer::addSelectColumns($c);
+		$startcol4 = $startcol3 + (OsPeer::NUM_COLUMNS - OsPeer::NUM_LAZY_LOAD_COLUMNS);
+
+		$c->addJoin(array(HostPeer::GROUP_ID,), array(HostGroupPeer::ID,), $join_behavior);
+		$c->addJoin(array(HostPeer::OS_ID,), array(OsPeer::ID,), $join_behavior);
+		$stmt = BasePeer::doSelect($c, $con);
+		$results = array();
+
+		while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$key1 = HostPeer::getPrimaryKeyHashFromRow($row, 0);
+			if (null !== ($obj1 = HostPeer::getInstanceFromPool($key1))) {
+															} else {
+				$omClass = HostPeer::getOMClass();
+
+				$cls = substr('.'.$omClass, strrpos('.'.$omClass, '.') + 1);
+				$obj1 = new $cls();
+				$obj1->hydrate($row);
+				HostPeer::addInstanceToPool($obj1, $key1);
+			} 
 			
-		}
-		return $results;
-	}
+			$key2 = HostGroupPeer::getPrimaryKeyHashFromRow($row, $startcol2);
+			if ($key2 !== null) {
+				$obj2 = HostGroupPeer::getInstanceFromPool($key2);
+				if (!$obj2) {
 
-	
-	public static function doCountJoinHostGroup(Criteria $criteria, $distinct = false, $con = null)
-	{
-				$criteria = clone $criteria;
-
-				$criteria->clearSelectColumns()->clearOrderByColumns();
-		if ($distinct || in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
-			$criteria->addSelectColumn(HostPeer::COUNT_DISTINCT);
-		} else {
-			$criteria->addSelectColumn(HostPeer::COUNT);
-		}
-
-				foreach($criteria->getGroupByColumns() as $column)
-		{
-			$criteria->addSelectColumn($column);
-		}
-
-		$criteria->addJoin(HostPeer::GROUP_ID, HostGroupPeer::ID);
-
-		$rs = HostPeer::doSelectRS($criteria, $con);
-		if ($rs->next()) {
-			return $rs->getInt(1);
-		} else {
-						return 0;
-		}
-	}
+					$omClass = HostGroupPeer::getOMClass();
 
 
-	
-	public static function doCountJoinOs(Criteria $criteria, $distinct = false, $con = null)
-	{
-				$criteria = clone $criteria;
+					$cls = substr('.'.$omClass, strrpos('.'.$omClass, '.') + 1);
+					$obj2 = new $cls();
+					$obj2->hydrate($row, $startcol2);
+					HostGroupPeer::addInstanceToPool($obj2, $key2);
+				} 
+								$obj2->addHost($obj1);
+			} 
+			
+			$key3 = OsPeer::getPrimaryKeyHashFromRow($row, $startcol3);
+			if ($key3 !== null) {
+				$obj3 = OsPeer::getInstanceFromPool($key3);
+				if (!$obj3) {
 
-				$criteria->clearSelectColumns()->clearOrderByColumns();
-		if ($distinct || in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
-			$criteria->addSelectColumn(HostPeer::COUNT_DISTINCT);
-		} else {
-			$criteria->addSelectColumn(HostPeer::COUNT);
-		}
-
-				foreach($criteria->getGroupByColumns() as $column)
-		{
-			$criteria->addSelectColumn($column);
-		}
-
-		$criteria->addJoin(HostPeer::OS_ID, OsPeer::ID);
-
-		$rs = HostPeer::doSelectRS($criteria, $con);
-		if ($rs->next()) {
-			return $rs->getInt(1);
-		} else {
-						return 0;
-		}
-	}
+					$omClass = OsPeer::getOMClass();
 
 
-	
-	public static function doSelectJoinHostGroup(Criteria $c, $con = null)
-	{
-		$c = clone $c;
-
-				if ($c->getDbName() == Propel::getDefaultDB()) {
-			$c->setDbName(self::DATABASE_NAME);
-		}
-
-		HostPeer::addSelectColumns($c);
-		$startcol = (HostPeer::NUM_COLUMNS - HostPeer::NUM_LAZY_LOAD_COLUMNS) + 1;
-		HostGroupPeer::addSelectColumns($c);
-
-		$c->addJoin(HostPeer::GROUP_ID, HostGroupPeer::ID);
-		$rs = BasePeer::doSelect($c, $con);
-		$results = array();
-
-		while($rs->next()) {
-
-			$omClass = HostPeer::getOMClass();
-
-			$cls = Propel::import($omClass);
-			$obj1 = new $cls();
-			$obj1->hydrate($rs);
-
-			$omClass = HostGroupPeer::getOMClass();
-
-			$cls = Propel::import($omClass);
-			$obj2 = new $cls();
-			$obj2->hydrate($rs, $startcol);
-
-			$newObject = true;
-			foreach($results as $temp_obj1) {
-				$temp_obj2 = $temp_obj1->getHostGroup(); 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
-					$newObject = false;
-										$temp_obj2->addHost($obj1); 					break;
-				}
-			}
-			if ($newObject) {
-				$obj2->initHosts();
-				$obj2->addHost($obj1); 			}
+					$cls = substr('.'.$omClass, strrpos('.'.$omClass, '.') + 1);
+					$obj3 = new $cls();
+					$obj3->hydrate($row, $startcol3);
+					OsPeer::addInstanceToPool($obj3, $key3);
+				} 
+								$obj3->addHost($obj1);
+			} 
 			$results[] = $obj1;
 		}
+		$stmt->closeCursor();
 		return $results;
 	}
 
 
 	
-	public static function doSelectJoinOs(Criteria $c, $con = null)
-	{
-		$c = clone $c;
-
-				if ($c->getDbName() == Propel::getDefaultDB()) {
-			$c->setDbName(self::DATABASE_NAME);
-		}
-
-		HostPeer::addSelectColumns($c);
-		$startcol = (HostPeer::NUM_COLUMNS - HostPeer::NUM_LAZY_LOAD_COLUMNS) + 1;
-		OsPeer::addSelectColumns($c);
-
-		$c->addJoin(HostPeer::OS_ID, OsPeer::ID);
-		$rs = BasePeer::doSelect($c, $con);
-		$results = array();
-
-		while($rs->next()) {
-
-			$omClass = HostPeer::getOMClass();
-
-			$cls = Propel::import($omClass);
-			$obj1 = new $cls();
-			$obj1->hydrate($rs);
-
-			$omClass = OsPeer::getOMClass();
-
-			$cls = Propel::import($omClass);
-			$obj2 = new $cls();
-			$obj2->hydrate($rs, $startcol);
-
-			$newObject = true;
-			foreach($results as $temp_obj1) {
-				$temp_obj2 = $temp_obj1->getOs(); 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
-					$newObject = false;
-										$temp_obj2->addHost($obj1); 					break;
-				}
-			}
-			if ($newObject) {
-				$obj2->initHosts();
-				$obj2->addHost($obj1); 			}
-			$results[] = $obj1;
-		}
-		return $results;
-	}
-
-
-	
-	public static function doCountJoinAll(Criteria $criteria, $distinct = false, $con = null)
-	{
-		$criteria = clone $criteria;
-
-				$criteria->clearSelectColumns()->clearOrderByColumns();
-		if ($distinct || in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
-			$criteria->addSelectColumn(HostPeer::COUNT_DISTINCT);
-		} else {
-			$criteria->addSelectColumn(HostPeer::COUNT);
-		}
-
-				foreach($criteria->getGroupByColumns() as $column)
-		{
-			$criteria->addSelectColumn($column);
-		}
-
-		$criteria->addJoin(HostPeer::GROUP_ID, HostGroupPeer::ID);
-
-		$criteria->addJoin(HostPeer::OS_ID, OsPeer::ID);
-
-		$rs = HostPeer::doSelectRS($criteria, $con);
-		if ($rs->next()) {
-			return $rs->getInt(1);
-		} else {
-						return 0;
-		}
-	}
-
-
-	
-	public static function doSelectJoinAll(Criteria $c, $con = null)
-	{
-		$c = clone $c;
-
-				if ($c->getDbName() == Propel::getDefaultDB()) {
-			$c->setDbName(self::DATABASE_NAME);
-		}
-
-		HostPeer::addSelectColumns($c);
-		$startcol2 = (HostPeer::NUM_COLUMNS - HostPeer::NUM_LAZY_LOAD_COLUMNS) + 1;
-
-		HostGroupPeer::addSelectColumns($c);
-		$startcol3 = $startcol2 + HostGroupPeer::NUM_COLUMNS;
-
-		OsPeer::addSelectColumns($c);
-		$startcol4 = $startcol3 + OsPeer::NUM_COLUMNS;
-
-		$c->addJoin(HostPeer::GROUP_ID, HostGroupPeer::ID);
-
-		$c->addJoin(HostPeer::OS_ID, OsPeer::ID);
-
-		$rs = BasePeer::doSelect($c, $con);
-		$results = array();
-
-		while($rs->next()) {
-
-			$omClass = HostPeer::getOMClass();
-
-
-			$cls = Propel::import($omClass);
-			$obj1 = new $cls();
-			$obj1->hydrate($rs);
-
-
-					
-			$omClass = HostGroupPeer::getOMClass();
-
-
-			$cls = Propel::import($omClass);
-			$obj2 = new $cls();
-			$obj2->hydrate($rs, $startcol2);
-
-			$newObject = true;
-			for ($j=0, $resCount=count($results); $j < $resCount; $j++) {
-				$temp_obj1 = $results[$j];
-				$temp_obj2 = $temp_obj1->getHostGroup(); 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
-					$newObject = false;
-					$temp_obj2->addHost($obj1); 					break;
-				}
-			}
-
-			if ($newObject) {
-				$obj2->initHosts();
-				$obj2->addHost($obj1);
-			}
-
-
-					
-			$omClass = OsPeer::getOMClass();
-
-
-			$cls = Propel::import($omClass);
-			$obj3 = new $cls();
-			$obj3->hydrate($rs, $startcol3);
-
-			$newObject = true;
-			for ($j=0, $resCount=count($results); $j < $resCount; $j++) {
-				$temp_obj1 = $results[$j];
-				$temp_obj3 = $temp_obj1->getOs(); 				if ($temp_obj3->getPrimaryKey() === $obj3->getPrimaryKey()) {
-					$newObject = false;
-					$temp_obj3->addHost($obj1); 					break;
-				}
-			}
-
-			if ($newObject) {
-				$obj3->initHosts();
-				$obj3->addHost($obj1);
-			}
-
-			$results[] = $obj1;
-		}
-		return $results;
-	}
-
-
-	
-	public static function doCountJoinAllExceptHostGroup(Criteria $criteria, $distinct = false, $con = null)
+	public static function doCountJoinAllExceptHostGroup(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
 				$criteria = clone $criteria;
 
-				$criteria->clearSelectColumns()->clearOrderByColumns();
-		if ($distinct || in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
-			$criteria->addSelectColumn(HostPeer::COUNT_DISTINCT);
+		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
+			$criteria->setDistinct();
+		}
+
+		if (!$criteria->hasSelectClause()) {
+			HostPeer::addSelectColumns($criteria);
+		}
+
+		$criteria->clearOrderByColumns(); 
+				$criteria->setDbName(self::DATABASE_NAME);
+
+		if ($con === null) {
+			$con = Propel::getConnection(HostPeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+	
+				$criteria->addJoin(array(HostPeer::OS_ID,), array(OsPeer::ID,), $join_behavior);
+		$stmt = BasePeer::doCount($criteria, $con);
+
+		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$count = (int) $row[0];
 		} else {
-			$criteria->addSelectColumn(HostPeer::COUNT);
-		}
-
-				foreach($criteria->getGroupByColumns() as $column)
-		{
-			$criteria->addSelectColumn($column);
-		}
-
-		$criteria->addJoin(HostPeer::OS_ID, OsPeer::ID);
-
-		$rs = HostPeer::doSelectRS($criteria, $con);
-		if ($rs->next()) {
-			return $rs->getInt(1);
-		} else {
-						return 0;
-		}
+			$count = 0; 		}
+		$stmt->closeCursor();
+		return $count;
 	}
 
 
 	
-	public static function doCountJoinAllExceptOs(Criteria $criteria, $distinct = false, $con = null)
+	public static function doCountJoinAllExceptOs(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
 				$criteria = clone $criteria;
 
-				$criteria->clearSelectColumns()->clearOrderByColumns();
-		if ($distinct || in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
-			$criteria->addSelectColumn(HostPeer::COUNT_DISTINCT);
+		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
+			$criteria->setDistinct();
+		}
+
+		if (!$criteria->hasSelectClause()) {
+			HostPeer::addSelectColumns($criteria);
+		}
+
+		$criteria->clearOrderByColumns(); 
+				$criteria->setDbName(self::DATABASE_NAME);
+
+		if ($con === null) {
+			$con = Propel::getConnection(HostPeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+	
+				$criteria->addJoin(array(HostPeer::GROUP_ID,), array(HostGroupPeer::ID,), $join_behavior);
+		$stmt = BasePeer::doCount($criteria, $con);
+
+		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$count = (int) $row[0];
 		} else {
-			$criteria->addSelectColumn(HostPeer::COUNT);
-		}
-
-				foreach($criteria->getGroupByColumns() as $column)
-		{
-			$criteria->addSelectColumn($column);
-		}
-
-		$criteria->addJoin(HostPeer::GROUP_ID, HostGroupPeer::ID);
-
-		$rs = HostPeer::doSelectRS($criteria, $con);
-		if ($rs->next()) {
-			return $rs->getInt(1);
-		} else {
-						return 0;
-		}
+			$count = 0; 		}
+		$stmt->closeCursor();
+		return $count;
 	}
 
 
 	
-	public static function doSelectJoinAllExceptHostGroup(Criteria $c, $con = null)
+	public static function doSelectJoinAllExceptHostGroup(Criteria $c, $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
 		$c = clone $c;
 
@@ -545,55 +615,53 @@ abstract class BaseHostPeer {
 		}
 
 		HostPeer::addSelectColumns($c);
-		$startcol2 = (HostPeer::NUM_COLUMNS - HostPeer::NUM_LAZY_LOAD_COLUMNS) + 1;
+		$startcol2 = (HostPeer::NUM_COLUMNS - HostPeer::NUM_LAZY_LOAD_COLUMNS);
 
 		OsPeer::addSelectColumns($c);
-		$startcol3 = $startcol2 + OsPeer::NUM_COLUMNS;
+		$startcol3 = $startcol2 + (OsPeer::NUM_COLUMNS - OsPeer::NUM_LAZY_LOAD_COLUMNS);
 
-		$c->addJoin(HostPeer::OS_ID, OsPeer::ID);
+				$c->addJoin(array(HostPeer::OS_ID,), array(OsPeer::ID,), $join_behavior);
 
-
-		$rs = BasePeer::doSelect($c, $con);
+		$stmt = BasePeer::doSelect($c, $con);
 		$results = array();
 
-		while($rs->next()) {
+		while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$key1 = HostPeer::getPrimaryKeyHashFromRow($row, 0);
+			if (null !== ($obj1 = HostPeer::getInstanceFromPool($key1))) {
+															} else {
+				$omClass = HostPeer::getOMClass();
 
-			$omClass = HostPeer::getOMClass();
+				$cls = substr('.'.$omClass, strrpos('.'.$omClass, '.') + 1);
+				$obj1 = new $cls();
+				$obj1->hydrate($row);
+				HostPeer::addInstanceToPool($obj1, $key1);
+			} 
+				
+				$key2 = OsPeer::getPrimaryKeyHashFromRow($row, $startcol2);
+				if ($key2 !== null) {
+					$obj2 = OsPeer::getInstanceFromPool($key2);
+					if (!$obj2) {
+	
+						$omClass = OsPeer::getOMClass();
 
-			$cls = Propel::import($omClass);
-			$obj1 = new $cls();
-			$obj1->hydrate($rs);
 
-			$omClass = OsPeer::getOMClass();
+					$cls = substr('.'.$omClass, strrpos('.'.$omClass, '.') + 1);
+					$obj2 = new $cls();
+					$obj2->hydrate($row, $startcol2);
+					OsPeer::addInstanceToPool($obj2, $key2);
+				} 
+								$obj2->addHost($obj1);
 
-
-			$cls = Propel::import($omClass);
-			$obj2  = new $cls();
-			$obj2->hydrate($rs, $startcol2);
-
-			$newObject = true;
-			for ($j=0, $resCount=count($results); $j < $resCount; $j++) {
-				$temp_obj1 = $results[$j];
-				$temp_obj2 = $temp_obj1->getOs(); 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
-					$newObject = false;
-					$temp_obj2->addHost($obj1);
-					break;
-				}
-			}
-
-			if ($newObject) {
-				$obj2->initHosts();
-				$obj2->addHost($obj1);
-			}
-
+			} 
 			$results[] = $obj1;
 		}
+		$stmt->closeCursor();
 		return $results;
 	}
 
 
 	
-	public static function doSelectJoinAllExceptOs(Criteria $c, $con = null)
+	public static function doSelectJoinAllExceptOs(Criteria $c, $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
 		$c = clone $c;
 
@@ -602,52 +670,55 @@ abstract class BaseHostPeer {
 		}
 
 		HostPeer::addSelectColumns($c);
-		$startcol2 = (HostPeer::NUM_COLUMNS - HostPeer::NUM_LAZY_LOAD_COLUMNS) + 1;
+		$startcol2 = (HostPeer::NUM_COLUMNS - HostPeer::NUM_LAZY_LOAD_COLUMNS);
 
 		HostGroupPeer::addSelectColumns($c);
-		$startcol3 = $startcol2 + HostGroupPeer::NUM_COLUMNS;
+		$startcol3 = $startcol2 + (HostGroupPeer::NUM_COLUMNS - HostGroupPeer::NUM_LAZY_LOAD_COLUMNS);
 
-		$c->addJoin(HostPeer::GROUP_ID, HostGroupPeer::ID);
+				$c->addJoin(array(HostPeer::GROUP_ID,), array(HostGroupPeer::ID,), $join_behavior);
 
-
-		$rs = BasePeer::doSelect($c, $con);
+		$stmt = BasePeer::doSelect($c, $con);
 		$results = array();
 
-		while($rs->next()) {
+		while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$key1 = HostPeer::getPrimaryKeyHashFromRow($row, 0);
+			if (null !== ($obj1 = HostPeer::getInstanceFromPool($key1))) {
+															} else {
+				$omClass = HostPeer::getOMClass();
 
-			$omClass = HostPeer::getOMClass();
+				$cls = substr('.'.$omClass, strrpos('.'.$omClass, '.') + 1);
+				$obj1 = new $cls();
+				$obj1->hydrate($row);
+				HostPeer::addInstanceToPool($obj1, $key1);
+			} 
+				
+				$key2 = HostGroupPeer::getPrimaryKeyHashFromRow($row, $startcol2);
+				if ($key2 !== null) {
+					$obj2 = HostGroupPeer::getInstanceFromPool($key2);
+					if (!$obj2) {
+	
+						$omClass = HostGroupPeer::getOMClass();
 
-			$cls = Propel::import($omClass);
-			$obj1 = new $cls();
-			$obj1->hydrate($rs);
 
-			$omClass = HostGroupPeer::getOMClass();
+					$cls = substr('.'.$omClass, strrpos('.'.$omClass, '.') + 1);
+					$obj2 = new $cls();
+					$obj2->hydrate($row, $startcol2);
+					HostGroupPeer::addInstanceToPool($obj2, $key2);
+				} 
+								$obj2->addHost($obj1);
 
-
-			$cls = Propel::import($omClass);
-			$obj2  = new $cls();
-			$obj2->hydrate($rs, $startcol2);
-
-			$newObject = true;
-			for ($j=0, $resCount=count($results); $j < $resCount; $j++) {
-				$temp_obj1 = $results[$j];
-				$temp_obj2 = $temp_obj1->getHostGroup(); 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
-					$newObject = false;
-					$temp_obj2->addHost($obj1);
-					break;
-				}
-			}
-
-			if ($newObject) {
-				$obj2->initHosts();
-				$obj2->addHost($obj1);
-			}
-
+			} 
 			$results[] = $obj1;
 		}
+		$stmt->closeCursor();
 		return $results;
 	}
 
+
+  static public function getUniqueColumnNames()
+  {
+    return array();
+  }
 	
 	public static function getTableMap()
 	{
@@ -661,26 +732,29 @@ abstract class BaseHostPeer {
 	}
 
 	
-	public static function doInsert($values, $con = null)
+	public static function doInsert($values, PropelPDO $con = null)
 	{
 		if ($con === null) {
-			$con = Propel::getConnection(self::DATABASE_NAME);
+			$con = Propel::getConnection(HostPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
 		}
 
 		if ($values instanceof Criteria) {
 			$criteria = clone $values; 		} else {
 			$criteria = $values->buildCriteria(); 		}
 
-		$criteria->remove(HostPeer::ID); 
+		if ($criteria->containsKey(HostPeer::ID) && $criteria->keyContainsValue(HostPeer::ID) ) {
+			throw new PropelException('Cannot insert a value for auto-increment primary key ('.HostPeer::ID.')');
+		}
+
 
 				$criteria->setDbName(self::DATABASE_NAME);
 
 		try {
-									$con->begin();
+									$con->beginTransaction();
 			$pk = BasePeer::doInsert($criteria, $con);
 			$con->commit();
 		} catch(PropelException $e) {
-			$con->rollback();
+			$con->rollBack();
 			throw $e;
 		}
 
@@ -688,10 +762,10 @@ abstract class BaseHostPeer {
 	}
 
 	
-	public static function doUpdate($values, $con = null)
+	public static function doUpdate($values, PropelPDO $con = null)
 	{
 		if ($con === null) {
-			$con = Propel::getConnection(self::DATABASE_NAME);
+			$con = Propel::getConnection(HostPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
 		}
 
 		$selectCriteria = new Criteria(self::DATABASE_NAME);
@@ -712,77 +786,94 @@ abstract class BaseHostPeer {
 	public static function doDeleteAll($con = null)
 	{
 		if ($con === null) {
-			$con = Propel::getConnection(self::DATABASE_NAME);
+			$con = Propel::getConnection(HostPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
 		}
 		$affectedRows = 0; 		try {
-									$con->begin();
-			$affectedRows += HostPeer::doOnDeleteCascade(new Criteria(), $con);
+									$con->beginTransaction();
+			$affectedRows += HostPeer::doOnDeleteCascade(new Criteria(HostPeer::DATABASE_NAME), $con);
 			$affectedRows += BasePeer::doDeleteAll(HostPeer::TABLE_NAME, $con);
 			$con->commit();
 			return $affectedRows;
 		} catch (PropelException $e) {
-			$con->rollback();
+			$con->rollBack();
 			throw $e;
 		}
 	}
 
 	
-	 public static function doDelete($values, $con = null)
+	 public static function doDelete($values, PropelPDO $con = null)
 	 {
 		if ($con === null) {
-			$con = Propel::getConnection(HostPeer::DATABASE_NAME);
+			$con = Propel::getConnection(HostPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
 		}
 
 		if ($values instanceof Criteria) {
-			$criteria = clone $values; 		} elseif ($values instanceof Host) {
+												HostPeer::clearInstancePool();
 
-			$criteria = $values->buildPkeyCriteria();
+						$criteria = clone $values;
+		} elseif ($values instanceof Host) {
+						HostPeer::removeInstanceFromPool($values);
+						$criteria = $values->buildPkeyCriteria();
 		} else {
-						$criteria = new Criteria(self::DATABASE_NAME);
+			
+
+
+			$criteria = new Criteria(self::DATABASE_NAME);
 			$criteria->add(HostPeer::ID, (array) $values, Criteria::IN);
+
+			foreach ((array) $values as $singleval) {
+								HostPeer::removeInstanceFromPool($singleval);
+			}
 		}
 
 				$criteria->setDbName(self::DATABASE_NAME);
 
 		$affectedRows = 0; 
 		try {
-									$con->begin();
+									$con->beginTransaction();
 			$affectedRows += HostPeer::doOnDeleteCascade($criteria, $con);
+			
+																if ($values instanceof Criteria) {
+					HostPeer::clearInstancePool();
+				} else { 					HostPeer::removeInstanceFromPool($values);
+				}
+			
 			$affectedRows += BasePeer::doDelete($criteria, $con);
+
+						HostServiceParamPeer::clearInstancePool();
+
+						HostToContactGroupPeer::clearInstancePool();
+
+						ServiceToHostPeer::clearInstancePool();
+
 			$con->commit();
 			return $affectedRows;
 		} catch (PropelException $e) {
-			$con->rollback();
+			$con->rollBack();
 			throw $e;
 		}
 	}
 
 	
-	protected static function doOnDeleteCascade(Criteria $criteria, Connection $con)
+	protected static function doOnDeleteCascade(Criteria $criteria, PropelPDO $con)
 	{
 				$affectedRows = 0;
 
 				$objects = HostPeer::doSelect($criteria, $con);
-		foreach($objects as $obj) {
+		foreach ($objects as $obj) {
 
 
-			include_once 'lib/model/HostServiceParam.php';
-
-						$c = new Criteria();
+						$c = new Criteria(HostServiceParamPeer::DATABASE_NAME);
 			
 			$c->add(HostServiceParamPeer::HOST_ID, $obj->getId());
 			$affectedRows += HostServiceParamPeer::doDelete($c, $con);
 
-			include_once 'lib/model/HostToContactGroup.php';
-
-						$c = new Criteria();
+						$c = new Criteria(HostToContactGroupPeer::DATABASE_NAME);
 			
 			$c->add(HostToContactGroupPeer::HOST_ID, $obj->getId());
 			$affectedRows += HostToContactGroupPeer::doDelete($c, $con);
 
-			include_once 'lib/model/ServiceToHost.php';
-
-						$c = new Criteria();
+						$c = new Criteria(ServiceToHostPeer::DATABASE_NAME);
 			
 			$c->add(ServiceToHostPeer::HOST_ID, $obj->getId());
 			$affectedRows += ServiceToHostPeer::doDelete($c, $con);
@@ -803,7 +894,7 @@ abstract class BaseHostPeer {
 				$cols = array($cols);
 			}
 
-			foreach($cols as $colName) {
+			foreach ($cols as $colName) {
 				if ($tableMap->containsColumn($colName)) {
 					$get = 'get' . $tableMap->getColumn($colName)->getPhpName();
 					$columns[$colName] = $obj->$get();
@@ -818,7 +909,6 @@ abstract class BaseHostPeer {
         $request = sfContext::getInstance()->getRequest();
         foreach ($res as $failed) {
             $col = HostPeer::translateFieldname($failed->getColumn(), BasePeer::TYPE_COLNAME, BasePeer::TYPE_PHPNAME);
-            $request->setError($col, $failed->getMessage());
         }
     }
 
@@ -826,16 +916,19 @@ abstract class BaseHostPeer {
 	}
 
 	
-	public static function retrieveByPK($pk, $con = null)
+	public static function retrieveByPK($pk, PropelPDO $con = null)
 	{
+
+		if (null !== ($obj = HostPeer::getInstanceFromPool((string) $pk))) {
+			return $obj;
+		}
+
 		if ($con === null) {
-			$con = Propel::getConnection(self::DATABASE_NAME);
+			$con = Propel::getConnection(HostPeer::DATABASE_NAME, Propel::CONNECTION_READ);
 		}
 
 		$criteria = new Criteria(HostPeer::DATABASE_NAME);
-
 		$criteria->add(HostPeer::ID, $pk);
-
 
 		$v = HostPeer::doSelect($criteria, $con);
 
@@ -843,17 +936,17 @@ abstract class BaseHostPeer {
 	}
 
 	
-	public static function retrieveByPKs($pks, $con = null)
+	public static function retrieveByPKs($pks, PropelPDO $con = null)
 	{
 		if ($con === null) {
-			$con = Propel::getConnection(self::DATABASE_NAME);
+			$con = Propel::getConnection(HostPeer::DATABASE_NAME, Propel::CONNECTION_READ);
 		}
 
 		$objs = null;
 		if (empty($pks)) {
 			$objs = array();
 		} else {
-			$criteria = new Criteria();
+			$criteria = new Criteria(HostPeer::DATABASE_NAME);
 			$criteria->add(HostPeer::ID, $pks, Criteria::IN);
 			$objs = HostPeer::doSelect($criteria, $con);
 		}
@@ -861,13 +954,6 @@ abstract class BaseHostPeer {
 	}
 
 } 
-if (Propel::isInit()) {
-			try {
-		BaseHostPeer::getMapBuilder();
-	} catch (Exception $e) {
-		Propel::log('Could not initialize Peer: ' . $e->getMessage(), Propel::LOG_ERR);
-	}
-} else {
-			require_once 'lib/model/map/HostMapBuilder.php';
-	Propel::registerMapBuilder('lib.model.map.HostMapBuilder');
-}
+
+Propel::getDatabaseMap(BaseHostPeer::DATABASE_NAME)->addTableBuilder(BaseHostPeer::TABLE_NAME, BaseHostPeer::getMapBuilder());
+

@@ -34,8 +34,6 @@ class HostGroupPeer extends BaseHostGroupPeer
 {
   public static function getConfig()
   {
-    sfLoader::loadHelpers('TemplateToken');
-    
     $tpl = getTemplate('hostgroup');
     
     $cfg = '';

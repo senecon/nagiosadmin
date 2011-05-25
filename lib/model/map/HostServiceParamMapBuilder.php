@@ -2,7 +2,7 @@
 
 
 
-class HostServiceParamMapBuilder {
+class HostServiceParamMapBuilder implements MapBuilder {
 
 	
 	const CLASS_NAME = 'lib.model.map.HostServiceParamMapBuilder';
@@ -25,24 +25,25 @@ class HostServiceParamMapBuilder {
 	
 	public function doBuild()
 	{
-		$this->dbMap = Propel::getDatabaseMap('propel');
+		$this->dbMap = Propel::getDatabaseMap(HostServiceParamPeer::DATABASE_NAME);
 
-		$tMap = $this->dbMap->addTable('host_service_param');
+		$tMap = $this->dbMap->addTable(HostServiceParamPeer::TABLE_NAME);
 		$tMap->setPhpName('HostServiceParam');
+		$tMap->setClassname('HostServiceParam');
 
 		$tMap->setUseIdGenerator(false);
 
-		$tMap->addForeignPrimaryKey('HOST_ID', 'HostId', 'int' , CreoleTypes::INTEGER, 'host', 'ID', true, null);
+		$tMap->addForeignPrimaryKey('HOST_ID', 'HostId', 'INTEGER' , 'host', 'ID', true, null);
 
-		$tMap->addForeignPrimaryKey('SERVICE_ID', 'ServiceId', 'int' , CreoleTypes::INTEGER, 'service', 'ID', true, null);
+		$tMap->addForeignPrimaryKey('SERVICE_ID', 'ServiceId', 'INTEGER' , 'service', 'ID', true, null);
 
-		$tMap->addColumn('PARAMETER', 'Parameter', 'string', CreoleTypes::VARCHAR, false, 255);
+		$tMap->addColumn('PARAMETER', 'Parameter', 'VARCHAR', false, 255);
 
-		$tMap->addColumn('SPECIAL', 'Special', 'string', CreoleTypes::LONGVARCHAR, false, null);
+		$tMap->addColumn('SPECIAL', 'Special', 'LONGVARCHAR', false, null);
 
-		$tMap->addColumn('CREATED_AT', 'CreatedAt', 'int', CreoleTypes::TIMESTAMP, false, null);
+		$tMap->addColumn('CREATED_AT', 'CreatedAt', 'TIMESTAMP', false, null);
 
-		$tMap->addColumn('UPDATED_AT', 'UpdatedAt', 'int', CreoleTypes::TIMESTAMP, false, null);
+		$tMap->addColumn('UPDATED_AT', 'UpdatedAt', 'TIMESTAMP', false, null);
 
 	} 
 } 

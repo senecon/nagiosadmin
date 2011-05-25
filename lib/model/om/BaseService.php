@@ -4,37 +4,31 @@
 abstract class BaseService extends BaseObject  implements Persistent {
 
 
+  const PEER = 'ServicePeer';
+
 	
 	protected static $peer;
-
 
 	
 	protected $id;
 
-
 	
 	protected $name;
-
 
 	
 	protected $alias;
 
-
 	
 	protected $command_id;
-
 
 	
 	protected $port;
 
-
 	
 	protected $special;
 
-
 	
 	protected $created_at;
-
 
 	
 	protected $updated_at;
@@ -46,13 +40,13 @@ abstract class BaseService extends BaseObject  implements Persistent {
 	protected $collHostServiceParams;
 
 	
-	protected $lastHostServiceParamCriteria = null;
+	private $lastHostServiceParamCriteria = null;
 
 	
 	protected $collServiceToHosts;
 
 	
-	protected $lastServiceToHostCriteria = null;
+	private $lastServiceToHostCriteria = null;
 
 	
 	protected $alreadyInSave = false;
@@ -61,98 +55,111 @@ abstract class BaseService extends BaseObject  implements Persistent {
 	protected $alreadyInValidation = false;
 
 	
+	public function __construct()
+	{
+		parent::__construct();
+		$this->applyDefaultValues();
+	}
+
+	
+	public function applyDefaultValues()
+	{
+	}
+
+	
 	public function getId()
 	{
-
 		return $this->id;
 	}
 
 	
 	public function getName()
 	{
-
 		return $this->name;
 	}
 
 	
 	public function getAlias()
 	{
-
 		return $this->alias;
 	}
 
 	
 	public function getCommandId()
 	{
-
 		return $this->command_id;
 	}
 
 	
 	public function getPort()
 	{
-
 		return $this->port;
 	}
 
 	
 	public function getSpecial()
 	{
-
 		return $this->special;
 	}
 
 	
 	public function getCreatedAt($format = 'Y-m-d H:i:s')
 	{
-
-		if ($this->created_at === null || $this->created_at === '') {
+		if ($this->created_at === null) {
 			return null;
-		} elseif (!is_int($this->created_at)) {
-						$ts = strtotime($this->created_at);
-			if ($ts === -1 || $ts === false) { 				throw new PropelException("Unable to parse value of [created_at] as date/time value: " . var_export($this->created_at, true));
-			}
-		} else {
-			$ts = $this->created_at;
 		}
-		if ($format === null) {
-			return $ts;
-		} elseif (strpos($format, '%') !== false) {
-			return strftime($format, $ts);
+
+
+		if ($this->created_at === '0000-00-00 00:00:00') {
+									return null;
 		} else {
-			return date($format, $ts);
+			try {
+				$dt = new DateTime($this->created_at);
+			} catch (Exception $x) {
+				throw new PropelException("Internally stored date/time/timestamp value could not be converted to DateTime: " . var_export($this->created_at, true), $x);
+			}
+		}
+
+		if ($format === null) {
+						return $dt;
+		} elseif (strpos($format, '%') !== false) {
+			return strftime($format, $dt->format('U'));
+		} else {
+			return $dt->format($format);
 		}
 	}
 
 	
 	public function getUpdatedAt($format = 'Y-m-d H:i:s')
 	{
-
-		if ($this->updated_at === null || $this->updated_at === '') {
+		if ($this->updated_at === null) {
 			return null;
-		} elseif (!is_int($this->updated_at)) {
-						$ts = strtotime($this->updated_at);
-			if ($ts === -1 || $ts === false) { 				throw new PropelException("Unable to parse value of [updated_at] as date/time value: " . var_export($this->updated_at, true));
-			}
-		} else {
-			$ts = $this->updated_at;
 		}
-		if ($format === null) {
-			return $ts;
-		} elseif (strpos($format, '%') !== false) {
-			return strftime($format, $ts);
+
+
+		if ($this->updated_at === '0000-00-00 00:00:00') {
+									return null;
 		} else {
-			return date($format, $ts);
+			try {
+				$dt = new DateTime($this->updated_at);
+			} catch (Exception $x) {
+				throw new PropelException("Internally stored date/time/timestamp value could not be converted to DateTime: " . var_export($this->updated_at, true), $x);
+			}
+		}
+
+		if ($format === null) {
+						return $dt;
+		} elseif (strpos($format, '%') !== false) {
+			return strftime($format, $dt->format('U'));
+		} else {
+			return $dt->format($format);
 		}
 	}
 
 	
 	public function setId($v)
 	{
-
-		
-		
-		if ($v !== null && !is_int($v) && is_numeric($v)) {
+		if ($v !== null) {
 			$v = (int) $v;
 		}
 
@@ -161,15 +168,13 @@ abstract class BaseService extends BaseObject  implements Persistent {
 			$this->modifiedColumns[] = ServicePeer::ID;
 		}
 
+		return $this;
 	} 
 	
 	public function setName($v)
 	{
-
-		
-		
-		if ($v !== null && !is_string($v)) {
-			$v = (string) $v; 
+		if ($v !== null) {
+			$v = (string) $v;
 		}
 
 		if ($this->name !== $v) {
@@ -177,15 +182,13 @@ abstract class BaseService extends BaseObject  implements Persistent {
 			$this->modifiedColumns[] = ServicePeer::NAME;
 		}
 
+		return $this;
 	} 
 	
 	public function setAlias($v)
 	{
-
-		
-		
-		if ($v !== null && !is_string($v)) {
-			$v = (string) $v; 
+		if ($v !== null) {
+			$v = (string) $v;
 		}
 
 		if ($this->alias !== $v) {
@@ -193,14 +196,12 @@ abstract class BaseService extends BaseObject  implements Persistent {
 			$this->modifiedColumns[] = ServicePeer::ALIAS;
 		}
 
+		return $this;
 	} 
 	
 	public function setCommandId($v)
 	{
-
-		
-		
-		if ($v !== null && !is_int($v) && is_numeric($v)) {
+		if ($v !== null) {
 			$v = (int) $v;
 		}
 
@@ -213,14 +214,12 @@ abstract class BaseService extends BaseObject  implements Persistent {
 			$this->aCommand = null;
 		}
 
+		return $this;
 	} 
 	
 	public function setPort($v)
 	{
-
-		
-		
-		if ($v !== null && !is_int($v) && is_numeric($v)) {
+		if ($v !== null) {
 			$v = (int) $v;
 		}
 
@@ -229,15 +228,13 @@ abstract class BaseService extends BaseObject  implements Persistent {
 			$this->modifiedColumns[] = ServicePeer::PORT;
 		}
 
+		return $this;
 	} 
 	
 	public function setSpecial($v)
 	{
-
-		
-		
-		if ($v !== null && !is_string($v)) {
-			$v = (string) $v; 
+		if ($v !== null) {
+			$v = (string) $v;
 		}
 
 		if ($this->special !== $v) {
@@ -245,65 +242,101 @@ abstract class BaseService extends BaseObject  implements Persistent {
 			$this->modifiedColumns[] = ServicePeer::SPECIAL;
 		}
 
+		return $this;
 	} 
 	
 	public function setCreatedAt($v)
 	{
-
-		if ($v !== null && !is_int($v)) {
-			$ts = strtotime($v);
-			if ($ts === -1 || $ts === false) { 				throw new PropelException("Unable to parse date/time value for [created_at] from input: " . var_export($v, true));
-			}
+						if ($v === null || $v === '') {
+			$dt = null;
+		} elseif ($v instanceof DateTime) {
+			$dt = $v;
 		} else {
-			$ts = $v;
-		}
-		if ($this->created_at !== $ts) {
-			$this->created_at = $ts;
-			$this->modifiedColumns[] = ServicePeer::CREATED_AT;
+									try {
+				if (is_numeric($v)) { 					$dt = new DateTime('@'.$v, new DateTimeZone('UTC'));
+															$dt->setTimeZone(new DateTimeZone(date_default_timezone_get()));
+				} else {
+					$dt = new DateTime($v);
+				}
+			} catch (Exception $x) {
+				throw new PropelException('Error parsing date/time value: ' . var_export($v, true), $x);
+			}
 		}
 
+		if ( $this->created_at !== null || $dt !== null ) {
+			
+			$currNorm = ($this->created_at !== null && $tmpDt = new DateTime($this->created_at)) ? $tmpDt->format('Y-m-d H:i:s') : null;
+			$newNorm = ($dt !== null) ? $dt->format('Y-m-d H:i:s') : null;
+
+			if ( ($currNorm !== $newNorm) 					)
+			{
+				$this->created_at = ($dt ? $dt->format('Y-m-d H:i:s') : null);
+				$this->modifiedColumns[] = ServicePeer::CREATED_AT;
+			}
+		} 
+		return $this;
 	} 
 	
 	public function setUpdatedAt($v)
 	{
-
-		if ($v !== null && !is_int($v)) {
-			$ts = strtotime($v);
-			if ($ts === -1 || $ts === false) { 				throw new PropelException("Unable to parse date/time value for [updated_at] from input: " . var_export($v, true));
-			}
+						if ($v === null || $v === '') {
+			$dt = null;
+		} elseif ($v instanceof DateTime) {
+			$dt = $v;
 		} else {
-			$ts = $v;
-		}
-		if ($this->updated_at !== $ts) {
-			$this->updated_at = $ts;
-			$this->modifiedColumns[] = ServicePeer::UPDATED_AT;
+									try {
+				if (is_numeric($v)) { 					$dt = new DateTime('@'.$v, new DateTimeZone('UTC'));
+															$dt->setTimeZone(new DateTimeZone(date_default_timezone_get()));
+				} else {
+					$dt = new DateTime($v);
+				}
+			} catch (Exception $x) {
+				throw new PropelException('Error parsing date/time value: ' . var_export($v, true), $x);
+			}
 		}
 
+		if ( $this->updated_at !== null || $dt !== null ) {
+			
+			$currNorm = ($this->updated_at !== null && $tmpDt = new DateTime($this->updated_at)) ? $tmpDt->format('Y-m-d H:i:s') : null;
+			$newNorm = ($dt !== null) ? $dt->format('Y-m-d H:i:s') : null;
+
+			if ( ($currNorm !== $newNorm) 					)
+			{
+				$this->updated_at = ($dt ? $dt->format('Y-m-d H:i:s') : null);
+				$this->modifiedColumns[] = ServicePeer::UPDATED_AT;
+			}
+		} 
+		return $this;
 	} 
 	
-	public function hydrate(ResultSet $rs, $startcol = 1)
+	public function hasOnlyDefaultValues()
+	{
+						if (array_diff($this->modifiedColumns, array())) {
+				return false;
+			}
+
+				return true;
+	} 
+	
+	public function hydrate($row, $startcol = 0, $rehydrate = false)
 	{
 		try {
 
-			$this->id = $rs->getInt($startcol + 0);
-
-			$this->name = $rs->getString($startcol + 1);
-
-			$this->alias = $rs->getString($startcol + 2);
-
-			$this->command_id = $rs->getInt($startcol + 3);
-
-			$this->port = $rs->getInt($startcol + 4);
-
-			$this->special = $rs->getString($startcol + 5);
-
-			$this->created_at = $rs->getTimestamp($startcol + 6, null);
-
-			$this->updated_at = $rs->getTimestamp($startcol + 7, null);
-
+			$this->id = ($row[$startcol + 0] !== null) ? (int) $row[$startcol + 0] : null;
+			$this->name = ($row[$startcol + 1] !== null) ? (string) $row[$startcol + 1] : null;
+			$this->alias = ($row[$startcol + 2] !== null) ? (string) $row[$startcol + 2] : null;
+			$this->command_id = ($row[$startcol + 3] !== null) ? (int) $row[$startcol + 3] : null;
+			$this->port = ($row[$startcol + 4] !== null) ? (int) $row[$startcol + 4] : null;
+			$this->special = ($row[$startcol + 5] !== null) ? (string) $row[$startcol + 5] : null;
+			$this->created_at = ($row[$startcol + 6] !== null) ? (string) $row[$startcol + 6] : null;
+			$this->updated_at = ($row[$startcol + 7] !== null) ? (string) $row[$startcol + 7] : null;
 			$this->resetModified();
 
 			$this->setNew(false);
+
+			if ($rehydrate) {
+				$this->ensureConsistency();
+			}
 
 						return $startcol + 8; 
 		} catch (Exception $e) {
@@ -312,29 +345,70 @@ abstract class BaseService extends BaseObject  implements Persistent {
 	}
 
 	
-	public function delete($con = null)
+	public function ensureConsistency()
+	{
+
+		if ($this->aCommand !== null && $this->command_id !== $this->aCommand->getId()) {
+			$this->aCommand = null;
+		}
+	} 
+	
+	public function reload($deep = false, PropelPDO $con = null)
+	{
+		if ($this->isDeleted()) {
+			throw new PropelException("Cannot reload a deleted object.");
+		}
+
+		if ($this->isNew()) {
+			throw new PropelException("Cannot reload an unsaved object.");
+		}
+
+		if ($con === null) {
+			$con = Propel::getConnection(ServicePeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+
+				
+		$stmt = ServicePeer::doSelectStmt($this->buildPkeyCriteria(), $con);
+		$row = $stmt->fetch(PDO::FETCH_NUM);
+		$stmt->closeCursor();
+		if (!$row) {
+			throw new PropelException('Cannot find matching row in the database to reload object values.');
+		}
+		$this->hydrate($row, 0, true); 
+		if ($deep) {  
+			$this->aCommand = null;
+			$this->collHostServiceParams = null;
+			$this->lastHostServiceParamCriteria = null;
+
+			$this->collServiceToHosts = null;
+			$this->lastServiceToHostCriteria = null;
+
+		} 	}
+
+	
+	public function delete(PropelPDO $con = null)
 	{
 		if ($this->isDeleted()) {
 			throw new PropelException("This object has already been deleted.");
 		}
 
 		if ($con === null) {
-			$con = Propel::getConnection(ServicePeer::DATABASE_NAME);
+			$con = Propel::getConnection(ServicePeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
 		}
-
+		
+		$con->beginTransaction();
 		try {
-			$con->begin();
 			ServicePeer::doDelete($this, $con);
 			$this->setDeleted(true);
 			$con->commit();
 		} catch (PropelException $e) {
-			$con->rollback();
+			$con->rollBack();
 			throw $e;
 		}
 	}
 
 	
-	public function save($con = null)
+	public function save(PropelPDO $con = null)
 	{
     if ($this->isNew() && !$this->isColumnModified(ServicePeer::CREATED_AT))
     {
@@ -351,35 +425,38 @@ abstract class BaseService extends BaseObject  implements Persistent {
 		}
 
 		if ($con === null) {
-			$con = Propel::getConnection(ServicePeer::DATABASE_NAME);
+			$con = Propel::getConnection(ServicePeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
 		}
-
+		
+		$con->beginTransaction();
 		try {
-			$con->begin();
 			$affectedRows = $this->doSave($con);
 			$con->commit();
+			ServicePeer::addInstanceToPool($this);
 			return $affectedRows;
 		} catch (PropelException $e) {
-			$con->rollback();
+			$con->rollBack();
 			throw $e;
 		}
 	}
 
 	
-	protected function doSave($con)
+	protected function doSave(PropelPDO $con)
 	{
 		$affectedRows = 0; 		if (!$this->alreadyInSave) {
 			$this->alreadyInSave = true;
 
-
 												
 			if ($this->aCommand !== null) {
-				if ($this->aCommand->isModified()) {
+				if ($this->aCommand->isModified() || $this->aCommand->isNew()) {
 					$affectedRows += $this->aCommand->save($con);
 				}
 				$this->setCommand($this->aCommand);
 			}
 
+			if ($this->isNew() ) {
+				$this->modifiedColumns[] = ServicePeer::ID;
+			}
 
 						if ($this->isModified()) {
 				if ($this->isNew()) {
@@ -390,10 +467,11 @@ abstract class BaseService extends BaseObject  implements Persistent {
 				} else {
 					$affectedRows += ServicePeer::doUpdate($this, $con);
 				}
+
 				$this->resetModified(); 			}
 
 			if ($this->collHostServiceParams !== null) {
-				foreach($this->collHostServiceParams as $referrerFK) {
+				foreach ($this->collHostServiceParams as $referrerFK) {
 					if (!$referrerFK->isDeleted()) {
 						$affectedRows += $referrerFK->save($con);
 					}
@@ -401,7 +479,7 @@ abstract class BaseService extends BaseObject  implements Persistent {
 			}
 
 			if ($this->collServiceToHosts !== null) {
-				foreach($this->collServiceToHosts as $referrerFK) {
+				foreach ($this->collServiceToHosts as $referrerFK) {
 					if (!$referrerFK->isDeleted()) {
 						$affectedRows += $referrerFK->save($con);
 					}
@@ -409,6 +487,7 @@ abstract class BaseService extends BaseObject  implements Persistent {
 			}
 
 			$this->alreadyInSave = false;
+
 		}
 		return $affectedRows;
 	} 
@@ -458,7 +537,7 @@ abstract class BaseService extends BaseObject  implements Persistent {
 
 
 				if ($this->collHostServiceParams !== null) {
-					foreach($this->collHostServiceParams as $referrerFK) {
+					foreach ($this->collHostServiceParams as $referrerFK) {
 						if (!$referrerFK->validate($columns)) {
 							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
 						}
@@ -466,7 +545,7 @@ abstract class BaseService extends BaseObject  implements Persistent {
 				}
 
 				if ($this->collServiceToHosts !== null) {
-					foreach($this->collServiceToHosts as $referrerFK) {
+					foreach ($this->collServiceToHosts as $referrerFK) {
 						if (!$referrerFK->validate($columns)) {
 							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
 						}
@@ -484,7 +563,8 @@ abstract class BaseService extends BaseObject  implements Persistent {
 	public function getByName($name, $type = BasePeer::TYPE_PHPNAME)
 	{
 		$pos = ServicePeer::translateFieldName($name, $type, BasePeer::TYPE_NUM);
-		return $this->getByPosition($pos);
+		$field = $this->getByPosition($pos);
+		return $field;
 	}
 
 	
@@ -521,7 +601,7 @@ abstract class BaseService extends BaseObject  implements Persistent {
 		} 	}
 
 	
-	public function toArray($keyType = BasePeer::TYPE_PHPNAME)
+	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true)
 	{
 		$keys = ServicePeer::getFieldNames($keyType);
 		$result = array(
@@ -650,12 +730,14 @@ abstract class BaseService extends BaseObject  implements Persistent {
 		if ($deepCopy) {
 									$copyObj->setNew(false);
 
-			foreach($this->getHostServiceParams() as $relObj) {
-				$copyObj->addHostServiceParam($relObj->copy($deepCopy));
+			foreach ($this->getHostServiceParams() as $relObj) {
+				if ($relObj !== $this) {  					$copyObj->addHostServiceParam($relObj->copy($deepCopy));
+				}
 			}
 
-			foreach($this->getServiceToHosts() as $relObj) {
-				$copyObj->addServiceToHost($relObj->copy($deepCopy));
+			foreach ($this->getServiceToHosts() as $relObj) {
+				if ($relObj !== $this) {  					$copyObj->addServiceToHost($relObj->copy($deepCopy));
+				}
 			}
 
 		} 
@@ -684,48 +766,52 @@ abstract class BaseService extends BaseObject  implements Persistent {
 	}
 
 	
-	public function setCommand($v)
+	public function setCommand(Command $v = null)
 	{
-
-
 		if ($v === null) {
 			$this->setCommandId(NULL);
 		} else {
 			$this->setCommandId($v->getId());
 		}
 
-
 		$this->aCommand = $v;
+
+						if ($v !== null) {
+			$v->addService($this);
+		}
+
+		return $this;
 	}
 
 
 	
-	public function getCommand($con = null)
+	public function getCommand(PropelPDO $con = null)
 	{
 		if ($this->aCommand === null && ($this->command_id !== null)) {
-						include_once 'lib/model/om/BaseCommandPeer.php';
-
-			$this->aCommand = CommandPeer::retrieveByPK($this->command_id, $con);
-
+			$c = new Criteria(CommandPeer::DATABASE_NAME);
+			$c->add(CommandPeer::ID, $this->command_id);
+			$this->aCommand = CommandPeer::doSelectOne($c, $con);
 			
 		}
 		return $this->aCommand;
 	}
 
 	
+	public function clearHostServiceParams()
+	{
+		$this->collHostServiceParams = null; 	}
+
+	
 	public function initHostServiceParams()
 	{
-		if ($this->collHostServiceParams === null) {
-			$this->collHostServiceParams = array();
-		}
+		$this->collHostServiceParams = array();
 	}
 
 	
-	public function getHostServiceParams($criteria = null, $con = null)
+	public function getHostServiceParams($criteria = null, PropelPDO $con = null)
 	{
-				include_once 'lib/model/om/BaseHostServiceParamPeer.php';
 		if ($criteria === null) {
-			$criteria = new Criteria();
+			$criteria = new Criteria(ServicePeer::DATABASE_NAME);
 		}
 		elseif ($criteria instanceof Criteria)
 		{
@@ -737,7 +823,7 @@ abstract class BaseService extends BaseObject  implements Persistent {
 			   $this->collHostServiceParams = array();
 			} else {
 
-				$criteria->add(HostServiceParamPeer::SERVICE_ID, $this->getId());
+				$criteria->add(HostServiceParamPeer::SERVICE_ID, $this->id);
 
 				HostServiceParamPeer::addSelectColumns($criteria);
 				$this->collHostServiceParams = HostServiceParamPeer::doSelect($criteria, $con);
@@ -746,7 +832,7 @@ abstract class BaseService extends BaseObject  implements Persistent {
 						if (!$this->isNew()) {
 												
 
-				$criteria->add(HostServiceParamPeer::SERVICE_ID, $this->getId());
+				$criteria->add(HostServiceParamPeer::SERVICE_ID, $this->id);
 
 				HostServiceParamPeer::addSelectColumns($criteria);
 				if (!isset($this->lastHostServiceParamCriteria) || !$this->lastHostServiceParamCriteria->equals($criteria)) {
@@ -759,36 +845,64 @@ abstract class BaseService extends BaseObject  implements Persistent {
 	}
 
 	
-	public function countHostServiceParams($criteria = null, $distinct = false, $con = null)
+	public function countHostServiceParams(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
 	{
-				include_once 'lib/model/om/BaseHostServiceParamPeer.php';
 		if ($criteria === null) {
-			$criteria = new Criteria();
-		}
-		elseif ($criteria instanceof Criteria)
-		{
+			$criteria = new Criteria(ServicePeer::DATABASE_NAME);
+		} else {
 			$criteria = clone $criteria;
 		}
 
-		$criteria->add(HostServiceParamPeer::SERVICE_ID, $this->getId());
+		if ($distinct) {
+			$criteria->setDistinct();
+		}
 
-		return HostServiceParamPeer::doCount($criteria, $distinct, $con);
+		$count = null;
+
+		if ($this->collHostServiceParams === null) {
+			if ($this->isNew()) {
+				$count = 0;
+			} else {
+
+				$criteria->add(HostServiceParamPeer::SERVICE_ID, $this->id);
+
+				$count = HostServiceParamPeer::doCount($criteria, $con);
+			}
+		} else {
+						if (!$this->isNew()) {
+												
+
+				$criteria->add(HostServiceParamPeer::SERVICE_ID, $this->id);
+
+				if (!isset($this->lastHostServiceParamCriteria) || !$this->lastHostServiceParamCriteria->equals($criteria)) {
+					$count = HostServiceParamPeer::doCount($criteria, $con);
+				} else {
+					$count = count($this->collHostServiceParams);
+				}
+			} else {
+				$count = count($this->collHostServiceParams);
+			}
+		}
+		return $count;
 	}
 
 	
 	public function addHostServiceParam(HostServiceParam $l)
 	{
-		$this->collHostServiceParams[] = $l;
-		$l->setService($this);
+		if ($this->collHostServiceParams === null) {
+			$this->initHostServiceParams();
+		}
+		if (!in_array($l, $this->collHostServiceParams, true)) { 			array_push($this->collHostServiceParams, $l);
+			$l->setService($this);
+		}
 	}
 
 
 	
-	public function getHostServiceParamsJoinHost($criteria = null, $con = null)
+	public function getHostServiceParamsJoinHost($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
-				include_once 'lib/model/om/BaseHostServiceParamPeer.php';
 		if ($criteria === null) {
-			$criteria = new Criteria();
+			$criteria = new Criteria(ServicePeer::DATABASE_NAME);
 		}
 		elseif ($criteria instanceof Criteria)
 		{
@@ -800,16 +914,16 @@ abstract class BaseService extends BaseObject  implements Persistent {
 				$this->collHostServiceParams = array();
 			} else {
 
-				$criteria->add(HostServiceParamPeer::SERVICE_ID, $this->getId());
+				$criteria->add(HostServiceParamPeer::SERVICE_ID, $this->id);
 
-				$this->collHostServiceParams = HostServiceParamPeer::doSelectJoinHost($criteria, $con);
+				$this->collHostServiceParams = HostServiceParamPeer::doSelectJoinHost($criteria, $con, $join_behavior);
 			}
 		} else {
 									
-			$criteria->add(HostServiceParamPeer::SERVICE_ID, $this->getId());
+			$criteria->add(HostServiceParamPeer::SERVICE_ID, $this->id);
 
 			if (!isset($this->lastHostServiceParamCriteria) || !$this->lastHostServiceParamCriteria->equals($criteria)) {
-				$this->collHostServiceParams = HostServiceParamPeer::doSelectJoinHost($criteria, $con);
+				$this->collHostServiceParams = HostServiceParamPeer::doSelectJoinHost($criteria, $con, $join_behavior);
 			}
 		}
 		$this->lastHostServiceParamCriteria = $criteria;
@@ -818,19 +932,21 @@ abstract class BaseService extends BaseObject  implements Persistent {
 	}
 
 	
+	public function clearServiceToHosts()
+	{
+		$this->collServiceToHosts = null; 	}
+
+	
 	public function initServiceToHosts()
 	{
-		if ($this->collServiceToHosts === null) {
-			$this->collServiceToHosts = array();
-		}
+		$this->collServiceToHosts = array();
 	}
 
 	
-	public function getServiceToHosts($criteria = null, $con = null)
+	public function getServiceToHosts($criteria = null, PropelPDO $con = null)
 	{
-				include_once 'lib/model/om/BaseServiceToHostPeer.php';
 		if ($criteria === null) {
-			$criteria = new Criteria();
+			$criteria = new Criteria(ServicePeer::DATABASE_NAME);
 		}
 		elseif ($criteria instanceof Criteria)
 		{
@@ -842,7 +958,7 @@ abstract class BaseService extends BaseObject  implements Persistent {
 			   $this->collServiceToHosts = array();
 			} else {
 
-				$criteria->add(ServiceToHostPeer::SERVICE_ID, $this->getId());
+				$criteria->add(ServiceToHostPeer::SERVICE_ID, $this->id);
 
 				ServiceToHostPeer::addSelectColumns($criteria);
 				$this->collServiceToHosts = ServiceToHostPeer::doSelect($criteria, $con);
@@ -851,7 +967,7 @@ abstract class BaseService extends BaseObject  implements Persistent {
 						if (!$this->isNew()) {
 												
 
-				$criteria->add(ServiceToHostPeer::SERVICE_ID, $this->getId());
+				$criteria->add(ServiceToHostPeer::SERVICE_ID, $this->id);
 
 				ServiceToHostPeer::addSelectColumns($criteria);
 				if (!isset($this->lastServiceToHostCriteria) || !$this->lastServiceToHostCriteria->equals($criteria)) {
@@ -864,36 +980,64 @@ abstract class BaseService extends BaseObject  implements Persistent {
 	}
 
 	
-	public function countServiceToHosts($criteria = null, $distinct = false, $con = null)
+	public function countServiceToHosts(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
 	{
-				include_once 'lib/model/om/BaseServiceToHostPeer.php';
 		if ($criteria === null) {
-			$criteria = new Criteria();
-		}
-		elseif ($criteria instanceof Criteria)
-		{
+			$criteria = new Criteria(ServicePeer::DATABASE_NAME);
+		} else {
 			$criteria = clone $criteria;
 		}
 
-		$criteria->add(ServiceToHostPeer::SERVICE_ID, $this->getId());
+		if ($distinct) {
+			$criteria->setDistinct();
+		}
 
-		return ServiceToHostPeer::doCount($criteria, $distinct, $con);
+		$count = null;
+
+		if ($this->collServiceToHosts === null) {
+			if ($this->isNew()) {
+				$count = 0;
+			} else {
+
+				$criteria->add(ServiceToHostPeer::SERVICE_ID, $this->id);
+
+				$count = ServiceToHostPeer::doCount($criteria, $con);
+			}
+		} else {
+						if (!$this->isNew()) {
+												
+
+				$criteria->add(ServiceToHostPeer::SERVICE_ID, $this->id);
+
+				if (!isset($this->lastServiceToHostCriteria) || !$this->lastServiceToHostCriteria->equals($criteria)) {
+					$count = ServiceToHostPeer::doCount($criteria, $con);
+				} else {
+					$count = count($this->collServiceToHosts);
+				}
+			} else {
+				$count = count($this->collServiceToHosts);
+			}
+		}
+		return $count;
 	}
 
 	
 	public function addServiceToHost(ServiceToHost $l)
 	{
-		$this->collServiceToHosts[] = $l;
-		$l->setService($this);
+		if ($this->collServiceToHosts === null) {
+			$this->initServiceToHosts();
+		}
+		if (!in_array($l, $this->collServiceToHosts, true)) { 			array_push($this->collServiceToHosts, $l);
+			$l->setService($this);
+		}
 	}
 
 
 	
-	public function getServiceToHostsJoinHost($criteria = null, $con = null)
+	public function getServiceToHostsJoinHost($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
-				include_once 'lib/model/om/BaseServiceToHostPeer.php';
 		if ($criteria === null) {
-			$criteria = new Criteria();
+			$criteria = new Criteria(ServicePeer::DATABASE_NAME);
 		}
 		elseif ($criteria instanceof Criteria)
 		{
@@ -905,21 +1049,41 @@ abstract class BaseService extends BaseObject  implements Persistent {
 				$this->collServiceToHosts = array();
 			} else {
 
-				$criteria->add(ServiceToHostPeer::SERVICE_ID, $this->getId());
+				$criteria->add(ServiceToHostPeer::SERVICE_ID, $this->id);
 
-				$this->collServiceToHosts = ServiceToHostPeer::doSelectJoinHost($criteria, $con);
+				$this->collServiceToHosts = ServiceToHostPeer::doSelectJoinHost($criteria, $con, $join_behavior);
 			}
 		} else {
 									
-			$criteria->add(ServiceToHostPeer::SERVICE_ID, $this->getId());
+			$criteria->add(ServiceToHostPeer::SERVICE_ID, $this->id);
 
 			if (!isset($this->lastServiceToHostCriteria) || !$this->lastServiceToHostCriteria->equals($criteria)) {
-				$this->collServiceToHosts = ServiceToHostPeer::doSelectJoinHost($criteria, $con);
+				$this->collServiceToHosts = ServiceToHostPeer::doSelectJoinHost($criteria, $con, $join_behavior);
 			}
 		}
 		$this->lastServiceToHostCriteria = $criteria;
 
 		return $this->collServiceToHosts;
+	}
+
+	
+	public function clearAllReferences($deep = false)
+	{
+		if ($deep) {
+			if ($this->collHostServiceParams) {
+				foreach ((array) $this->collHostServiceParams as $o) {
+					$o->clearAllReferences($deep);
+				}
+			}
+			if ($this->collServiceToHosts) {
+				foreach ((array) $this->collServiceToHosts as $o) {
+					$o->clearAllReferences($deep);
+				}
+			}
+		} 
+		$this->collHostServiceParams = null;
+		$this->collServiceToHosts = null;
+			$this->aCommand = null;
 	}
 
 } 

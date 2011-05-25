@@ -4,41 +4,34 @@
 abstract class BaseHost extends BaseObject  implements Persistent {
 
 
+  const PEER = 'HostPeer';
+
 	
 	protected static $peer;
-
 
 	
 	protected $id;
 
-
 	
 	protected $group_id;
-
 
 	
 	protected $name;
 
-
 	
 	protected $alias;
-
 
 	
 	protected $address;
 
-
 	
 	protected $special;
-
 
 	
 	protected $os_id;
 
-
 	
 	protected $created_at;
-
 
 	
 	protected $updated_at;
@@ -53,19 +46,19 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 	protected $collHostServiceParams;
 
 	
-	protected $lastHostServiceParamCriteria = null;
+	private $lastHostServiceParamCriteria = null;
 
 	
 	protected $collHostToContactGroups;
 
 	
-	protected $lastHostToContactGroupCriteria = null;
+	private $lastHostToContactGroupCriteria = null;
 
 	
 	protected $collServiceToHosts;
 
 	
-	protected $lastServiceToHostCriteria = null;
+	private $lastServiceToHostCriteria = null;
 
 	
 	protected $alreadyInSave = false;
@@ -74,105 +67,117 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 	protected $alreadyInValidation = false;
 
 	
+	public function __construct()
+	{
+		parent::__construct();
+		$this->applyDefaultValues();
+	}
+
+	
+	public function applyDefaultValues()
+	{
+	}
+
+	
 	public function getId()
 	{
-
 		return $this->id;
 	}
 
 	
 	public function getGroupId()
 	{
-
 		return $this->group_id;
 	}
 
 	
 	public function getName()
 	{
-
 		return $this->name;
 	}
 
 	
 	public function getAlias()
 	{
-
 		return $this->alias;
 	}
 
 	
 	public function getAddress()
 	{
-
 		return $this->address;
 	}
 
 	
 	public function getSpecial()
 	{
-
 		return $this->special;
 	}
 
 	
 	public function getOsId()
 	{
-
 		return $this->os_id;
 	}
 
 	
 	public function getCreatedAt($format = 'Y-m-d H:i:s')
 	{
-
-		if ($this->created_at === null || $this->created_at === '') {
+		if ($this->created_at === null) {
 			return null;
-		} elseif (!is_int($this->created_at)) {
-						$ts = strtotime($this->created_at);
-			if ($ts === -1 || $ts === false) { 				throw new PropelException("Unable to parse value of [created_at] as date/time value: " . var_export($this->created_at, true));
-			}
-		} else {
-			$ts = $this->created_at;
 		}
-		if ($format === null) {
-			return $ts;
-		} elseif (strpos($format, '%') !== false) {
-			return strftime($format, $ts);
+
+
+		if ($this->created_at === '0000-00-00 00:00:00') {
+									return null;
 		} else {
-			return date($format, $ts);
+			try {
+				$dt = new DateTime($this->created_at);
+			} catch (Exception $x) {
+				throw new PropelException("Internally stored date/time/timestamp value could not be converted to DateTime: " . var_export($this->created_at, true), $x);
+			}
+		}
+
+		if ($format === null) {
+						return $dt;
+		} elseif (strpos($format, '%') !== false) {
+			return strftime($format, $dt->format('U'));
+		} else {
+			return $dt->format($format);
 		}
 	}
 
 	
 	public function getUpdatedAt($format = 'Y-m-d H:i:s')
 	{
-
-		if ($this->updated_at === null || $this->updated_at === '') {
+		if ($this->updated_at === null) {
 			return null;
-		} elseif (!is_int($this->updated_at)) {
-						$ts = strtotime($this->updated_at);
-			if ($ts === -1 || $ts === false) { 				throw new PropelException("Unable to parse value of [updated_at] as date/time value: " . var_export($this->updated_at, true));
-			}
-		} else {
-			$ts = $this->updated_at;
 		}
-		if ($format === null) {
-			return $ts;
-		} elseif (strpos($format, '%') !== false) {
-			return strftime($format, $ts);
+
+
+		if ($this->updated_at === '0000-00-00 00:00:00') {
+									return null;
 		} else {
-			return date($format, $ts);
+			try {
+				$dt = new DateTime($this->updated_at);
+			} catch (Exception $x) {
+				throw new PropelException("Internally stored date/time/timestamp value could not be converted to DateTime: " . var_export($this->updated_at, true), $x);
+			}
+		}
+
+		if ($format === null) {
+						return $dt;
+		} elseif (strpos($format, '%') !== false) {
+			return strftime($format, $dt->format('U'));
+		} else {
+			return $dt->format($format);
 		}
 	}
 
 	
 	public function setId($v)
 	{
-
-		
-		
-		if ($v !== null && !is_int($v) && is_numeric($v)) {
+		if ($v !== null) {
 			$v = (int) $v;
 		}
 
@@ -181,14 +186,12 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 			$this->modifiedColumns[] = HostPeer::ID;
 		}
 
+		return $this;
 	} 
 	
 	public function setGroupId($v)
 	{
-
-		
-		
-		if ($v !== null && !is_int($v) && is_numeric($v)) {
+		if ($v !== null) {
 			$v = (int) $v;
 		}
 
@@ -201,15 +204,13 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 			$this->aHostGroup = null;
 		}
 
+		return $this;
 	} 
 	
 	public function setName($v)
 	{
-
-		
-		
-		if ($v !== null && !is_string($v)) {
-			$v = (string) $v; 
+		if ($v !== null) {
+			$v = (string) $v;
 		}
 
 		if ($this->name !== $v) {
@@ -217,15 +218,13 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 			$this->modifiedColumns[] = HostPeer::NAME;
 		}
 
+		return $this;
 	} 
 	
 	public function setAlias($v)
 	{
-
-		
-		
-		if ($v !== null && !is_string($v)) {
-			$v = (string) $v; 
+		if ($v !== null) {
+			$v = (string) $v;
 		}
 
 		if ($this->alias !== $v) {
@@ -233,15 +232,13 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 			$this->modifiedColumns[] = HostPeer::ALIAS;
 		}
 
+		return $this;
 	} 
 	
 	public function setAddress($v)
 	{
-
-		
-		
-		if ($v !== null && !is_string($v)) {
-			$v = (string) $v; 
+		if ($v !== null) {
+			$v = (string) $v;
 		}
 
 		if ($this->address !== $v) {
@@ -249,15 +246,13 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 			$this->modifiedColumns[] = HostPeer::ADDRESS;
 		}
 
+		return $this;
 	} 
 	
 	public function setSpecial($v)
 	{
-
-		
-		
-		if ($v !== null && !is_string($v)) {
-			$v = (string) $v; 
+		if ($v !== null) {
+			$v = (string) $v;
 		}
 
 		if ($this->special !== $v) {
@@ -265,14 +260,12 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 			$this->modifiedColumns[] = HostPeer::SPECIAL;
 		}
 
+		return $this;
 	} 
 	
 	public function setOsId($v)
 	{
-
-		
-		
-		if ($v !== null && !is_int($v) && is_numeric($v)) {
+		if ($v !== null) {
 			$v = (int) $v;
 		}
 
@@ -285,67 +278,102 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 			$this->aOs = null;
 		}
 
+		return $this;
 	} 
 	
 	public function setCreatedAt($v)
 	{
-
-		if ($v !== null && !is_int($v)) {
-			$ts = strtotime($v);
-			if ($ts === -1 || $ts === false) { 				throw new PropelException("Unable to parse date/time value for [created_at] from input: " . var_export($v, true));
-			}
+						if ($v === null || $v === '') {
+			$dt = null;
+		} elseif ($v instanceof DateTime) {
+			$dt = $v;
 		} else {
-			$ts = $v;
-		}
-		if ($this->created_at !== $ts) {
-			$this->created_at = $ts;
-			$this->modifiedColumns[] = HostPeer::CREATED_AT;
+									try {
+				if (is_numeric($v)) { 					$dt = new DateTime('@'.$v, new DateTimeZone('UTC'));
+															$dt->setTimeZone(new DateTimeZone(date_default_timezone_get()));
+				} else {
+					$dt = new DateTime($v);
+				}
+			} catch (Exception $x) {
+				throw new PropelException('Error parsing date/time value: ' . var_export($v, true), $x);
+			}
 		}
 
+		if ( $this->created_at !== null || $dt !== null ) {
+			
+			$currNorm = ($this->created_at !== null && $tmpDt = new DateTime($this->created_at)) ? $tmpDt->format('Y-m-d H:i:s') : null;
+			$newNorm = ($dt !== null) ? $dt->format('Y-m-d H:i:s') : null;
+
+			if ( ($currNorm !== $newNorm) 					)
+			{
+				$this->created_at = ($dt ? $dt->format('Y-m-d H:i:s') : null);
+				$this->modifiedColumns[] = HostPeer::CREATED_AT;
+			}
+		} 
+		return $this;
 	} 
 	
 	public function setUpdatedAt($v)
 	{
-
-		if ($v !== null && !is_int($v)) {
-			$ts = strtotime($v);
-			if ($ts === -1 || $ts === false) { 				throw new PropelException("Unable to parse date/time value for [updated_at] from input: " . var_export($v, true));
-			}
+						if ($v === null || $v === '') {
+			$dt = null;
+		} elseif ($v instanceof DateTime) {
+			$dt = $v;
 		} else {
-			$ts = $v;
-		}
-		if ($this->updated_at !== $ts) {
-			$this->updated_at = $ts;
-			$this->modifiedColumns[] = HostPeer::UPDATED_AT;
+									try {
+				if (is_numeric($v)) { 					$dt = new DateTime('@'.$v, new DateTimeZone('UTC'));
+															$dt->setTimeZone(new DateTimeZone(date_default_timezone_get()));
+				} else {
+					$dt = new DateTime($v);
+				}
+			} catch (Exception $x) {
+				throw new PropelException('Error parsing date/time value: ' . var_export($v, true), $x);
+			}
 		}
 
+		if ( $this->updated_at !== null || $dt !== null ) {
+			
+			$currNorm = ($this->updated_at !== null && $tmpDt = new DateTime($this->updated_at)) ? $tmpDt->format('Y-m-d H:i:s') : null;
+			$newNorm = ($dt !== null) ? $dt->format('Y-m-d H:i:s') : null;
+
+			if ( ($currNorm !== $newNorm) 					)
+			{
+				$this->updated_at = ($dt ? $dt->format('Y-m-d H:i:s') : null);
+				$this->modifiedColumns[] = HostPeer::UPDATED_AT;
+			}
+		} 
+		return $this;
 	} 
 	
-	public function hydrate(ResultSet $rs, $startcol = 1)
+	public function hasOnlyDefaultValues()
+	{
+						if (array_diff($this->modifiedColumns, array())) {
+				return false;
+			}
+
+				return true;
+	} 
+	
+	public function hydrate($row, $startcol = 0, $rehydrate = false)
 	{
 		try {
 
-			$this->id = $rs->getInt($startcol + 0);
-
-			$this->group_id = $rs->getInt($startcol + 1);
-
-			$this->name = $rs->getString($startcol + 2);
-
-			$this->alias = $rs->getString($startcol + 3);
-
-			$this->address = $rs->getString($startcol + 4);
-
-			$this->special = $rs->getString($startcol + 5);
-
-			$this->os_id = $rs->getInt($startcol + 6);
-
-			$this->created_at = $rs->getTimestamp($startcol + 7, null);
-
-			$this->updated_at = $rs->getTimestamp($startcol + 8, null);
-
+			$this->id = ($row[$startcol + 0] !== null) ? (int) $row[$startcol + 0] : null;
+			$this->group_id = ($row[$startcol + 1] !== null) ? (int) $row[$startcol + 1] : null;
+			$this->name = ($row[$startcol + 2] !== null) ? (string) $row[$startcol + 2] : null;
+			$this->alias = ($row[$startcol + 3] !== null) ? (string) $row[$startcol + 3] : null;
+			$this->address = ($row[$startcol + 4] !== null) ? (string) $row[$startcol + 4] : null;
+			$this->special = ($row[$startcol + 5] !== null) ? (string) $row[$startcol + 5] : null;
+			$this->os_id = ($row[$startcol + 6] !== null) ? (int) $row[$startcol + 6] : null;
+			$this->created_at = ($row[$startcol + 7] !== null) ? (string) $row[$startcol + 7] : null;
+			$this->updated_at = ($row[$startcol + 8] !== null) ? (string) $row[$startcol + 8] : null;
 			$this->resetModified();
 
 			$this->setNew(false);
+
+			if ($rehydrate) {
+				$this->ensureConsistency();
+			}
 
 						return $startcol + 9; 
 		} catch (Exception $e) {
@@ -354,29 +382,77 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 	}
 
 	
-	public function delete($con = null)
+	public function ensureConsistency()
+	{
+
+		if ($this->aHostGroup !== null && $this->group_id !== $this->aHostGroup->getId()) {
+			$this->aHostGroup = null;
+		}
+		if ($this->aOs !== null && $this->os_id !== $this->aOs->getId()) {
+			$this->aOs = null;
+		}
+	} 
+	
+	public function reload($deep = false, PropelPDO $con = null)
+	{
+		if ($this->isDeleted()) {
+			throw new PropelException("Cannot reload a deleted object.");
+		}
+
+		if ($this->isNew()) {
+			throw new PropelException("Cannot reload an unsaved object.");
+		}
+
+		if ($con === null) {
+			$con = Propel::getConnection(HostPeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+
+				
+		$stmt = HostPeer::doSelectStmt($this->buildPkeyCriteria(), $con);
+		$row = $stmt->fetch(PDO::FETCH_NUM);
+		$stmt->closeCursor();
+		if (!$row) {
+			throw new PropelException('Cannot find matching row in the database to reload object values.');
+		}
+		$this->hydrate($row, 0, true); 
+		if ($deep) {  
+			$this->aHostGroup = null;
+			$this->aOs = null;
+			$this->collHostServiceParams = null;
+			$this->lastHostServiceParamCriteria = null;
+
+			$this->collHostToContactGroups = null;
+			$this->lastHostToContactGroupCriteria = null;
+
+			$this->collServiceToHosts = null;
+			$this->lastServiceToHostCriteria = null;
+
+		} 	}
+
+	
+	public function delete(PropelPDO $con = null)
 	{
 		if ($this->isDeleted()) {
 			throw new PropelException("This object has already been deleted.");
 		}
 
 		if ($con === null) {
-			$con = Propel::getConnection(HostPeer::DATABASE_NAME);
+			$con = Propel::getConnection(HostPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
 		}
-
+		
+		$con->beginTransaction();
 		try {
-			$con->begin();
 			HostPeer::doDelete($this, $con);
 			$this->setDeleted(true);
 			$con->commit();
 		} catch (PropelException $e) {
-			$con->rollback();
+			$con->rollBack();
 			throw $e;
 		}
 	}
 
 	
-	public function save($con = null)
+	public function save(PropelPDO $con = null)
 	{
     if ($this->isNew() && !$this->isColumnModified(HostPeer::CREATED_AT))
     {
@@ -393,42 +469,45 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 		}
 
 		if ($con === null) {
-			$con = Propel::getConnection(HostPeer::DATABASE_NAME);
+			$con = Propel::getConnection(HostPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
 		}
-
+		
+		$con->beginTransaction();
 		try {
-			$con->begin();
 			$affectedRows = $this->doSave($con);
 			$con->commit();
+			HostPeer::addInstanceToPool($this);
 			return $affectedRows;
 		} catch (PropelException $e) {
-			$con->rollback();
+			$con->rollBack();
 			throw $e;
 		}
 	}
 
 	
-	protected function doSave($con)
+	protected function doSave(PropelPDO $con)
 	{
 		$affectedRows = 0; 		if (!$this->alreadyInSave) {
 			$this->alreadyInSave = true;
 
-
 												
 			if ($this->aHostGroup !== null) {
-				if ($this->aHostGroup->isModified()) {
+				if ($this->aHostGroup->isModified() || $this->aHostGroup->isNew()) {
 					$affectedRows += $this->aHostGroup->save($con);
 				}
 				$this->setHostGroup($this->aHostGroup);
 			}
 
 			if ($this->aOs !== null) {
-				if ($this->aOs->isModified()) {
+				if ($this->aOs->isModified() || $this->aOs->isNew()) {
 					$affectedRows += $this->aOs->save($con);
 				}
 				$this->setOs($this->aOs);
 			}
 
+			if ($this->isNew() ) {
+				$this->modifiedColumns[] = HostPeer::ID;
+			}
 
 						if ($this->isModified()) {
 				if ($this->isNew()) {
@@ -439,10 +518,11 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 				} else {
 					$affectedRows += HostPeer::doUpdate($this, $con);
 				}
+
 				$this->resetModified(); 			}
 
 			if ($this->collHostServiceParams !== null) {
-				foreach($this->collHostServiceParams as $referrerFK) {
+				foreach ($this->collHostServiceParams as $referrerFK) {
 					if (!$referrerFK->isDeleted()) {
 						$affectedRows += $referrerFK->save($con);
 					}
@@ -450,7 +530,7 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 			}
 
 			if ($this->collHostToContactGroups !== null) {
-				foreach($this->collHostToContactGroups as $referrerFK) {
+				foreach ($this->collHostToContactGroups as $referrerFK) {
 					if (!$referrerFK->isDeleted()) {
 						$affectedRows += $referrerFK->save($con);
 					}
@@ -458,7 +538,7 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 			}
 
 			if ($this->collServiceToHosts !== null) {
-				foreach($this->collServiceToHosts as $referrerFK) {
+				foreach ($this->collServiceToHosts as $referrerFK) {
 					if (!$referrerFK->isDeleted()) {
 						$affectedRows += $referrerFK->save($con);
 					}
@@ -466,6 +546,7 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 			}
 
 			$this->alreadyInSave = false;
+
 		}
 		return $affectedRows;
 	} 
@@ -521,7 +602,7 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 
 
 				if ($this->collHostServiceParams !== null) {
-					foreach($this->collHostServiceParams as $referrerFK) {
+					foreach ($this->collHostServiceParams as $referrerFK) {
 						if (!$referrerFK->validate($columns)) {
 							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
 						}
@@ -529,7 +610,7 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 				}
 
 				if ($this->collHostToContactGroups !== null) {
-					foreach($this->collHostToContactGroups as $referrerFK) {
+					foreach ($this->collHostToContactGroups as $referrerFK) {
 						if (!$referrerFK->validate($columns)) {
 							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
 						}
@@ -537,7 +618,7 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 				}
 
 				if ($this->collServiceToHosts !== null) {
-					foreach($this->collServiceToHosts as $referrerFK) {
+					foreach ($this->collServiceToHosts as $referrerFK) {
 						if (!$referrerFK->validate($columns)) {
 							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
 						}
@@ -555,7 +636,8 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 	public function getByName($name, $type = BasePeer::TYPE_PHPNAME)
 	{
 		$pos = HostPeer::translateFieldName($name, $type, BasePeer::TYPE_NUM);
-		return $this->getByPosition($pos);
+		$field = $this->getByPosition($pos);
+		return $field;
 	}
 
 	
@@ -595,7 +677,7 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 		} 	}
 
 	
-	public function toArray($keyType = BasePeer::TYPE_PHPNAME)
+	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true)
 	{
 		$keys = HostPeer::getFieldNames($keyType);
 		$result = array(
@@ -732,16 +814,19 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 		if ($deepCopy) {
 									$copyObj->setNew(false);
 
-			foreach($this->getHostServiceParams() as $relObj) {
-				$copyObj->addHostServiceParam($relObj->copy($deepCopy));
+			foreach ($this->getHostServiceParams() as $relObj) {
+				if ($relObj !== $this) {  					$copyObj->addHostServiceParam($relObj->copy($deepCopy));
+				}
 			}
 
-			foreach($this->getHostToContactGroups() as $relObj) {
-				$copyObj->addHostToContactGroup($relObj->copy($deepCopy));
+			foreach ($this->getHostToContactGroups() as $relObj) {
+				if ($relObj !== $this) {  					$copyObj->addHostToContactGroup($relObj->copy($deepCopy));
+				}
 			}
 
-			foreach($this->getServiceToHosts() as $relObj) {
-				$copyObj->addServiceToHost($relObj->copy($deepCopy));
+			foreach ($this->getServiceToHosts() as $relObj) {
+				if ($relObj !== $this) {  					$copyObj->addServiceToHost($relObj->copy($deepCopy));
+				}
 			}
 
 		} 
@@ -770,77 +855,83 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 	}
 
 	
-	public function setHostGroup($v)
+	public function setHostGroup(HostGroup $v = null)
 	{
-
-
 		if ($v === null) {
 			$this->setGroupId(NULL);
 		} else {
 			$this->setGroupId($v->getId());
 		}
 
-
 		$this->aHostGroup = $v;
+
+						if ($v !== null) {
+			$v->addHost($this);
+		}
+
+		return $this;
 	}
 
 
 	
-	public function getHostGroup($con = null)
+	public function getHostGroup(PropelPDO $con = null)
 	{
 		if ($this->aHostGroup === null && ($this->group_id !== null)) {
-						include_once 'lib/model/om/BaseHostGroupPeer.php';
-
-			$this->aHostGroup = HostGroupPeer::retrieveByPK($this->group_id, $con);
-
+			$c = new Criteria(HostGroupPeer::DATABASE_NAME);
+			$c->add(HostGroupPeer::ID, $this->group_id);
+			$this->aHostGroup = HostGroupPeer::doSelectOne($c, $con);
 			
 		}
 		return $this->aHostGroup;
 	}
 
 	
-	public function setOs($v)
+	public function setOs(Os $v = null)
 	{
-
-
 		if ($v === null) {
 			$this->setOsId(NULL);
 		} else {
 			$this->setOsId($v->getId());
 		}
 
-
 		$this->aOs = $v;
+
+						if ($v !== null) {
+			$v->addHost($this);
+		}
+
+		return $this;
 	}
 
 
 	
-	public function getOs($con = null)
+	public function getOs(PropelPDO $con = null)
 	{
 		if ($this->aOs === null && ($this->os_id !== null)) {
-						include_once 'lib/model/om/BaseOsPeer.php';
-
-			$this->aOs = OsPeer::retrieveByPK($this->os_id, $con);
-
+			$c = new Criteria(OsPeer::DATABASE_NAME);
+			$c->add(OsPeer::ID, $this->os_id);
+			$this->aOs = OsPeer::doSelectOne($c, $con);
 			
 		}
 		return $this->aOs;
 	}
 
 	
+	public function clearHostServiceParams()
+	{
+		$this->collHostServiceParams = null; 	}
+
+	
 	public function initHostServiceParams()
 	{
-		if ($this->collHostServiceParams === null) {
-			$this->collHostServiceParams = array();
-		}
+		$this->collHostServiceParams = array();
 	}
 
 	
-	public function getHostServiceParams($criteria = null, $con = null)
+	public function getHostServiceParams($criteria = null, PropelPDO $con = null)
 	{
-				include_once 'lib/model/om/BaseHostServiceParamPeer.php';
 		if ($criteria === null) {
-			$criteria = new Criteria();
+			$criteria = new Criteria(HostPeer::DATABASE_NAME);
 		}
 		elseif ($criteria instanceof Criteria)
 		{
@@ -852,7 +943,7 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 			   $this->collHostServiceParams = array();
 			} else {
 
-				$criteria->add(HostServiceParamPeer::HOST_ID, $this->getId());
+				$criteria->add(HostServiceParamPeer::HOST_ID, $this->id);
 
 				HostServiceParamPeer::addSelectColumns($criteria);
 				$this->collHostServiceParams = HostServiceParamPeer::doSelect($criteria, $con);
@@ -861,7 +952,7 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 						if (!$this->isNew()) {
 												
 
-				$criteria->add(HostServiceParamPeer::HOST_ID, $this->getId());
+				$criteria->add(HostServiceParamPeer::HOST_ID, $this->id);
 
 				HostServiceParamPeer::addSelectColumns($criteria);
 				if (!isset($this->lastHostServiceParamCriteria) || !$this->lastHostServiceParamCriteria->equals($criteria)) {
@@ -874,36 +965,64 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 	}
 
 	
-	public function countHostServiceParams($criteria = null, $distinct = false, $con = null)
+	public function countHostServiceParams(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
 	{
-				include_once 'lib/model/om/BaseHostServiceParamPeer.php';
 		if ($criteria === null) {
-			$criteria = new Criteria();
-		}
-		elseif ($criteria instanceof Criteria)
-		{
+			$criteria = new Criteria(HostPeer::DATABASE_NAME);
+		} else {
 			$criteria = clone $criteria;
 		}
 
-		$criteria->add(HostServiceParamPeer::HOST_ID, $this->getId());
+		if ($distinct) {
+			$criteria->setDistinct();
+		}
 
-		return HostServiceParamPeer::doCount($criteria, $distinct, $con);
+		$count = null;
+
+		if ($this->collHostServiceParams === null) {
+			if ($this->isNew()) {
+				$count = 0;
+			} else {
+
+				$criteria->add(HostServiceParamPeer::HOST_ID, $this->id);
+
+				$count = HostServiceParamPeer::doCount($criteria, $con);
+			}
+		} else {
+						if (!$this->isNew()) {
+												
+
+				$criteria->add(HostServiceParamPeer::HOST_ID, $this->id);
+
+				if (!isset($this->lastHostServiceParamCriteria) || !$this->lastHostServiceParamCriteria->equals($criteria)) {
+					$count = HostServiceParamPeer::doCount($criteria, $con);
+				} else {
+					$count = count($this->collHostServiceParams);
+				}
+			} else {
+				$count = count($this->collHostServiceParams);
+			}
+		}
+		return $count;
 	}
 
 	
 	public function addHostServiceParam(HostServiceParam $l)
 	{
-		$this->collHostServiceParams[] = $l;
-		$l->setHost($this);
+		if ($this->collHostServiceParams === null) {
+			$this->initHostServiceParams();
+		}
+		if (!in_array($l, $this->collHostServiceParams, true)) { 			array_push($this->collHostServiceParams, $l);
+			$l->setHost($this);
+		}
 	}
 
 
 	
-	public function getHostServiceParamsJoinService($criteria = null, $con = null)
+	public function getHostServiceParamsJoinService($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
-				include_once 'lib/model/om/BaseHostServiceParamPeer.php';
 		if ($criteria === null) {
-			$criteria = new Criteria();
+			$criteria = new Criteria(HostPeer::DATABASE_NAME);
 		}
 		elseif ($criteria instanceof Criteria)
 		{
@@ -915,16 +1034,16 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 				$this->collHostServiceParams = array();
 			} else {
 
-				$criteria->add(HostServiceParamPeer::HOST_ID, $this->getId());
+				$criteria->add(HostServiceParamPeer::HOST_ID, $this->id);
 
-				$this->collHostServiceParams = HostServiceParamPeer::doSelectJoinService($criteria, $con);
+				$this->collHostServiceParams = HostServiceParamPeer::doSelectJoinService($criteria, $con, $join_behavior);
 			}
 		} else {
 									
-			$criteria->add(HostServiceParamPeer::HOST_ID, $this->getId());
+			$criteria->add(HostServiceParamPeer::HOST_ID, $this->id);
 
 			if (!isset($this->lastHostServiceParamCriteria) || !$this->lastHostServiceParamCriteria->equals($criteria)) {
-				$this->collHostServiceParams = HostServiceParamPeer::doSelectJoinService($criteria, $con);
+				$this->collHostServiceParams = HostServiceParamPeer::doSelectJoinService($criteria, $con, $join_behavior);
 			}
 		}
 		$this->lastHostServiceParamCriteria = $criteria;
@@ -933,19 +1052,21 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 	}
 
 	
+	public function clearHostToContactGroups()
+	{
+		$this->collHostToContactGroups = null; 	}
+
+	
 	public function initHostToContactGroups()
 	{
-		if ($this->collHostToContactGroups === null) {
-			$this->collHostToContactGroups = array();
-		}
+		$this->collHostToContactGroups = array();
 	}
 
 	
-	public function getHostToContactGroups($criteria = null, $con = null)
+	public function getHostToContactGroups($criteria = null, PropelPDO $con = null)
 	{
-				include_once 'lib/model/om/BaseHostToContactGroupPeer.php';
 		if ($criteria === null) {
-			$criteria = new Criteria();
+			$criteria = new Criteria(HostPeer::DATABASE_NAME);
 		}
 		elseif ($criteria instanceof Criteria)
 		{
@@ -957,7 +1078,7 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 			   $this->collHostToContactGroups = array();
 			} else {
 
-				$criteria->add(HostToContactGroupPeer::HOST_ID, $this->getId());
+				$criteria->add(HostToContactGroupPeer::HOST_ID, $this->id);
 
 				HostToContactGroupPeer::addSelectColumns($criteria);
 				$this->collHostToContactGroups = HostToContactGroupPeer::doSelect($criteria, $con);
@@ -966,7 +1087,7 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 						if (!$this->isNew()) {
 												
 
-				$criteria->add(HostToContactGroupPeer::HOST_ID, $this->getId());
+				$criteria->add(HostToContactGroupPeer::HOST_ID, $this->id);
 
 				HostToContactGroupPeer::addSelectColumns($criteria);
 				if (!isset($this->lastHostToContactGroupCriteria) || !$this->lastHostToContactGroupCriteria->equals($criteria)) {
@@ -979,36 +1100,64 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 	}
 
 	
-	public function countHostToContactGroups($criteria = null, $distinct = false, $con = null)
+	public function countHostToContactGroups(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
 	{
-				include_once 'lib/model/om/BaseHostToContactGroupPeer.php';
 		if ($criteria === null) {
-			$criteria = new Criteria();
-		}
-		elseif ($criteria instanceof Criteria)
-		{
+			$criteria = new Criteria(HostPeer::DATABASE_NAME);
+		} else {
 			$criteria = clone $criteria;
 		}
 
-		$criteria->add(HostToContactGroupPeer::HOST_ID, $this->getId());
+		if ($distinct) {
+			$criteria->setDistinct();
+		}
 
-		return HostToContactGroupPeer::doCount($criteria, $distinct, $con);
+		$count = null;
+
+		if ($this->collHostToContactGroups === null) {
+			if ($this->isNew()) {
+				$count = 0;
+			} else {
+
+				$criteria->add(HostToContactGroupPeer::HOST_ID, $this->id);
+
+				$count = HostToContactGroupPeer::doCount($criteria, $con);
+			}
+		} else {
+						if (!$this->isNew()) {
+												
+
+				$criteria->add(HostToContactGroupPeer::HOST_ID, $this->id);
+
+				if (!isset($this->lastHostToContactGroupCriteria) || !$this->lastHostToContactGroupCriteria->equals($criteria)) {
+					$count = HostToContactGroupPeer::doCount($criteria, $con);
+				} else {
+					$count = count($this->collHostToContactGroups);
+				}
+			} else {
+				$count = count($this->collHostToContactGroups);
+			}
+		}
+		return $count;
 	}
 
 	
 	public function addHostToContactGroup(HostToContactGroup $l)
 	{
-		$this->collHostToContactGroups[] = $l;
-		$l->setHost($this);
+		if ($this->collHostToContactGroups === null) {
+			$this->initHostToContactGroups();
+		}
+		if (!in_array($l, $this->collHostToContactGroups, true)) { 			array_push($this->collHostToContactGroups, $l);
+			$l->setHost($this);
+		}
 	}
 
 
 	
-	public function getHostToContactGroupsJoinContactGroup($criteria = null, $con = null)
+	public function getHostToContactGroupsJoinContactGroup($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
-				include_once 'lib/model/om/BaseHostToContactGroupPeer.php';
 		if ($criteria === null) {
-			$criteria = new Criteria();
+			$criteria = new Criteria(HostPeer::DATABASE_NAME);
 		}
 		elseif ($criteria instanceof Criteria)
 		{
@@ -1020,16 +1169,16 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 				$this->collHostToContactGroups = array();
 			} else {
 
-				$criteria->add(HostToContactGroupPeer::HOST_ID, $this->getId());
+				$criteria->add(HostToContactGroupPeer::HOST_ID, $this->id);
 
-				$this->collHostToContactGroups = HostToContactGroupPeer::doSelectJoinContactGroup($criteria, $con);
+				$this->collHostToContactGroups = HostToContactGroupPeer::doSelectJoinContactGroup($criteria, $con, $join_behavior);
 			}
 		} else {
 									
-			$criteria->add(HostToContactGroupPeer::HOST_ID, $this->getId());
+			$criteria->add(HostToContactGroupPeer::HOST_ID, $this->id);
 
 			if (!isset($this->lastHostToContactGroupCriteria) || !$this->lastHostToContactGroupCriteria->equals($criteria)) {
-				$this->collHostToContactGroups = HostToContactGroupPeer::doSelectJoinContactGroup($criteria, $con);
+				$this->collHostToContactGroups = HostToContactGroupPeer::doSelectJoinContactGroup($criteria, $con, $join_behavior);
 			}
 		}
 		$this->lastHostToContactGroupCriteria = $criteria;
@@ -1038,19 +1187,21 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 	}
 
 	
+	public function clearServiceToHosts()
+	{
+		$this->collServiceToHosts = null; 	}
+
+	
 	public function initServiceToHosts()
 	{
-		if ($this->collServiceToHosts === null) {
-			$this->collServiceToHosts = array();
-		}
+		$this->collServiceToHosts = array();
 	}
 
 	
-	public function getServiceToHosts($criteria = null, $con = null)
+	public function getServiceToHosts($criteria = null, PropelPDO $con = null)
 	{
-				include_once 'lib/model/om/BaseServiceToHostPeer.php';
 		if ($criteria === null) {
-			$criteria = new Criteria();
+			$criteria = new Criteria(HostPeer::DATABASE_NAME);
 		}
 		elseif ($criteria instanceof Criteria)
 		{
@@ -1062,7 +1213,7 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 			   $this->collServiceToHosts = array();
 			} else {
 
-				$criteria->add(ServiceToHostPeer::HOST_ID, $this->getId());
+				$criteria->add(ServiceToHostPeer::HOST_ID, $this->id);
 
 				ServiceToHostPeer::addSelectColumns($criteria);
 				$this->collServiceToHosts = ServiceToHostPeer::doSelect($criteria, $con);
@@ -1071,7 +1222,7 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 						if (!$this->isNew()) {
 												
 
-				$criteria->add(ServiceToHostPeer::HOST_ID, $this->getId());
+				$criteria->add(ServiceToHostPeer::HOST_ID, $this->id);
 
 				ServiceToHostPeer::addSelectColumns($criteria);
 				if (!isset($this->lastServiceToHostCriteria) || !$this->lastServiceToHostCriteria->equals($criteria)) {
@@ -1084,36 +1235,64 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 	}
 
 	
-	public function countServiceToHosts($criteria = null, $distinct = false, $con = null)
+	public function countServiceToHosts(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
 	{
-				include_once 'lib/model/om/BaseServiceToHostPeer.php';
 		if ($criteria === null) {
-			$criteria = new Criteria();
-		}
-		elseif ($criteria instanceof Criteria)
-		{
+			$criteria = new Criteria(HostPeer::DATABASE_NAME);
+		} else {
 			$criteria = clone $criteria;
 		}
 
-		$criteria->add(ServiceToHostPeer::HOST_ID, $this->getId());
+		if ($distinct) {
+			$criteria->setDistinct();
+		}
 
-		return ServiceToHostPeer::doCount($criteria, $distinct, $con);
+		$count = null;
+
+		if ($this->collServiceToHosts === null) {
+			if ($this->isNew()) {
+				$count = 0;
+			} else {
+
+				$criteria->add(ServiceToHostPeer::HOST_ID, $this->id);
+
+				$count = ServiceToHostPeer::doCount($criteria, $con);
+			}
+		} else {
+						if (!$this->isNew()) {
+												
+
+				$criteria->add(ServiceToHostPeer::HOST_ID, $this->id);
+
+				if (!isset($this->lastServiceToHostCriteria) || !$this->lastServiceToHostCriteria->equals($criteria)) {
+					$count = ServiceToHostPeer::doCount($criteria, $con);
+				} else {
+					$count = count($this->collServiceToHosts);
+				}
+			} else {
+				$count = count($this->collServiceToHosts);
+			}
+		}
+		return $count;
 	}
 
 	
 	public function addServiceToHost(ServiceToHost $l)
 	{
-		$this->collServiceToHosts[] = $l;
-		$l->setHost($this);
+		if ($this->collServiceToHosts === null) {
+			$this->initServiceToHosts();
+		}
+		if (!in_array($l, $this->collServiceToHosts, true)) { 			array_push($this->collServiceToHosts, $l);
+			$l->setHost($this);
+		}
 	}
 
 
 	
-	public function getServiceToHostsJoinService($criteria = null, $con = null)
+	public function getServiceToHostsJoinService($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
-				include_once 'lib/model/om/BaseServiceToHostPeer.php';
 		if ($criteria === null) {
-			$criteria = new Criteria();
+			$criteria = new Criteria(HostPeer::DATABASE_NAME);
 		}
 		elseif ($criteria instanceof Criteria)
 		{
@@ -1125,21 +1304,48 @@ abstract class BaseHost extends BaseObject  implements Persistent {
 				$this->collServiceToHosts = array();
 			} else {
 
-				$criteria->add(ServiceToHostPeer::HOST_ID, $this->getId());
+				$criteria->add(ServiceToHostPeer::HOST_ID, $this->id);
 
-				$this->collServiceToHosts = ServiceToHostPeer::doSelectJoinService($criteria, $con);
+				$this->collServiceToHosts = ServiceToHostPeer::doSelectJoinService($criteria, $con, $join_behavior);
 			}
 		} else {
 									
-			$criteria->add(ServiceToHostPeer::HOST_ID, $this->getId());
+			$criteria->add(ServiceToHostPeer::HOST_ID, $this->id);
 
 			if (!isset($this->lastServiceToHostCriteria) || !$this->lastServiceToHostCriteria->equals($criteria)) {
-				$this->collServiceToHosts = ServiceToHostPeer::doSelectJoinService($criteria, $con);
+				$this->collServiceToHosts = ServiceToHostPeer::doSelectJoinService($criteria, $con, $join_behavior);
 			}
 		}
 		$this->lastServiceToHostCriteria = $criteria;
 
 		return $this->collServiceToHosts;
+	}
+
+	
+	public function clearAllReferences($deep = false)
+	{
+		if ($deep) {
+			if ($this->collHostServiceParams) {
+				foreach ((array) $this->collHostServiceParams as $o) {
+					$o->clearAllReferences($deep);
+				}
+			}
+			if ($this->collHostToContactGroups) {
+				foreach ((array) $this->collHostToContactGroups as $o) {
+					$o->clearAllReferences($deep);
+				}
+			}
+			if ($this->collServiceToHosts) {
+				foreach ((array) $this->collServiceToHosts as $o) {
+					$o->clearAllReferences($deep);
+				}
+			}
+		} 
+		$this->collHostServiceParams = null;
+		$this->collHostToContactGroups = null;
+		$this->collServiceToHosts = null;
+			$this->aHostGroup = null;
+			$this->aOs = null;
 	}
 
 } 

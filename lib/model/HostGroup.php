@@ -47,7 +47,7 @@ class HostGroup extends BaseHostGroup
     return $this->getAlias();
   }
   
-  public function toArray($keyType = BasePeer::TYPE_PHPNAME)
+  public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true)
   {
     $result = parent::toArray($keyType);
     

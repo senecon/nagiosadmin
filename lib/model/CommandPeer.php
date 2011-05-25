@@ -34,8 +34,6 @@ class CommandPeer extends BaseCommandPeer
 {
   public static function getConfig()
   {
-    sfLoader::loadHelpers('TemplateToken');
-    
     $tpl = getTemplate('command');
     
     $cfg = '';

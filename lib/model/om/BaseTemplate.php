@@ -4,33 +4,28 @@
 abstract class BaseTemplate extends BaseObject  implements Persistent {
 
 
+  const PEER = 'TemplatePeer';
+
 	
 	protected static $peer;
-
 
 	
 	protected $id;
 
-
 	
-	protected $type = 0;
-
+	protected $type;
 
 	
 	protected $name;
 
-
 	
 	protected $alias;
-
 
 	
 	protected $content;
 
-
 	
 	protected $created_at;
-
 
 	
 	protected $updated_at;
@@ -42,91 +37,106 @@ abstract class BaseTemplate extends BaseObject  implements Persistent {
 	protected $alreadyInValidation = false;
 
 	
+	public function __construct()
+	{
+		parent::__construct();
+		$this->applyDefaultValues();
+	}
+
+	
+	public function applyDefaultValues()
+	{
+		$this->type = 0;
+	}
+
+	
 	public function getId()
 	{
-
 		return $this->id;
 	}
 
 	
 	public function getType()
 	{
-
 		return $this->type;
 	}
 
 	
 	public function getName()
 	{
-
 		return $this->name;
 	}
 
 	
 	public function getAlias()
 	{
-
 		return $this->alias;
 	}
 
 	
 	public function getContent()
 	{
-
 		return $this->content;
 	}
 
 	
 	public function getCreatedAt($format = 'Y-m-d H:i:s')
 	{
-
-		if ($this->created_at === null || $this->created_at === '') {
+		if ($this->created_at === null) {
 			return null;
-		} elseif (!is_int($this->created_at)) {
-						$ts = strtotime($this->created_at);
-			if ($ts === -1 || $ts === false) { 				throw new PropelException("Unable to parse value of [created_at] as date/time value: " . var_export($this->created_at, true));
-			}
-		} else {
-			$ts = $this->created_at;
 		}
-		if ($format === null) {
-			return $ts;
-		} elseif (strpos($format, '%') !== false) {
-			return strftime($format, $ts);
+
+
+		if ($this->created_at === '0000-00-00 00:00:00') {
+									return null;
 		} else {
-			return date($format, $ts);
+			try {
+				$dt = new DateTime($this->created_at);
+			} catch (Exception $x) {
+				throw new PropelException("Internally stored date/time/timestamp value could not be converted to DateTime: " . var_export($this->created_at, true), $x);
+			}
+		}
+
+		if ($format === null) {
+						return $dt;
+		} elseif (strpos($format, '%') !== false) {
+			return strftime($format, $dt->format('U'));
+		} else {
+			return $dt->format($format);
 		}
 	}
 
 	
 	public function getUpdatedAt($format = 'Y-m-d H:i:s')
 	{
-
-		if ($this->updated_at === null || $this->updated_at === '') {
+		if ($this->updated_at === null) {
 			return null;
-		} elseif (!is_int($this->updated_at)) {
-						$ts = strtotime($this->updated_at);
-			if ($ts === -1 || $ts === false) { 				throw new PropelException("Unable to parse value of [updated_at] as date/time value: " . var_export($this->updated_at, true));
-			}
-		} else {
-			$ts = $this->updated_at;
 		}
-		if ($format === null) {
-			return $ts;
-		} elseif (strpos($format, '%') !== false) {
-			return strftime($format, $ts);
+
+
+		if ($this->updated_at === '0000-00-00 00:00:00') {
+									return null;
 		} else {
-			return date($format, $ts);
+			try {
+				$dt = new DateTime($this->updated_at);
+			} catch (Exception $x) {
+				throw new PropelException("Internally stored date/time/timestamp value could not be converted to DateTime: " . var_export($this->updated_at, true), $x);
+			}
+		}
+
+		if ($format === null) {
+						return $dt;
+		} elseif (strpos($format, '%') !== false) {
+			return strftime($format, $dt->format('U'));
+		} else {
+			return $dt->format($format);
 		}
 	}
 
 	
 	public function setId($v)
 	{
-
-		
-		
-		if ($v !== null && !is_int($v) && is_numeric($v)) {
+		if ($v !== null) {
 			$v = (int) $v;
 		}
 
@@ -135,14 +145,12 @@ abstract class BaseTemplate extends BaseObject  implements Persistent {
 			$this->modifiedColumns[] = TemplatePeer::ID;
 		}
 
+		return $this;
 	} 
 	
 	public function setType($v)
 	{
-
-		
-		
-		if ($v !== null && !is_int($v) && is_numeric($v)) {
+		if ($v !== null) {
 			$v = (int) $v;
 		}
 
@@ -151,15 +159,13 @@ abstract class BaseTemplate extends BaseObject  implements Persistent {
 			$this->modifiedColumns[] = TemplatePeer::TYPE;
 		}
 
+		return $this;
 	} 
 	
 	public function setName($v)
 	{
-
-		
-		
-		if ($v !== null && !is_string($v)) {
-			$v = (string) $v; 
+		if ($v !== null) {
+			$v = (string) $v;
 		}
 
 		if ($this->name !== $v) {
@@ -167,15 +173,13 @@ abstract class BaseTemplate extends BaseObject  implements Persistent {
 			$this->modifiedColumns[] = TemplatePeer::NAME;
 		}
 
+		return $this;
 	} 
 	
 	public function setAlias($v)
 	{
-
-		
-		
-		if ($v !== null && !is_string($v)) {
-			$v = (string) $v; 
+		if ($v !== null) {
+			$v = (string) $v;
 		}
 
 		if ($this->alias !== $v) {
@@ -183,15 +187,13 @@ abstract class BaseTemplate extends BaseObject  implements Persistent {
 			$this->modifiedColumns[] = TemplatePeer::ALIAS;
 		}
 
+		return $this;
 	} 
 	
 	public function setContent($v)
 	{
-
-		
-		
-		if ($v !== null && !is_string($v)) {
-			$v = (string) $v; 
+		if ($v !== null) {
+			$v = (string) $v;
 		}
 
 		if ($this->content !== $v) {
@@ -199,63 +201,104 @@ abstract class BaseTemplate extends BaseObject  implements Persistent {
 			$this->modifiedColumns[] = TemplatePeer::CONTENT;
 		}
 
+		return $this;
 	} 
 	
 	public function setCreatedAt($v)
 	{
-
-		if ($v !== null && !is_int($v)) {
-			$ts = strtotime($v);
-			if ($ts === -1 || $ts === false) { 				throw new PropelException("Unable to parse date/time value for [created_at] from input: " . var_export($v, true));
-			}
+						if ($v === null || $v === '') {
+			$dt = null;
+		} elseif ($v instanceof DateTime) {
+			$dt = $v;
 		} else {
-			$ts = $v;
-		}
-		if ($this->created_at !== $ts) {
-			$this->created_at = $ts;
-			$this->modifiedColumns[] = TemplatePeer::CREATED_AT;
+									try {
+				if (is_numeric($v)) { 					$dt = new DateTime('@'.$v, new DateTimeZone('UTC'));
+															$dt->setTimeZone(new DateTimeZone(date_default_timezone_get()));
+				} else {
+					$dt = new DateTime($v);
+				}
+			} catch (Exception $x) {
+				throw new PropelException('Error parsing date/time value: ' . var_export($v, true), $x);
+			}
 		}
 
+		if ( $this->created_at !== null || $dt !== null ) {
+			
+			$currNorm = ($this->created_at !== null && $tmpDt = new DateTime($this->created_at)) ? $tmpDt->format('Y-m-d H:i:s') : null;
+			$newNorm = ($dt !== null) ? $dt->format('Y-m-d H:i:s') : null;
+
+			if ( ($currNorm !== $newNorm) 					)
+			{
+				$this->created_at = ($dt ? $dt->format('Y-m-d H:i:s') : null);
+				$this->modifiedColumns[] = TemplatePeer::CREATED_AT;
+			}
+		} 
+		return $this;
 	} 
 	
 	public function setUpdatedAt($v)
 	{
-
-		if ($v !== null && !is_int($v)) {
-			$ts = strtotime($v);
-			if ($ts === -1 || $ts === false) { 				throw new PropelException("Unable to parse date/time value for [updated_at] from input: " . var_export($v, true));
-			}
+						if ($v === null || $v === '') {
+			$dt = null;
+		} elseif ($v instanceof DateTime) {
+			$dt = $v;
 		} else {
-			$ts = $v;
-		}
-		if ($this->updated_at !== $ts) {
-			$this->updated_at = $ts;
-			$this->modifiedColumns[] = TemplatePeer::UPDATED_AT;
+									try {
+				if (is_numeric($v)) { 					$dt = new DateTime('@'.$v, new DateTimeZone('UTC'));
+															$dt->setTimeZone(new DateTimeZone(date_default_timezone_get()));
+				} else {
+					$dt = new DateTime($v);
+				}
+			} catch (Exception $x) {
+				throw new PropelException('Error parsing date/time value: ' . var_export($v, true), $x);
+			}
 		}
 
+		if ( $this->updated_at !== null || $dt !== null ) {
+			
+			$currNorm = ($this->updated_at !== null && $tmpDt = new DateTime($this->updated_at)) ? $tmpDt->format('Y-m-d H:i:s') : null;
+			$newNorm = ($dt !== null) ? $dt->format('Y-m-d H:i:s') : null;
+
+			if ( ($currNorm !== $newNorm) 					)
+			{
+				$this->updated_at = ($dt ? $dt->format('Y-m-d H:i:s') : null);
+				$this->modifiedColumns[] = TemplatePeer::UPDATED_AT;
+			}
+		} 
+		return $this;
 	} 
 	
-	public function hydrate(ResultSet $rs, $startcol = 1)
+	public function hasOnlyDefaultValues()
+	{
+						if (array_diff($this->modifiedColumns, array(TemplatePeer::TYPE))) {
+				return false;
+			}
+
+			if ($this->type !== 0) {
+				return false;
+			}
+
+				return true;
+	} 
+	
+	public function hydrate($row, $startcol = 0, $rehydrate = false)
 	{
 		try {
 
-			$this->id = $rs->getInt($startcol + 0);
-
-			$this->type = $rs->getInt($startcol + 1);
-
-			$this->name = $rs->getString($startcol + 2);
-
-			$this->alias = $rs->getString($startcol + 3);
-
-			$this->content = $rs->getString($startcol + 4);
-
-			$this->created_at = $rs->getTimestamp($startcol + 5, null);
-
-			$this->updated_at = $rs->getTimestamp($startcol + 6, null);
-
+			$this->id = ($row[$startcol + 0] !== null) ? (int) $row[$startcol + 0] : null;
+			$this->type = ($row[$startcol + 1] !== null) ? (int) $row[$startcol + 1] : null;
+			$this->name = ($row[$startcol + 2] !== null) ? (string) $row[$startcol + 2] : null;
+			$this->alias = ($row[$startcol + 3] !== null) ? (string) $row[$startcol + 3] : null;
+			$this->content = ($row[$startcol + 4] !== null) ? (string) $row[$startcol + 4] : null;
+			$this->created_at = ($row[$startcol + 5] !== null) ? (string) $row[$startcol + 5] : null;
+			$this->updated_at = ($row[$startcol + 6] !== null) ? (string) $row[$startcol + 6] : null;
 			$this->resetModified();
 
 			$this->setNew(false);
+
+			if ($rehydrate) {
+				$this->ensureConsistency();
+			}
 
 						return $startcol + 7; 
 		} catch (Exception $e) {
@@ -264,29 +307,60 @@ abstract class BaseTemplate extends BaseObject  implements Persistent {
 	}
 
 	
-	public function delete($con = null)
+	public function ensureConsistency()
+	{
+
+	} 
+	
+	public function reload($deep = false, PropelPDO $con = null)
+	{
+		if ($this->isDeleted()) {
+			throw new PropelException("Cannot reload a deleted object.");
+		}
+
+		if ($this->isNew()) {
+			throw new PropelException("Cannot reload an unsaved object.");
+		}
+
+		if ($con === null) {
+			$con = Propel::getConnection(TemplatePeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+
+				
+		$stmt = TemplatePeer::doSelectStmt($this->buildPkeyCriteria(), $con);
+		$row = $stmt->fetch(PDO::FETCH_NUM);
+		$stmt->closeCursor();
+		if (!$row) {
+			throw new PropelException('Cannot find matching row in the database to reload object values.');
+		}
+		$this->hydrate($row, 0, true); 
+		if ($deep) {  
+		} 	}
+
+	
+	public function delete(PropelPDO $con = null)
 	{
 		if ($this->isDeleted()) {
 			throw new PropelException("This object has already been deleted.");
 		}
 
 		if ($con === null) {
-			$con = Propel::getConnection(TemplatePeer::DATABASE_NAME);
+			$con = Propel::getConnection(TemplatePeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
 		}
-
+		
+		$con->beginTransaction();
 		try {
-			$con->begin();
 			TemplatePeer::doDelete($this, $con);
 			$this->setDeleted(true);
 			$con->commit();
 		} catch (PropelException $e) {
-			$con->rollback();
+			$con->rollBack();
 			throw $e;
 		}
 	}
 
 	
-	public function save($con = null)
+	public function save(PropelPDO $con = null)
 	{
     if ($this->isNew() && !$this->isColumnModified(TemplatePeer::CREATED_AT))
     {
@@ -303,26 +377,30 @@ abstract class BaseTemplate extends BaseObject  implements Persistent {
 		}
 
 		if ($con === null) {
-			$con = Propel::getConnection(TemplatePeer::DATABASE_NAME);
+			$con = Propel::getConnection(TemplatePeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
 		}
-
+		
+		$con->beginTransaction();
 		try {
-			$con->begin();
 			$affectedRows = $this->doSave($con);
 			$con->commit();
+			TemplatePeer::addInstanceToPool($this);
 			return $affectedRows;
 		} catch (PropelException $e) {
-			$con->rollback();
+			$con->rollBack();
 			throw $e;
 		}
 	}
 
 	
-	protected function doSave($con)
+	protected function doSave(PropelPDO $con)
 	{
 		$affectedRows = 0; 		if (!$this->alreadyInSave) {
 			$this->alreadyInSave = true;
 
+			if ($this->isNew() ) {
+				$this->modifiedColumns[] = TemplatePeer::ID;
+			}
 
 						if ($this->isModified()) {
 				if ($this->isNew()) {
@@ -333,9 +411,11 @@ abstract class BaseTemplate extends BaseObject  implements Persistent {
 				} else {
 					$affectedRows += TemplatePeer::doUpdate($this, $con);
 				}
+
 				$this->resetModified(); 			}
 
 			$this->alreadyInSave = false;
+
 		}
 		return $affectedRows;
 	} 
@@ -387,7 +467,8 @@ abstract class BaseTemplate extends BaseObject  implements Persistent {
 	public function getByName($name, $type = BasePeer::TYPE_PHPNAME)
 	{
 		$pos = TemplatePeer::translateFieldName($name, $type, BasePeer::TYPE_NUM);
-		return $this->getByPosition($pos);
+		$field = $this->getByPosition($pos);
+		return $field;
 	}
 
 	
@@ -421,7 +502,7 @@ abstract class BaseTemplate extends BaseObject  implements Persistent {
 		} 	}
 
 	
-	public function toArray($keyType = BasePeer::TYPE_PHPNAME)
+	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true)
 	{
 		$keys = TemplatePeer::getFieldNames($keyType);
 		$result = array(
@@ -560,6 +641,13 @@ abstract class BaseTemplate extends BaseObject  implements Persistent {
 			self::$peer = new TemplatePeer();
 		}
 		return self::$peer;
+	}
+
+	
+	public function clearAllReferences($deep = false)
+	{
+		if ($deep) {
+		} 
 	}
 
 } 

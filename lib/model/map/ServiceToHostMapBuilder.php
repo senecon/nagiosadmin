@@ -2,7 +2,7 @@
 
 
 
-class ServiceToHostMapBuilder {
+class ServiceToHostMapBuilder implements MapBuilder {
 
 	
 	const CLASS_NAME = 'lib.model.map.ServiceToHostMapBuilder';
@@ -25,16 +25,17 @@ class ServiceToHostMapBuilder {
 	
 	public function doBuild()
 	{
-		$this->dbMap = Propel::getDatabaseMap('propel');
+		$this->dbMap = Propel::getDatabaseMap(ServiceToHostPeer::DATABASE_NAME);
 
-		$tMap = $this->dbMap->addTable('service_to_host');
+		$tMap = $this->dbMap->addTable(ServiceToHostPeer::TABLE_NAME);
 		$tMap->setPhpName('ServiceToHost');
+		$tMap->setClassname('ServiceToHost');
 
 		$tMap->setUseIdGenerator(false);
 
-		$tMap->addForeignPrimaryKey('SERVICE_ID', 'ServiceId', 'int' , CreoleTypes::INTEGER, 'service', 'ID', true, null);
+		$tMap->addForeignPrimaryKey('SERVICE_ID', 'ServiceId', 'INTEGER' , 'service', 'ID', true, null);
 
-		$tMap->addForeignPrimaryKey('HOST_ID', 'HostId', 'int' , CreoleTypes::INTEGER, 'host', 'ID', true, null);
+		$tMap->addForeignPrimaryKey('HOST_ID', 'HostId', 'INTEGER' , 'host', 'ID', true, null);
 
 	} 
 } 

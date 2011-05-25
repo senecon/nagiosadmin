@@ -34,8 +34,6 @@ class HostPeer extends BaseHostPeer
 {
   public static function getConfig()
   {
-    sfLoader::loadHelpers('TemplateToken');
-    
     $tpl = getTemplate('host');
     $tpl_service = getTemplate('service');
     

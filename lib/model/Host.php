@@ -99,7 +99,7 @@ class Host extends BaseHost
     return $this->getHostToContactGroupsJoinContactGroup();
   }
 
-  public function toArray($keyType = BasePeer::TYPE_PHPNAME)
+  public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true)
   {
     $result = parent::toArray($keyType);
 

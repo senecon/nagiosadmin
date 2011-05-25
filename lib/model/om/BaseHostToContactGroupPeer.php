@@ -18,7 +18,6 @@ abstract class BaseHostToContactGroupPeer {
 	
 	const NUM_LAZY_LOAD_COLUMNS = 0;
 
-
 	
 	const HOST_ID = 'host_to_contact_group.HOST_ID';
 
@@ -26,13 +25,16 @@ abstract class BaseHostToContactGroupPeer {
 	const CONTACT_GROUP_ID = 'host_to_contact_group.CONTACT_GROUP_ID';
 
 	
-	private static $phpNameMap = null;
+	public static $instances = array();
 
+	
+	private static $mapBuilder = null;
 
 	
 	private static $fieldNames = array (
 		BasePeer::TYPE_PHPNAME => array ('HostId', 'ContactGroupId', ),
-		BasePeer::TYPE_COLNAME => array (HostToContactGroupPeer::HOST_ID, HostToContactGroupPeer::CONTACT_GROUP_ID, ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('hostId', 'contactGroupId', ),
+		BasePeer::TYPE_COLNAME => array (self::HOST_ID, self::CONTACT_GROUP_ID, ),
 		BasePeer::TYPE_FIELDNAME => array ('host_id', 'contact_group_id', ),
 		BasePeer::TYPE_NUM => array (0, 1, )
 	);
@@ -40,7 +42,8 @@ abstract class BaseHostToContactGroupPeer {
 	
 	private static $fieldKeys = array (
 		BasePeer::TYPE_PHPNAME => array ('HostId' => 0, 'ContactGroupId' => 1, ),
-		BasePeer::TYPE_COLNAME => array (HostToContactGroupPeer::HOST_ID => 0, HostToContactGroupPeer::CONTACT_GROUP_ID => 1, ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('hostId' => 0, 'contactGroupId' => 1, ),
+		BasePeer::TYPE_COLNAME => array (self::HOST_ID => 0, self::CONTACT_GROUP_ID => 1, ),
 		BasePeer::TYPE_FIELDNAME => array ('host_id' => 0, 'contact_group_id' => 1, ),
 		BasePeer::TYPE_NUM => array (0, 1, )
 	);
@@ -48,22 +51,10 @@ abstract class BaseHostToContactGroupPeer {
 	
 	public static function getMapBuilder()
 	{
-		include_once 'lib/model/map/HostToContactGroupMapBuilder.php';
-		return BasePeer::getMapBuilder('lib.model.map.HostToContactGroupMapBuilder');
-	}
-	
-	public static function getPhpNameMap()
-	{
-		if (self::$phpNameMap === null) {
-			$map = HostToContactGroupPeer::getTableMap();
-			$columns = $map->getColumns();
-			$nameMap = array();
-			foreach ($columns as $column) {
-				$nameMap[$column->getPhpName()] = $column->getColumnName();
-			}
-			self::$phpNameMap = $nameMap;
+		if (self::$mapBuilder === null) {
+			self::$mapBuilder = new HostToContactGroupMapBuilder();
 		}
-		return self::$phpNameMap;
+		return self::$mapBuilder;
 	}
 	
 	static public function translateFieldName($name, $fromType, $toType)
@@ -81,7 +72,7 @@ abstract class BaseHostToContactGroupPeer {
 	static public function getFieldNames($type = BasePeer::TYPE_PHPNAME)
 	{
 		if (!array_key_exists($type, self::$fieldNames)) {
-			throw new PropelException('Method getFieldNames() expects the parameter $type to be one of the class constants TYPE_PHPNAME, TYPE_COLNAME, TYPE_FIELDNAME, TYPE_NUM. ' . $type . ' was given.');
+			throw new PropelException('Method getFieldNames() expects the parameter $type to be one of the class constants BasePeer::TYPE_PHPNAME, BasePeer::TYPE_STUDLYPHPNAME, BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM. ' . $type . ' was given.');
 		}
 		return self::$fieldNames[$type];
 	}
@@ -102,35 +93,37 @@ abstract class BaseHostToContactGroupPeer {
 
 	}
 
-	const COUNT = 'COUNT(host_to_contact_group.HOST_ID)';
-	const COUNT_DISTINCT = 'COUNT(DISTINCT host_to_contact_group.HOST_ID)';
-
 	
-	public static function doCount(Criteria $criteria, $distinct = false, $con = null)
+	public static function doCount(Criteria $criteria, $distinct = false, PropelPDO $con = null)
 	{
 				$criteria = clone $criteria;
 
-				$criteria->clearSelectColumns()->clearOrderByColumns();
-		if ($distinct || in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
-			$criteria->addSelectColumn(HostToContactGroupPeer::COUNT_DISTINCT);
-		} else {
-			$criteria->addSelectColumn(HostToContactGroupPeer::COUNT);
+								$criteria->setPrimaryTableName(HostToContactGroupPeer::TABLE_NAME);
+
+		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
+			$criteria->setDistinct();
 		}
 
-				foreach($criteria->getGroupByColumns() as $column)
-		{
-			$criteria->addSelectColumn($column);
+		if (!$criteria->hasSelectClause()) {
+			HostToContactGroupPeer::addSelectColumns($criteria);
 		}
 
-		$rs = HostToContactGroupPeer::doSelectRS($criteria, $con);
-		if ($rs->next()) {
-			return $rs->getInt(1);
-		} else {
-						return 0;
+		$criteria->clearOrderByColumns(); 		$criteria->setDbName(self::DATABASE_NAME); 
+		if ($con === null) {
+			$con = Propel::getConnection(HostToContactGroupPeer::DATABASE_NAME, Propel::CONNECTION_READ);
 		}
+
+				$stmt = BasePeer::doCount($criteria, $con);
+
+		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$count = (int) $row[0];
+		} else {
+			$count = 0; 		}
+		$stmt->closeCursor();
+		return $count;
 	}
 	
-	public static function doSelectOne(Criteria $criteria, $con = null)
+	public static function doSelectOne(Criteria $criteria, PropelPDO $con = null)
 	{
 		$critcopy = clone $criteria;
 		$critcopy->setLimit(1);
@@ -141,367 +134,444 @@ abstract class BaseHostToContactGroupPeer {
 		return null;
 	}
 	
-	public static function doSelect(Criteria $criteria, $con = null)
+	public static function doSelect(Criteria $criteria, PropelPDO $con = null)
 	{
-		return HostToContactGroupPeer::populateObjects(HostToContactGroupPeer::doSelectRS($criteria, $con));
+		return HostToContactGroupPeer::populateObjects(HostToContactGroupPeer::doSelectStmt($criteria, $con));
 	}
 	
-	public static function doSelectRS(Criteria $criteria, $con = null)
+	public static function doSelectStmt(Criteria $criteria, PropelPDO $con = null)
 	{
 		if ($con === null) {
-			$con = Propel::getConnection(self::DATABASE_NAME);
+			$con = Propel::getConnection(HostToContactGroupPeer::DATABASE_NAME, Propel::CONNECTION_READ);
 		}
 
-		if (!$criteria->getSelectColumns()) {
+		if (!$criteria->hasSelectClause()) {
 			$criteria = clone $criteria;
 			HostToContactGroupPeer::addSelectColumns($criteria);
 		}
 
 				$criteria->setDbName(self::DATABASE_NAME);
 
-						return BasePeer::doSelect($criteria, $con);
+				return BasePeer::doSelect($criteria, $con);
 	}
 	
-	public static function populateObjects(ResultSet $rs)
+	public static function addInstanceToPool(HostToContactGroup $obj, $key = null)
+	{
+		if (Propel::isInstancePoolingEnabled()) {
+			if ($key === null) {
+				$key = serialize(array((string) $obj->getHostId(), (string) $obj->getContactGroupId()));
+			} 			self::$instances[$key] = $obj;
+		}
+	}
+
+	
+	public static function removeInstanceFromPool($value)
+	{
+		if (Propel::isInstancePoolingEnabled() && $value !== null) {
+			if (is_object($value) && $value instanceof HostToContactGroup) {
+				$key = serialize(array((string) $value->getHostId(), (string) $value->getContactGroupId()));
+			} elseif (is_array($value) && count($value) === 2) {
+								$key = serialize(array((string) $value[0], (string) $value[1]));
+			} else {
+				$e = new PropelException("Invalid value passed to removeInstanceFromPool().  Expected primary key or HostToContactGroup object; got " . (is_object($value) ? get_class($value) . ' object.' : var_export($value,true)));
+				throw $e;
+			}
+
+			unset(self::$instances[$key]);
+		}
+	} 
+	
+	public static function getInstanceFromPool($key)
+	{
+		if (Propel::isInstancePoolingEnabled()) {
+			if (isset(self::$instances[$key])) {
+				return self::$instances[$key];
+			}
+		}
+		return null; 	}
+	
+	
+	public static function clearInstancePool()
+	{
+		self::$instances = array();
+	}
+	
+	
+	public static function getPrimaryKeyHashFromRow($row, $startcol = 0)
+	{
+				if ($row[$startcol + 0] === null && $row[$startcol + 1] === null) {
+			return null;
+		}
+		return serialize(array((string) $row[$startcol + 0], (string) $row[$startcol + 1]));
+	}
+
+	
+	public static function populateObjects(PDOStatement $stmt)
 	{
 		$results = array();
 	
 				$cls = HostToContactGroupPeer::getOMClass();
-		$cls = Propel::import($cls);
-				while($rs->next()) {
+		$cls = substr('.'.$cls, strrpos('.'.$cls, '.') + 1);
+				while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$key = HostToContactGroupPeer::getPrimaryKeyHashFromRow($row, 0);
+			if (null !== ($obj = HostToContactGroupPeer::getInstanceFromPool($key))) {
+																$results[] = $obj;
+			} else {
 		
-			$obj = new $cls();
-			$obj->hydrate($rs);
-			$results[] = $obj;
+				$obj = new $cls();
+				$obj->hydrate($row);
+				$results[] = $obj;
+				HostToContactGroupPeer::addInstanceToPool($obj, $key);
+			} 		}
+		$stmt->closeCursor();
+		return $results;
+	}
+
+	
+	public static function doCountJoinHost(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	{
+				$criteria = clone $criteria;
+
+								$criteria->setPrimaryTableName(HostToContactGroupPeer::TABLE_NAME);
+
+		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
+			$criteria->setDistinct();
+		}
+
+		if (!$criteria->hasSelectClause()) {
+			HostToContactGroupPeer::addSelectColumns($criteria);
+		}
+
+		$criteria->clearOrderByColumns(); 
+				$criteria->setDbName(self::DATABASE_NAME);
+
+		if ($con === null) {
+			$con = Propel::getConnection(HostToContactGroupPeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+
+		$criteria->addJoin(array(HostToContactGroupPeer::HOST_ID,), array(HostPeer::ID,), $join_behavior);
+
+		$stmt = BasePeer::doCount($criteria, $con);
+
+		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$count = (int) $row[0];
+		} else {
+			$count = 0; 		}
+		$stmt->closeCursor();
+		return $count;
+	}
+
+
+	
+	public static function doCountJoinContactGroup(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	{
+				$criteria = clone $criteria;
+
+								$criteria->setPrimaryTableName(HostToContactGroupPeer::TABLE_NAME);
+
+		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
+			$criteria->setDistinct();
+		}
+
+		if (!$criteria->hasSelectClause()) {
+			HostToContactGroupPeer::addSelectColumns($criteria);
+		}
+
+		$criteria->clearOrderByColumns(); 
+				$criteria->setDbName(self::DATABASE_NAME);
+
+		if ($con === null) {
+			$con = Propel::getConnection(HostToContactGroupPeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+
+		$criteria->addJoin(array(HostToContactGroupPeer::CONTACT_GROUP_ID,), array(ContactGroupPeer::ID,), $join_behavior);
+
+		$stmt = BasePeer::doCount($criteria, $con);
+
+		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$count = (int) $row[0];
+		} else {
+			$count = 0; 		}
+		$stmt->closeCursor();
+		return $count;
+	}
+
+
+	
+	public static function doSelectJoinHost(Criteria $c, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	{
+		$c = clone $c;
+
+				if ($c->getDbName() == Propel::getDefaultDB()) {
+			$c->setDbName(self::DATABASE_NAME);
+		}
+
+		HostToContactGroupPeer::addSelectColumns($c);
+		$startcol = (HostToContactGroupPeer::NUM_COLUMNS - HostToContactGroupPeer::NUM_LAZY_LOAD_COLUMNS);
+		HostPeer::addSelectColumns($c);
+
+		$c->addJoin(array(HostToContactGroupPeer::HOST_ID,), array(HostPeer::ID,), $join_behavior);
+		$stmt = BasePeer::doSelect($c, $con);
+		$results = array();
+
+		while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$key1 = HostToContactGroupPeer::getPrimaryKeyHashFromRow($row, 0);
+			if (null !== ($obj1 = HostToContactGroupPeer::getInstanceFromPool($key1))) {
+															} else {
+
+				$omClass = HostToContactGroupPeer::getOMClass();
+
+				$cls = substr('.'.$omClass, strrpos('.'.$omClass, '.') + 1);
+				$obj1 = new $cls();
+				$obj1->hydrate($row);
+				HostToContactGroupPeer::addInstanceToPool($obj1, $key1);
+			} 
+			$key2 = HostPeer::getPrimaryKeyHashFromRow($row, $startcol);
+			if ($key2 !== null) {
+				$obj2 = HostPeer::getInstanceFromPool($key2);
+				if (!$obj2) {
+
+					$omClass = HostPeer::getOMClass();
+
+					$cls = substr('.'.$omClass, strrpos('.'.$omClass, '.') + 1);
+					$obj2 = new $cls();
+					$obj2->hydrate($row, $startcol);
+					HostPeer::addInstanceToPool($obj2, $key2);
+				} 
+								$obj2->addHostToContactGroup($obj1);
+
+			} 
+			$results[] = $obj1;
+		}
+		$stmt->closeCursor();
+		return $results;
+	}
+
+
+	
+	public static function doSelectJoinContactGroup(Criteria $c, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	{
+		$c = clone $c;
+
+				if ($c->getDbName() == Propel::getDefaultDB()) {
+			$c->setDbName(self::DATABASE_NAME);
+		}
+
+		HostToContactGroupPeer::addSelectColumns($c);
+		$startcol = (HostToContactGroupPeer::NUM_COLUMNS - HostToContactGroupPeer::NUM_LAZY_LOAD_COLUMNS);
+		ContactGroupPeer::addSelectColumns($c);
+
+		$c->addJoin(array(HostToContactGroupPeer::CONTACT_GROUP_ID,), array(ContactGroupPeer::ID,), $join_behavior);
+		$stmt = BasePeer::doSelect($c, $con);
+		$results = array();
+
+		while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$key1 = HostToContactGroupPeer::getPrimaryKeyHashFromRow($row, 0);
+			if (null !== ($obj1 = HostToContactGroupPeer::getInstanceFromPool($key1))) {
+															} else {
+
+				$omClass = HostToContactGroupPeer::getOMClass();
+
+				$cls = substr('.'.$omClass, strrpos('.'.$omClass, '.') + 1);
+				$obj1 = new $cls();
+				$obj1->hydrate($row);
+				HostToContactGroupPeer::addInstanceToPool($obj1, $key1);
+			} 
+			$key2 = ContactGroupPeer::getPrimaryKeyHashFromRow($row, $startcol);
+			if ($key2 !== null) {
+				$obj2 = ContactGroupPeer::getInstanceFromPool($key2);
+				if (!$obj2) {
+
+					$omClass = ContactGroupPeer::getOMClass();
+
+					$cls = substr('.'.$omClass, strrpos('.'.$omClass, '.') + 1);
+					$obj2 = new $cls();
+					$obj2->hydrate($row, $startcol);
+					ContactGroupPeer::addInstanceToPool($obj2, $key2);
+				} 
+								$obj2->addHostToContactGroup($obj1);
+
+			} 
+			$results[] = $obj1;
+		}
+		$stmt->closeCursor();
+		return $results;
+	}
+
+
+	
+	public static function doCountJoinAll(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	{
+				$criteria = clone $criteria;
+
+								$criteria->setPrimaryTableName(HostToContactGroupPeer::TABLE_NAME);
+
+		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
+			$criteria->setDistinct();
+		}
+
+		if (!$criteria->hasSelectClause()) {
+			HostToContactGroupPeer::addSelectColumns($criteria);
+		}
+
+		$criteria->clearOrderByColumns(); 
+				$criteria->setDbName(self::DATABASE_NAME);
+
+		if ($con === null) {
+			$con = Propel::getConnection(HostToContactGroupPeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+
+		$criteria->addJoin(array(HostToContactGroupPeer::HOST_ID,), array(HostPeer::ID,), $join_behavior);
+		$criteria->addJoin(array(HostToContactGroupPeer::CONTACT_GROUP_ID,), array(ContactGroupPeer::ID,), $join_behavior);
+		$stmt = BasePeer::doCount($criteria, $con);
+
+		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$count = (int) $row[0];
+		} else {
+			$count = 0; 		}
+		$stmt->closeCursor();
+		return $count;
+	}
+
+	
+	public static function doSelectJoinAll(Criteria $c, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	{
+		$c = clone $c;
+
+				if ($c->getDbName() == Propel::getDefaultDB()) {
+			$c->setDbName(self::DATABASE_NAME);
+		}
+
+		HostToContactGroupPeer::addSelectColumns($c);
+		$startcol2 = (HostToContactGroupPeer::NUM_COLUMNS - HostToContactGroupPeer::NUM_LAZY_LOAD_COLUMNS);
+
+		HostPeer::addSelectColumns($c);
+		$startcol3 = $startcol2 + (HostPeer::NUM_COLUMNS - HostPeer::NUM_LAZY_LOAD_COLUMNS);
+
+		ContactGroupPeer::addSelectColumns($c);
+		$startcol4 = $startcol3 + (ContactGroupPeer::NUM_COLUMNS - ContactGroupPeer::NUM_LAZY_LOAD_COLUMNS);
+
+		$c->addJoin(array(HostToContactGroupPeer::HOST_ID,), array(HostPeer::ID,), $join_behavior);
+		$c->addJoin(array(HostToContactGroupPeer::CONTACT_GROUP_ID,), array(ContactGroupPeer::ID,), $join_behavior);
+		$stmt = BasePeer::doSelect($c, $con);
+		$results = array();
+
+		while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$key1 = HostToContactGroupPeer::getPrimaryKeyHashFromRow($row, 0);
+			if (null !== ($obj1 = HostToContactGroupPeer::getInstanceFromPool($key1))) {
+															} else {
+				$omClass = HostToContactGroupPeer::getOMClass();
+
+				$cls = substr('.'.$omClass, strrpos('.'.$omClass, '.') + 1);
+				$obj1 = new $cls();
+				$obj1->hydrate($row);
+				HostToContactGroupPeer::addInstanceToPool($obj1, $key1);
+			} 
 			
-		}
-		return $results;
-	}
+			$key2 = HostPeer::getPrimaryKeyHashFromRow($row, $startcol2);
+			if ($key2 !== null) {
+				$obj2 = HostPeer::getInstanceFromPool($key2);
+				if (!$obj2) {
 
-	
-	public static function doCountJoinHost(Criteria $criteria, $distinct = false, $con = null)
-	{
-				$criteria = clone $criteria;
-
-				$criteria->clearSelectColumns()->clearOrderByColumns();
-		if ($distinct || in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
-			$criteria->addSelectColumn(HostToContactGroupPeer::COUNT_DISTINCT);
-		} else {
-			$criteria->addSelectColumn(HostToContactGroupPeer::COUNT);
-		}
-
-				foreach($criteria->getGroupByColumns() as $column)
-		{
-			$criteria->addSelectColumn($column);
-		}
-
-		$criteria->addJoin(HostToContactGroupPeer::HOST_ID, HostPeer::ID);
-
-		$rs = HostToContactGroupPeer::doSelectRS($criteria, $con);
-		if ($rs->next()) {
-			return $rs->getInt(1);
-		} else {
-						return 0;
-		}
-	}
+					$omClass = HostPeer::getOMClass();
 
 
-	
-	public static function doCountJoinContactGroup(Criteria $criteria, $distinct = false, $con = null)
-	{
-				$criteria = clone $criteria;
+					$cls = substr('.'.$omClass, strrpos('.'.$omClass, '.') + 1);
+					$obj2 = new $cls();
+					$obj2->hydrate($row, $startcol2);
+					HostPeer::addInstanceToPool($obj2, $key2);
+				} 
+								$obj2->addHostToContactGroup($obj1);
+			} 
+			
+			$key3 = ContactGroupPeer::getPrimaryKeyHashFromRow($row, $startcol3);
+			if ($key3 !== null) {
+				$obj3 = ContactGroupPeer::getInstanceFromPool($key3);
+				if (!$obj3) {
 
-				$criteria->clearSelectColumns()->clearOrderByColumns();
-		if ($distinct || in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
-			$criteria->addSelectColumn(HostToContactGroupPeer::COUNT_DISTINCT);
-		} else {
-			$criteria->addSelectColumn(HostToContactGroupPeer::COUNT);
-		}
-
-				foreach($criteria->getGroupByColumns() as $column)
-		{
-			$criteria->addSelectColumn($column);
-		}
-
-		$criteria->addJoin(HostToContactGroupPeer::CONTACT_GROUP_ID, ContactGroupPeer::ID);
-
-		$rs = HostToContactGroupPeer::doSelectRS($criteria, $con);
-		if ($rs->next()) {
-			return $rs->getInt(1);
-		} else {
-						return 0;
-		}
-	}
+					$omClass = ContactGroupPeer::getOMClass();
 
 
-	
-	public static function doSelectJoinHost(Criteria $c, $con = null)
-	{
-		$c = clone $c;
-
-				if ($c->getDbName() == Propel::getDefaultDB()) {
-			$c->setDbName(self::DATABASE_NAME);
-		}
-
-		HostToContactGroupPeer::addSelectColumns($c);
-		$startcol = (HostToContactGroupPeer::NUM_COLUMNS - HostToContactGroupPeer::NUM_LAZY_LOAD_COLUMNS) + 1;
-		HostPeer::addSelectColumns($c);
-
-		$c->addJoin(HostToContactGroupPeer::HOST_ID, HostPeer::ID);
-		$rs = BasePeer::doSelect($c, $con);
-		$results = array();
-
-		while($rs->next()) {
-
-			$omClass = HostToContactGroupPeer::getOMClass();
-
-			$cls = Propel::import($omClass);
-			$obj1 = new $cls();
-			$obj1->hydrate($rs);
-
-			$omClass = HostPeer::getOMClass();
-
-			$cls = Propel::import($omClass);
-			$obj2 = new $cls();
-			$obj2->hydrate($rs, $startcol);
-
-			$newObject = true;
-			foreach($results as $temp_obj1) {
-				$temp_obj2 = $temp_obj1->getHost(); 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
-					$newObject = false;
-										$temp_obj2->addHostToContactGroup($obj1); 					break;
-				}
-			}
-			if ($newObject) {
-				$obj2->initHostToContactGroups();
-				$obj2->addHostToContactGroup($obj1); 			}
+					$cls = substr('.'.$omClass, strrpos('.'.$omClass, '.') + 1);
+					$obj3 = new $cls();
+					$obj3->hydrate($row, $startcol3);
+					ContactGroupPeer::addInstanceToPool($obj3, $key3);
+				} 
+								$obj3->addHostToContactGroup($obj1);
+			} 
 			$results[] = $obj1;
 		}
+		$stmt->closeCursor();
 		return $results;
 	}
 
 
 	
-	public static function doSelectJoinContactGroup(Criteria $c, $con = null)
-	{
-		$c = clone $c;
-
-				if ($c->getDbName() == Propel::getDefaultDB()) {
-			$c->setDbName(self::DATABASE_NAME);
-		}
-
-		HostToContactGroupPeer::addSelectColumns($c);
-		$startcol = (HostToContactGroupPeer::NUM_COLUMNS - HostToContactGroupPeer::NUM_LAZY_LOAD_COLUMNS) + 1;
-		ContactGroupPeer::addSelectColumns($c);
-
-		$c->addJoin(HostToContactGroupPeer::CONTACT_GROUP_ID, ContactGroupPeer::ID);
-		$rs = BasePeer::doSelect($c, $con);
-		$results = array();
-
-		while($rs->next()) {
-
-			$omClass = HostToContactGroupPeer::getOMClass();
-
-			$cls = Propel::import($omClass);
-			$obj1 = new $cls();
-			$obj1->hydrate($rs);
-
-			$omClass = ContactGroupPeer::getOMClass();
-
-			$cls = Propel::import($omClass);
-			$obj2 = new $cls();
-			$obj2->hydrate($rs, $startcol);
-
-			$newObject = true;
-			foreach($results as $temp_obj1) {
-				$temp_obj2 = $temp_obj1->getContactGroup(); 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
-					$newObject = false;
-										$temp_obj2->addHostToContactGroup($obj1); 					break;
-				}
-			}
-			if ($newObject) {
-				$obj2->initHostToContactGroups();
-				$obj2->addHostToContactGroup($obj1); 			}
-			$results[] = $obj1;
-		}
-		return $results;
-	}
-
-
-	
-	public static function doCountJoinAll(Criteria $criteria, $distinct = false, $con = null)
-	{
-		$criteria = clone $criteria;
-
-				$criteria->clearSelectColumns()->clearOrderByColumns();
-		if ($distinct || in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
-			$criteria->addSelectColumn(HostToContactGroupPeer::COUNT_DISTINCT);
-		} else {
-			$criteria->addSelectColumn(HostToContactGroupPeer::COUNT);
-		}
-
-				foreach($criteria->getGroupByColumns() as $column)
-		{
-			$criteria->addSelectColumn($column);
-		}
-
-		$criteria->addJoin(HostToContactGroupPeer::HOST_ID, HostPeer::ID);
-
-		$criteria->addJoin(HostToContactGroupPeer::CONTACT_GROUP_ID, ContactGroupPeer::ID);
-
-		$rs = HostToContactGroupPeer::doSelectRS($criteria, $con);
-		if ($rs->next()) {
-			return $rs->getInt(1);
-		} else {
-						return 0;
-		}
-	}
-
-
-	
-	public static function doSelectJoinAll(Criteria $c, $con = null)
-	{
-		$c = clone $c;
-
-				if ($c->getDbName() == Propel::getDefaultDB()) {
-			$c->setDbName(self::DATABASE_NAME);
-		}
-
-		HostToContactGroupPeer::addSelectColumns($c);
-		$startcol2 = (HostToContactGroupPeer::NUM_COLUMNS - HostToContactGroupPeer::NUM_LAZY_LOAD_COLUMNS) + 1;
-
-		HostPeer::addSelectColumns($c);
-		$startcol3 = $startcol2 + HostPeer::NUM_COLUMNS;
-
-		ContactGroupPeer::addSelectColumns($c);
-		$startcol4 = $startcol3 + ContactGroupPeer::NUM_COLUMNS;
-
-		$c->addJoin(HostToContactGroupPeer::HOST_ID, HostPeer::ID);
-
-		$c->addJoin(HostToContactGroupPeer::CONTACT_GROUP_ID, ContactGroupPeer::ID);
-
-		$rs = BasePeer::doSelect($c, $con);
-		$results = array();
-
-		while($rs->next()) {
-
-			$omClass = HostToContactGroupPeer::getOMClass();
-
-
-			$cls = Propel::import($omClass);
-			$obj1 = new $cls();
-			$obj1->hydrate($rs);
-
-
-					
-			$omClass = HostPeer::getOMClass();
-
-
-			$cls = Propel::import($omClass);
-			$obj2 = new $cls();
-			$obj2->hydrate($rs, $startcol2);
-
-			$newObject = true;
-			for ($j=0, $resCount=count($results); $j < $resCount; $j++) {
-				$temp_obj1 = $results[$j];
-				$temp_obj2 = $temp_obj1->getHost(); 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
-					$newObject = false;
-					$temp_obj2->addHostToContactGroup($obj1); 					break;
-				}
-			}
-
-			if ($newObject) {
-				$obj2->initHostToContactGroups();
-				$obj2->addHostToContactGroup($obj1);
-			}
-
-
-					
-			$omClass = ContactGroupPeer::getOMClass();
-
-
-			$cls = Propel::import($omClass);
-			$obj3 = new $cls();
-			$obj3->hydrate($rs, $startcol3);
-
-			$newObject = true;
-			for ($j=0, $resCount=count($results); $j < $resCount; $j++) {
-				$temp_obj1 = $results[$j];
-				$temp_obj3 = $temp_obj1->getContactGroup(); 				if ($temp_obj3->getPrimaryKey() === $obj3->getPrimaryKey()) {
-					$newObject = false;
-					$temp_obj3->addHostToContactGroup($obj1); 					break;
-				}
-			}
-
-			if ($newObject) {
-				$obj3->initHostToContactGroups();
-				$obj3->addHostToContactGroup($obj1);
-			}
-
-			$results[] = $obj1;
-		}
-		return $results;
-	}
-
-
-	
-	public static function doCountJoinAllExceptHost(Criteria $criteria, $distinct = false, $con = null)
+	public static function doCountJoinAllExceptHost(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
 				$criteria = clone $criteria;
 
-				$criteria->clearSelectColumns()->clearOrderByColumns();
-		if ($distinct || in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
-			$criteria->addSelectColumn(HostToContactGroupPeer::COUNT_DISTINCT);
+		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
+			$criteria->setDistinct();
+		}
+
+		if (!$criteria->hasSelectClause()) {
+			HostToContactGroupPeer::addSelectColumns($criteria);
+		}
+
+		$criteria->clearOrderByColumns(); 
+				$criteria->setDbName(self::DATABASE_NAME);
+
+		if ($con === null) {
+			$con = Propel::getConnection(HostToContactGroupPeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+	
+				$criteria->addJoin(array(HostToContactGroupPeer::CONTACT_GROUP_ID,), array(ContactGroupPeer::ID,), $join_behavior);
+		$stmt = BasePeer::doCount($criteria, $con);
+
+		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$count = (int) $row[0];
 		} else {
-			$criteria->addSelectColumn(HostToContactGroupPeer::COUNT);
-		}
-
-				foreach($criteria->getGroupByColumns() as $column)
-		{
-			$criteria->addSelectColumn($column);
-		}
-
-		$criteria->addJoin(HostToContactGroupPeer::CONTACT_GROUP_ID, ContactGroupPeer::ID);
-
-		$rs = HostToContactGroupPeer::doSelectRS($criteria, $con);
-		if ($rs->next()) {
-			return $rs->getInt(1);
-		} else {
-						return 0;
-		}
+			$count = 0; 		}
+		$stmt->closeCursor();
+		return $count;
 	}
 
 
 	
-	public static function doCountJoinAllExceptContactGroup(Criteria $criteria, $distinct = false, $con = null)
+	public static function doCountJoinAllExceptContactGroup(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
 				$criteria = clone $criteria;
 
-				$criteria->clearSelectColumns()->clearOrderByColumns();
-		if ($distinct || in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
-			$criteria->addSelectColumn(HostToContactGroupPeer::COUNT_DISTINCT);
+		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
+			$criteria->setDistinct();
+		}
+
+		if (!$criteria->hasSelectClause()) {
+			HostToContactGroupPeer::addSelectColumns($criteria);
+		}
+
+		$criteria->clearOrderByColumns(); 
+				$criteria->setDbName(self::DATABASE_NAME);
+
+		if ($con === null) {
+			$con = Propel::getConnection(HostToContactGroupPeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+	
+				$criteria->addJoin(array(HostToContactGroupPeer::HOST_ID,), array(HostPeer::ID,), $join_behavior);
+		$stmt = BasePeer::doCount($criteria, $con);
+
+		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$count = (int) $row[0];
 		} else {
-			$criteria->addSelectColumn(HostToContactGroupPeer::COUNT);
-		}
-
-				foreach($criteria->getGroupByColumns() as $column)
-		{
-			$criteria->addSelectColumn($column);
-		}
-
-		$criteria->addJoin(HostToContactGroupPeer::HOST_ID, HostPeer::ID);
-
-		$rs = HostToContactGroupPeer::doSelectRS($criteria, $con);
-		if ($rs->next()) {
-			return $rs->getInt(1);
-		} else {
-						return 0;
-		}
+			$count = 0; 		}
+		$stmt->closeCursor();
+		return $count;
 	}
 
 
 	
-	public static function doSelectJoinAllExceptHost(Criteria $c, $con = null)
+	public static function doSelectJoinAllExceptHost(Criteria $c, $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
 		$c = clone $c;
 
@@ -510,55 +580,53 @@ abstract class BaseHostToContactGroupPeer {
 		}
 
 		HostToContactGroupPeer::addSelectColumns($c);
-		$startcol2 = (HostToContactGroupPeer::NUM_COLUMNS - HostToContactGroupPeer::NUM_LAZY_LOAD_COLUMNS) + 1;
+		$startcol2 = (HostToContactGroupPeer::NUM_COLUMNS - HostToContactGroupPeer::NUM_LAZY_LOAD_COLUMNS);
 
 		ContactGroupPeer::addSelectColumns($c);
-		$startcol3 = $startcol2 + ContactGroupPeer::NUM_COLUMNS;
+		$startcol3 = $startcol2 + (ContactGroupPeer::NUM_COLUMNS - ContactGroupPeer::NUM_LAZY_LOAD_COLUMNS);
 
-		$c->addJoin(HostToContactGroupPeer::CONTACT_GROUP_ID, ContactGroupPeer::ID);
+				$c->addJoin(array(HostToContactGroupPeer::CONTACT_GROUP_ID,), array(ContactGroupPeer::ID,), $join_behavior);
 
-
-		$rs = BasePeer::doSelect($c, $con);
+		$stmt = BasePeer::doSelect($c, $con);
 		$results = array();
 
-		while($rs->next()) {
+		while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$key1 = HostToContactGroupPeer::getPrimaryKeyHashFromRow($row, 0);
+			if (null !== ($obj1 = HostToContactGroupPeer::getInstanceFromPool($key1))) {
+															} else {
+				$omClass = HostToContactGroupPeer::getOMClass();
 
-			$omClass = HostToContactGroupPeer::getOMClass();
+				$cls = substr('.'.$omClass, strrpos('.'.$omClass, '.') + 1);
+				$obj1 = new $cls();
+				$obj1->hydrate($row);
+				HostToContactGroupPeer::addInstanceToPool($obj1, $key1);
+			} 
+				
+				$key2 = ContactGroupPeer::getPrimaryKeyHashFromRow($row, $startcol2);
+				if ($key2 !== null) {
+					$obj2 = ContactGroupPeer::getInstanceFromPool($key2);
+					if (!$obj2) {
+	
+						$omClass = ContactGroupPeer::getOMClass();
 
-			$cls = Propel::import($omClass);
-			$obj1 = new $cls();
-			$obj1->hydrate($rs);
 
-			$omClass = ContactGroupPeer::getOMClass();
+					$cls = substr('.'.$omClass, strrpos('.'.$omClass, '.') + 1);
+					$obj2 = new $cls();
+					$obj2->hydrate($row, $startcol2);
+					ContactGroupPeer::addInstanceToPool($obj2, $key2);
+				} 
+								$obj2->addHostToContactGroup($obj1);
 
-
-			$cls = Propel::import($omClass);
-			$obj2  = new $cls();
-			$obj2->hydrate($rs, $startcol2);
-
-			$newObject = true;
-			for ($j=0, $resCount=count($results); $j < $resCount; $j++) {
-				$temp_obj1 = $results[$j];
-				$temp_obj2 = $temp_obj1->getContactGroup(); 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
-					$newObject = false;
-					$temp_obj2->addHostToContactGroup($obj1);
-					break;
-				}
-			}
-
-			if ($newObject) {
-				$obj2->initHostToContactGroups();
-				$obj2->addHostToContactGroup($obj1);
-			}
-
+			} 
 			$results[] = $obj1;
 		}
+		$stmt->closeCursor();
 		return $results;
 	}
 
 
 	
-	public static function doSelectJoinAllExceptContactGroup(Criteria $c, $con = null)
+	public static function doSelectJoinAllExceptContactGroup(Criteria $c, $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
 		$c = clone $c;
 
@@ -567,52 +635,55 @@ abstract class BaseHostToContactGroupPeer {
 		}
 
 		HostToContactGroupPeer::addSelectColumns($c);
-		$startcol2 = (HostToContactGroupPeer::NUM_COLUMNS - HostToContactGroupPeer::NUM_LAZY_LOAD_COLUMNS) + 1;
+		$startcol2 = (HostToContactGroupPeer::NUM_COLUMNS - HostToContactGroupPeer::NUM_LAZY_LOAD_COLUMNS);
 
 		HostPeer::addSelectColumns($c);
-		$startcol3 = $startcol2 + HostPeer::NUM_COLUMNS;
+		$startcol3 = $startcol2 + (HostPeer::NUM_COLUMNS - HostPeer::NUM_LAZY_LOAD_COLUMNS);
 
-		$c->addJoin(HostToContactGroupPeer::HOST_ID, HostPeer::ID);
+				$c->addJoin(array(HostToContactGroupPeer::HOST_ID,), array(HostPeer::ID,), $join_behavior);
 
-
-		$rs = BasePeer::doSelect($c, $con);
+		$stmt = BasePeer::doSelect($c, $con);
 		$results = array();
 
-		while($rs->next()) {
+		while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$key1 = HostToContactGroupPeer::getPrimaryKeyHashFromRow($row, 0);
+			if (null !== ($obj1 = HostToContactGroupPeer::getInstanceFromPool($key1))) {
+															} else {
+				$omClass = HostToContactGroupPeer::getOMClass();
 
-			$omClass = HostToContactGroupPeer::getOMClass();
+				$cls = substr('.'.$omClass, strrpos('.'.$omClass, '.') + 1);
+				$obj1 = new $cls();
+				$obj1->hydrate($row);
+				HostToContactGroupPeer::addInstanceToPool($obj1, $key1);
+			} 
+				
+				$key2 = HostPeer::getPrimaryKeyHashFromRow($row, $startcol2);
+				if ($key2 !== null) {
+					$obj2 = HostPeer::getInstanceFromPool($key2);
+					if (!$obj2) {
+	
+						$omClass = HostPeer::getOMClass();
 
-			$cls = Propel::import($omClass);
-			$obj1 = new $cls();
-			$obj1->hydrate($rs);
 
-			$omClass = HostPeer::getOMClass();
+					$cls = substr('.'.$omClass, strrpos('.'.$omClass, '.') + 1);
+					$obj2 = new $cls();
+					$obj2->hydrate($row, $startcol2);
+					HostPeer::addInstanceToPool($obj2, $key2);
+				} 
+								$obj2->addHostToContactGroup($obj1);
 
-
-			$cls = Propel::import($omClass);
-			$obj2  = new $cls();
-			$obj2->hydrate($rs, $startcol2);
-
-			$newObject = true;
-			for ($j=0, $resCount=count($results); $j < $resCount; $j++) {
-				$temp_obj1 = $results[$j];
-				$temp_obj2 = $temp_obj1->getHost(); 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
-					$newObject = false;
-					$temp_obj2->addHostToContactGroup($obj1);
-					break;
-				}
-			}
-
-			if ($newObject) {
-				$obj2->initHostToContactGroups();
-				$obj2->addHostToContactGroup($obj1);
-			}
-
+			} 
 			$results[] = $obj1;
 		}
+		$stmt->closeCursor();
 		return $results;
 	}
 
+
+  static public function getUniqueColumnNames()
+  {
+    return array();
+  }
 	
 	public static function getTableMap()
 	{
@@ -626,10 +697,10 @@ abstract class BaseHostToContactGroupPeer {
 	}
 
 	
-	public static function doInsert($values, $con = null)
+	public static function doInsert($values, PropelPDO $con = null)
 	{
 		if ($con === null) {
-			$con = Propel::getConnection(self::DATABASE_NAME);
+			$con = Propel::getConnection(HostToContactGroupPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
 		}
 
 		if ($values instanceof Criteria) {
@@ -640,11 +711,11 @@ abstract class BaseHostToContactGroupPeer {
 				$criteria->setDbName(self::DATABASE_NAME);
 
 		try {
-									$con->begin();
+									$con->beginTransaction();
 			$pk = BasePeer::doInsert($criteria, $con);
 			$con->commit();
 		} catch(PropelException $e) {
-			$con->rollback();
+			$con->rollBack();
 			throw $e;
 		}
 
@@ -652,10 +723,10 @@ abstract class BaseHostToContactGroupPeer {
 	}
 
 	
-	public static function doUpdate($values, $con = null)
+	public static function doUpdate($values, PropelPDO $con = null)
 	{
 		if ($con === null) {
-			$con = Propel::getConnection(self::DATABASE_NAME);
+			$con = Propel::getConnection(HostToContactGroupPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
 		}
 
 		$selectCriteria = new Criteria(self::DATABASE_NAME);
@@ -679,59 +750,64 @@ abstract class BaseHostToContactGroupPeer {
 	public static function doDeleteAll($con = null)
 	{
 		if ($con === null) {
-			$con = Propel::getConnection(self::DATABASE_NAME);
+			$con = Propel::getConnection(HostToContactGroupPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
 		}
 		$affectedRows = 0; 		try {
-									$con->begin();
+									$con->beginTransaction();
 			$affectedRows += BasePeer::doDeleteAll(HostToContactGroupPeer::TABLE_NAME, $con);
 			$con->commit();
 			return $affectedRows;
 		} catch (PropelException $e) {
-			$con->rollback();
+			$con->rollBack();
 			throw $e;
 		}
 	}
 
 	
-	 public static function doDelete($values, $con = null)
+	 public static function doDelete($values, PropelPDO $con = null)
 	 {
 		if ($con === null) {
-			$con = Propel::getConnection(HostToContactGroupPeer::DATABASE_NAME);
+			$con = Propel::getConnection(HostToContactGroupPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
 		}
 
 		if ($values instanceof Criteria) {
-			$criteria = clone $values; 		} elseif ($values instanceof HostToContactGroup) {
+												HostToContactGroupPeer::clearInstancePool();
 
-			$criteria = $values->buildPkeyCriteria();
+						$criteria = clone $values;
+		} elseif ($values instanceof HostToContactGroup) {
+						HostToContactGroupPeer::removeInstanceFromPool($values);
+						$criteria = $values->buildPkeyCriteria();
 		} else {
-						$criteria = new Criteria(self::DATABASE_NAME);
-												if(count($values) == count($values, COUNT_RECURSIVE))
-			{
+			
+
+
+			$criteria = new Criteria(self::DATABASE_NAME);
+												if (count($values) == count($values, COUNT_RECURSIVE)) {
 								$values = array($values);
 			}
-			$vals = array();
-			foreach($values as $value)
-			{
 
-				$vals[0][] = $value[0];
-				$vals[1][] = $value[1];
+			foreach ($values as $value) {
+
+				$criterion = $criteria->getNewCriterion(HostToContactGroupPeer::HOST_ID, $value[0]);
+				$criterion->addAnd($criteria->getNewCriterion(HostToContactGroupPeer::CONTACT_GROUP_ID, $value[1]));
+				$criteria->addOr($criterion);
+
+								HostToContactGroupPeer::removeInstanceFromPool($value);
 			}
-
-			$criteria->add(HostToContactGroupPeer::HOST_ID, $vals[0], Criteria::IN);
-			$criteria->add(HostToContactGroupPeer::CONTACT_GROUP_ID, $vals[1], Criteria::IN);
 		}
 
 				$criteria->setDbName(self::DATABASE_NAME);
 
 		$affectedRows = 0; 
 		try {
-									$con->begin();
+									$con->beginTransaction();
 			
 			$affectedRows += BasePeer::doDelete($criteria, $con);
+
 			$con->commit();
 			return $affectedRows;
 		} catch (PropelException $e) {
-			$con->rollback();
+			$con->rollBack();
 			throw $e;
 		}
 	}
@@ -749,7 +825,7 @@ abstract class BaseHostToContactGroupPeer {
 				$cols = array($cols);
 			}
 
-			foreach($cols as $colName) {
+			foreach ($cols as $colName) {
 				if ($tableMap->containsColumn($colName)) {
 					$get = 'get' . $tableMap->getColumn($colName)->getPhpName();
 					$columns[$colName] = $obj->$get();
@@ -764,7 +840,6 @@ abstract class BaseHostToContactGroupPeer {
         $request = sfContext::getInstance()->getRequest();
         foreach ($res as $failed) {
             $col = HostToContactGroupPeer::translateFieldname($failed->getColumn(), BasePeer::TYPE_COLNAME, BasePeer::TYPE_PHPNAME);
-            $request->setError($col, $failed->getMessage());
         }
     }
 
@@ -772,11 +847,16 @@ abstract class BaseHostToContactGroupPeer {
 	}
 
 	
-	public static function retrieveByPK( $host_id, $contact_group_id, $con = null) {
-		if ($con === null) {
-			$con = Propel::getConnection(self::DATABASE_NAME);
+	public static function retrieveByPK($host_id, $contact_group_id, PropelPDO $con = null) {
+		$key = serialize(array((string) $host_id, (string) $contact_group_id));
+ 		if (null !== ($obj = HostToContactGroupPeer::getInstanceFromPool($key))) {
+ 			return $obj;
 		}
-		$criteria = new Criteria();
+
+		if ($con === null) {
+			$con = Propel::getConnection(HostToContactGroupPeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+		$criteria = new Criteria(HostToContactGroupPeer::DATABASE_NAME);
 		$criteria->add(HostToContactGroupPeer::HOST_ID, $host_id);
 		$criteria->add(HostToContactGroupPeer::CONTACT_GROUP_ID, $contact_group_id);
 		$v = HostToContactGroupPeer::doSelect($criteria, $con);
@@ -784,13 +864,6 @@ abstract class BaseHostToContactGroupPeer {
 		return !empty($v) ? $v[0] : null;
 	}
 } 
-if (Propel::isInit()) {
-			try {
-		BaseHostToContactGroupPeer::getMapBuilder();
-	} catch (Exception $e) {
-		Propel::log('Could not initialize Peer: ' . $e->getMessage(), Propel::LOG_ERR);
-	}
-} else {
-			require_once 'lib/model/map/HostToContactGroupMapBuilder.php';
-	Propel::registerMapBuilder('lib.model.map.HostToContactGroupMapBuilder');
-}
+
+Propel::getDatabaseMap(BaseHostToContactGroupPeer::DATABASE_NAME)->addTableBuilder(BaseHostToContactGroupPeer::TABLE_NAME, BaseHostToContactGroupPeer::getMapBuilder());
+

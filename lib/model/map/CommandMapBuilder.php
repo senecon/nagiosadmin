@@ -2,7 +2,7 @@
 
 
 
-class CommandMapBuilder {
+class CommandMapBuilder implements MapBuilder {
 
 	
 	const CLASS_NAME = 'lib.model.map.CommandMapBuilder';
@@ -25,24 +25,25 @@ class CommandMapBuilder {
 	
 	public function doBuild()
 	{
-		$this->dbMap = Propel::getDatabaseMap('propel');
+		$this->dbMap = Propel::getDatabaseMap(CommandPeer::DATABASE_NAME);
 
-		$tMap = $this->dbMap->addTable('command');
+		$tMap = $this->dbMap->addTable(CommandPeer::TABLE_NAME);
 		$tMap->setPhpName('Command');
+		$tMap->setClassname('Command');
 
 		$tMap->setUseIdGenerator(true);
 
-		$tMap->addPrimaryKey('ID', 'Id', 'int', CreoleTypes::INTEGER, true, null);
+		$tMap->addPrimaryKey('ID', 'Id', 'INTEGER', true, null);
 
-		$tMap->addColumn('NAME', 'Name', 'string', CreoleTypes::VARCHAR, true, 255);
+		$tMap->addColumn('NAME', 'Name', 'VARCHAR', true, 255);
 
-		$tMap->addColumn('ALIAS', 'Alias', 'string', CreoleTypes::VARCHAR, true, 255);
+		$tMap->addColumn('ALIAS', 'Alias', 'VARCHAR', true, 255);
 
-		$tMap->addColumn('COMMAND', 'Command', 'string', CreoleTypes::LONGVARCHAR, true, null);
+		$tMap->addColumn('COMMAND', 'Command', 'LONGVARCHAR', true, null);
 
-		$tMap->addColumn('CREATED_AT', 'CreatedAt', 'int', CreoleTypes::TIMESTAMP, false, null);
+		$tMap->addColumn('CREATED_AT', 'CreatedAt', 'TIMESTAMP', false, null);
 
-		$tMap->addColumn('UPDATED_AT', 'UpdatedAt', 'int', CreoleTypes::TIMESTAMP, false, null);
+		$tMap->addColumn('UPDATED_AT', 'UpdatedAt', 'TIMESTAMP', false, null);
 
 	} 
 } 

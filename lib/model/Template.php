@@ -45,7 +45,7 @@ class Template extends BaseTemplate
     'service'
   );
   
-  public function delete($con = null)
+  public function delete(PropelPDO $con = null)
   {
     if (in_array($this->getName(),$this->template_names))
     {

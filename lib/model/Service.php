@@ -80,7 +80,7 @@ class Service extends BaseService
     return $this->getAlias();
   }
   
-  public function toArray($keyType = BasePeer::TYPE_PHPNAME)
+  public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true)
   {
     $result = parent::toArray($keyType);
     $result['command'] = $this->getCommand()->getName();

@@ -2,7 +2,7 @@
 
 
 
-class OsMapBuilder {
+class OsMapBuilder implements MapBuilder {
 
 	
 	const CLASS_NAME = 'lib.model.map.OsMapBuilder';
@@ -25,22 +25,23 @@ class OsMapBuilder {
 	
 	public function doBuild()
 	{
-		$this->dbMap = Propel::getDatabaseMap('propel');
+		$this->dbMap = Propel::getDatabaseMap(OsPeer::DATABASE_NAME);
 
-		$tMap = $this->dbMap->addTable('os');
+		$tMap = $this->dbMap->addTable(OsPeer::TABLE_NAME);
 		$tMap->setPhpName('Os');
+		$tMap->setClassname('Os');
 
 		$tMap->setUseIdGenerator(true);
 
-		$tMap->addPrimaryKey('ID', 'Id', 'int', CreoleTypes::INTEGER, true, null);
+		$tMap->addPrimaryKey('ID', 'Id', 'INTEGER', true, null);
 
-		$tMap->addColumn('NAME', 'Name', 'string', CreoleTypes::VARCHAR, true, 255);
+		$tMap->addColumn('NAME', 'Name', 'VARCHAR', true, 255);
 
-		$tMap->addColumn('IMAGE', 'Image', 'string', CreoleTypes::VARCHAR, true, 255);
+		$tMap->addColumn('IMAGE', 'Image', 'VARCHAR', true, 255);
 
-		$tMap->addColumn('CREATED_AT', 'CreatedAt', 'int', CreoleTypes::TIMESTAMP, false, null);
+		$tMap->addColumn('CREATED_AT', 'CreatedAt', 'TIMESTAMP', false, null);
 
-		$tMap->addColumn('UPDATED_AT', 'UpdatedAt', 'int', CreoleTypes::TIMESTAMP, false, null);
+		$tMap->addColumn('UPDATED_AT', 'UpdatedAt', 'TIMESTAMP', false, null);
 
 	} 
 } 

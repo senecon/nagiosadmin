@@ -4,13 +4,13 @@
 abstract class BaseServiceToHost extends BaseObject  implements Persistent {
 
 
+  const PEER = 'ServiceToHostPeer';
+
 	
 	protected static $peer;
 
-
 	
 	protected $service_id;
-
 
 	
 	protected $host_id;
@@ -28,26 +28,33 @@ abstract class BaseServiceToHost extends BaseObject  implements Persistent {
 	protected $alreadyInValidation = false;
 
 	
+	public function __construct()
+	{
+		parent::__construct();
+		$this->applyDefaultValues();
+	}
+
+	
+	public function applyDefaultValues()
+	{
+	}
+
+	
 	public function getServiceId()
 	{
-
 		return $this->service_id;
 	}
 
 	
 	public function getHostId()
 	{
-
 		return $this->host_id;
 	}
 
 	
 	public function setServiceId($v)
 	{
-
-		
-		
-		if ($v !== null && !is_int($v) && is_numeric($v)) {
+		if ($v !== null) {
 			$v = (int) $v;
 		}
 
@@ -60,14 +67,12 @@ abstract class BaseServiceToHost extends BaseObject  implements Persistent {
 			$this->aService = null;
 		}
 
+		return $this;
 	} 
 	
 	public function setHostId($v)
 	{
-
-		
-		
-		if ($v !== null && !is_int($v) && is_numeric($v)) {
+		if ($v !== null) {
 			$v = (int) $v;
 		}
 
@@ -80,19 +85,31 @@ abstract class BaseServiceToHost extends BaseObject  implements Persistent {
 			$this->aHost = null;
 		}
 
+		return $this;
 	} 
 	
-	public function hydrate(ResultSet $rs, $startcol = 1)
+	public function hasOnlyDefaultValues()
+	{
+						if (array_diff($this->modifiedColumns, array())) {
+				return false;
+			}
+
+				return true;
+	} 
+	
+	public function hydrate($row, $startcol = 0, $rehydrate = false)
 	{
 		try {
 
-			$this->service_id = $rs->getInt($startcol + 0);
-
-			$this->host_id = $rs->getInt($startcol + 1);
-
+			$this->service_id = ($row[$startcol + 0] !== null) ? (int) $row[$startcol + 0] : null;
+			$this->host_id = ($row[$startcol + 1] !== null) ? (int) $row[$startcol + 1] : null;
 			$this->resetModified();
 
 			$this->setNew(false);
+
+			if ($rehydrate) {
+				$this->ensureConsistency();
+			}
 
 						return $startcol + 2; 
 		} catch (Exception $e) {
@@ -101,66 +118,105 @@ abstract class BaseServiceToHost extends BaseObject  implements Persistent {
 	}
 
 	
-	public function delete($con = null)
+	public function ensureConsistency()
+	{
+
+		if ($this->aService !== null && $this->service_id !== $this->aService->getId()) {
+			$this->aService = null;
+		}
+		if ($this->aHost !== null && $this->host_id !== $this->aHost->getId()) {
+			$this->aHost = null;
+		}
+	} 
+	
+	public function reload($deep = false, PropelPDO $con = null)
+	{
+		if ($this->isDeleted()) {
+			throw new PropelException("Cannot reload a deleted object.");
+		}
+
+		if ($this->isNew()) {
+			throw new PropelException("Cannot reload an unsaved object.");
+		}
+
+		if ($con === null) {
+			$con = Propel::getConnection(ServiceToHostPeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+
+				
+		$stmt = ServiceToHostPeer::doSelectStmt($this->buildPkeyCriteria(), $con);
+		$row = $stmt->fetch(PDO::FETCH_NUM);
+		$stmt->closeCursor();
+		if (!$row) {
+			throw new PropelException('Cannot find matching row in the database to reload object values.');
+		}
+		$this->hydrate($row, 0, true); 
+		if ($deep) {  
+			$this->aService = null;
+			$this->aHost = null;
+		} 	}
+
+	
+	public function delete(PropelPDO $con = null)
 	{
 		if ($this->isDeleted()) {
 			throw new PropelException("This object has already been deleted.");
 		}
 
 		if ($con === null) {
-			$con = Propel::getConnection(ServiceToHostPeer::DATABASE_NAME);
+			$con = Propel::getConnection(ServiceToHostPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
 		}
-
+		
+		$con->beginTransaction();
 		try {
-			$con->begin();
 			ServiceToHostPeer::doDelete($this, $con);
 			$this->setDeleted(true);
 			$con->commit();
 		} catch (PropelException $e) {
-			$con->rollback();
+			$con->rollBack();
 			throw $e;
 		}
 	}
 
 	
-	public function save($con = null)
+	public function save(PropelPDO $con = null)
 	{
 		if ($this->isDeleted()) {
 			throw new PropelException("You cannot save an object that has been deleted.");
 		}
 
 		if ($con === null) {
-			$con = Propel::getConnection(ServiceToHostPeer::DATABASE_NAME);
+			$con = Propel::getConnection(ServiceToHostPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
 		}
-
+		
+		$con->beginTransaction();
 		try {
-			$con->begin();
 			$affectedRows = $this->doSave($con);
 			$con->commit();
+			ServiceToHostPeer::addInstanceToPool($this);
 			return $affectedRows;
 		} catch (PropelException $e) {
-			$con->rollback();
+			$con->rollBack();
 			throw $e;
 		}
 	}
 
 	
-	protected function doSave($con)
+	protected function doSave(PropelPDO $con)
 	{
 		$affectedRows = 0; 		if (!$this->alreadyInSave) {
 			$this->alreadyInSave = true;
 
-
 												
 			if ($this->aService !== null) {
-				if ($this->aService->isModified()) {
+				if ($this->aService->isModified() || $this->aService->isNew()) {
 					$affectedRows += $this->aService->save($con);
 				}
 				$this->setService($this->aService);
 			}
 
 			if ($this->aHost !== null) {
-				if ($this->aHost->isModified()) {
+				if ($this->aHost->isModified() || $this->aHost->isNew()) {
 					$affectedRows += $this->aHost->save($con);
 				}
 				$this->setHost($this->aHost);
@@ -175,9 +231,11 @@ abstract class BaseServiceToHost extends BaseObject  implements Persistent {
 				} else {
 					$affectedRows += ServiceToHostPeer::doUpdate($this, $con);
 				}
+
 				$this->resetModified(); 			}
 
 			$this->alreadyInSave = false;
+
 		}
 		return $affectedRows;
 	} 
@@ -243,7 +301,8 @@ abstract class BaseServiceToHost extends BaseObject  implements Persistent {
 	public function getByName($name, $type = BasePeer::TYPE_PHPNAME)
 	{
 		$pos = ServiceToHostPeer::translateFieldName($name, $type, BasePeer::TYPE_NUM);
-		return $this->getByPosition($pos);
+		$field = $this->getByPosition($pos);
+		return $field;
 	}
 
 	
@@ -262,7 +321,7 @@ abstract class BaseServiceToHost extends BaseObject  implements Persistent {
 		} 	}
 
 	
-	public function toArray($keyType = BasePeer::TYPE_PHPNAME)
+	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true)
 	{
 		$keys = ServiceToHostPeer::getFieldNames($keyType);
 		$result = array(
@@ -348,11 +407,13 @@ abstract class BaseServiceToHost extends BaseObject  implements Persistent {
 	public function copyInto($copyObj, $deepCopy = false)
 	{
 
+		$copyObj->setServiceId($this->service_id);
+
+		$copyObj->setHostId($this->host_id);
+
 
 		$copyObj->setNew(true);
 
-		$copyObj->setServiceId(NULL); 
-		$copyObj->setHostId(NULL); 
 	}
 
 	
@@ -374,61 +435,74 @@ abstract class BaseServiceToHost extends BaseObject  implements Persistent {
 	}
 
 	
-	public function setService($v)
+	public function setService(Service $v = null)
 	{
-
-
 		if ($v === null) {
 			$this->setServiceId(NULL);
 		} else {
 			$this->setServiceId($v->getId());
 		}
 
-
 		$this->aService = $v;
+
+						if ($v !== null) {
+			$v->addServiceToHost($this);
+		}
+
+		return $this;
 	}
 
 
 	
-	public function getService($con = null)
+	public function getService(PropelPDO $con = null)
 	{
 		if ($this->aService === null && ($this->service_id !== null)) {
-						include_once 'lib/model/om/BaseServicePeer.php';
-
-			$this->aService = ServicePeer::retrieveByPK($this->service_id, $con);
-
+			$c = new Criteria(ServicePeer::DATABASE_NAME);
+			$c->add(ServicePeer::ID, $this->service_id);
+			$this->aService = ServicePeer::doSelectOne($c, $con);
 			
 		}
 		return $this->aService;
 	}
 
 	
-	public function setHost($v)
+	public function setHost(Host $v = null)
 	{
-
-
 		if ($v === null) {
 			$this->setHostId(NULL);
 		} else {
 			$this->setHostId($v->getId());
 		}
 
-
 		$this->aHost = $v;
+
+						if ($v !== null) {
+			$v->addServiceToHost($this);
+		}
+
+		return $this;
 	}
 
 
 	
-	public function getHost($con = null)
+	public function getHost(PropelPDO $con = null)
 	{
 		if ($this->aHost === null && ($this->host_id !== null)) {
-						include_once 'lib/model/om/BaseHostPeer.php';
-
-			$this->aHost = HostPeer::retrieveByPK($this->host_id, $con);
-
+			$c = new Criteria(HostPeer::DATABASE_NAME);
+			$c->add(HostPeer::ID, $this->host_id);
+			$this->aHost = HostPeer::doSelectOne($c, $con);
 			
 		}
 		return $this->aHost;
+	}
+
+	
+	public function clearAllReferences($deep = false)
+	{
+		if ($deep) {
+		} 
+			$this->aService = null;
+			$this->aHost = null;
 	}
 
 } 

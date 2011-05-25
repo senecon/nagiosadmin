@@ -34,8 +34,6 @@ class ContactPeer extends BaseContactPeer
 {
   public static function getConfig()
   {
-    sfLoader::loadHelpers('TemplateToken');
-    
     $tpl = getTemplate('contact');
     
     $cfg = '';

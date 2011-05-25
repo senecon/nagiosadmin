@@ -8,15 +8,24 @@ prod:
     param:
       host:               localhost
 
+dev:
+  propel:
+    param:
+      classname:          DebugPDO
+
+test:
+  propel:
+    param:
+      classname:          DebugPDO
+
 all:
   propel:
     class:                sfPropelDatabase
     param:
-      phptype:            mysql     # Database vendor
-      hostspec:           localhost
-      database:           na
-      username:           root
-      password:           root
-      port:               
-      encoding:           utf8      # Default charset for table creation
-      persistent:         true      # Use persistent connections
+      dsn:        mysql:dbname=nagiosadmin;host=localhost
+      username:   root
+      password:
+      encoding:   utf8
+      persistent: true
+      pooling:    true
+      classname:  PropelPDO

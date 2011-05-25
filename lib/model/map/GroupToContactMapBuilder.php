@@ -2,7 +2,7 @@
 
 
 
-class GroupToContactMapBuilder {
+class GroupToContactMapBuilder implements MapBuilder {
 
 	
 	const CLASS_NAME = 'lib.model.map.GroupToContactMapBuilder';
@@ -25,16 +25,17 @@ class GroupToContactMapBuilder {
 	
 	public function doBuild()
 	{
-		$this->dbMap = Propel::getDatabaseMap('propel');
+		$this->dbMap = Propel::getDatabaseMap(GroupToContactPeer::DATABASE_NAME);
 
-		$tMap = $this->dbMap->addTable('group_to_contact');
+		$tMap = $this->dbMap->addTable(GroupToContactPeer::TABLE_NAME);
 		$tMap->setPhpName('GroupToContact');
+		$tMap->setClassname('GroupToContact');
 
 		$tMap->setUseIdGenerator(false);
 
-		$tMap->addForeignPrimaryKey('GROUP_ID', 'GroupId', 'int' , CreoleTypes::INTEGER, 'contact_group', 'ID', true, null);
+		$tMap->addForeignPrimaryKey('GROUP_ID', 'GroupId', 'INTEGER' , 'contact_group', 'ID', true, null);
 
-		$tMap->addForeignPrimaryKey('CONTACT_ID', 'ContactId', 'int' , CreoleTypes::INTEGER, 'contact', 'ID', true, null);
+		$tMap->addForeignPrimaryKey('CONTACT_ID', 'ContactId', 'INTEGER' , 'contact', 'ID', true, null);
 
 	} 
 } 

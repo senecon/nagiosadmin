@@ -2,7 +2,7 @@
 
 
 
-class TemplateMapBuilder {
+class TemplateMapBuilder implements MapBuilder {
 
 	
 	const CLASS_NAME = 'lib.model.map.TemplateMapBuilder';
@@ -25,26 +25,27 @@ class TemplateMapBuilder {
 	
 	public function doBuild()
 	{
-		$this->dbMap = Propel::getDatabaseMap('propel');
+		$this->dbMap = Propel::getDatabaseMap(TemplatePeer::DATABASE_NAME);
 
-		$tMap = $this->dbMap->addTable('template');
+		$tMap = $this->dbMap->addTable(TemplatePeer::TABLE_NAME);
 		$tMap->setPhpName('Template');
+		$tMap->setClassname('Template');
 
 		$tMap->setUseIdGenerator(true);
 
-		$tMap->addPrimaryKey('ID', 'Id', 'int', CreoleTypes::INTEGER, true, null);
+		$tMap->addPrimaryKey('ID', 'Id', 'INTEGER', true, null);
 
-		$tMap->addColumn('TYPE', 'Type', 'int', CreoleTypes::INTEGER, true, null);
+		$tMap->addColumn('TYPE', 'Type', 'INTEGER', true, null);
 
-		$tMap->addColumn('NAME', 'Name', 'string', CreoleTypes::VARCHAR, true, 255);
+		$tMap->addColumn('NAME', 'Name', 'VARCHAR', true, 255);
 
-		$tMap->addColumn('ALIAS', 'Alias', 'string', CreoleTypes::VARCHAR, true, 255);
+		$tMap->addColumn('ALIAS', 'Alias', 'VARCHAR', true, 255);
 
-		$tMap->addColumn('CONTENT', 'Content', 'string', CreoleTypes::LONGVARCHAR, true, null);
+		$tMap->addColumn('CONTENT', 'Content', 'LONGVARCHAR', true, null);
 
-		$tMap->addColumn('CREATED_AT', 'CreatedAt', 'int', CreoleTypes::TIMESTAMP, false, null);
+		$tMap->addColumn('CREATED_AT', 'CreatedAt', 'TIMESTAMP', false, null);
 
-		$tMap->addColumn('UPDATED_AT', 'UpdatedAt', 'int', CreoleTypes::TIMESTAMP, false, null);
+		$tMap->addColumn('UPDATED_AT', 'UpdatedAt', 'TIMESTAMP', false, null);
 
 	} 
 } 
