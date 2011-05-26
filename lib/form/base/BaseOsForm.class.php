@@ -3,24 +3,26 @@
 /**
  * Os form base class.
  *
+ * @method Os getObject() Returns the current form's model object
+ *
  * @package    nagiosadmin
  * @subpackage form
  * @author     Your name here
  */
-class BaseOsForm extends BaseFormPropel
+abstract class BaseOsForm extends BaseFormPropel
 {
   public function setup()
   {
     $this->setWidgets(array(
       'id'         => new sfWidgetFormInputHidden(),
-      'name'       => new sfWidgetFormInput(),
-      'image'      => new sfWidgetFormInput(),
+      'name'       => new sfWidgetFormInputText(),
+      'image'      => new sfWidgetFormInputText(),
       'created_at' => new sfWidgetFormDateTime(),
       'updated_at' => new sfWidgetFormDateTime(),
     ));
 
     $this->setValidators(array(
-      'id'         => new sfValidatorPropelChoice(array('model' => 'Os', 'column' => 'id', 'required' => false)),
+      'id'         => new sfValidatorChoice(array('choices' => array($this->getObject()->getId()), 'empty_value' => $this->getObject()->getId(), 'required' => false)),
       'name'       => new sfValidatorString(array('max_length' => 255)),
       'image'      => new sfValidatorString(array('max_length' => 255)),
       'created_at' => new sfValidatorDateTime(array('required' => false)),

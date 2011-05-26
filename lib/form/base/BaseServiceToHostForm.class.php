@@ -3,11 +3,13 @@
 /**
  * ServiceToHost form base class.
  *
+ * @method ServiceToHost getObject() Returns the current form's model object
+ *
  * @package    nagiosadmin
  * @subpackage form
  * @author     Your name here
  */
-class BaseServiceToHostForm extends BaseFormPropel
+abstract class BaseServiceToHostForm extends BaseFormPropel
 {
   public function setup()
   {

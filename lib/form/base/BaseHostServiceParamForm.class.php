@@ -3,18 +3,20 @@
 /**
  * HostServiceParam form base class.
  *
+ * @method HostServiceParam getObject() Returns the current form's model object
+ *
  * @package    nagiosadmin
  * @subpackage form
  * @author     Your name here
  */
-class BaseHostServiceParamForm extends BaseFormPropel
+abstract class BaseHostServiceParamForm extends BaseFormPropel
 {
   public function setup()
   {
     $this->setWidgets(array(
       'host_id'    => new sfWidgetFormInputHidden(),
       'service_id' => new sfWidgetFormInputHidden(),
-      'parameter'  => new sfWidgetFormInput(),
+      'parameter'  => new sfWidgetFormInputText(),
       'special'    => new sfWidgetFormTextarea(),
       'created_at' => new sfWidgetFormDateTime(),
       'updated_at' => new sfWidgetFormDateTime(),

@@ -17,7 +17,7 @@ fields:
     required:
       msg: You must provide a template definition
     sfRegexValidator:
-      match: yes
+      match: true
       match_error: Template definitions should look like "define templatename { ... }"
       pattern: /define\s+\S+\s+\{.*\}\s*/s
   template{type}:

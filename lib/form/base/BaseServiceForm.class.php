@@ -3,38 +3,40 @@
 /**
  * Service form base class.
  *
+ * @method Service getObject() Returns the current form's model object
+ *
  * @package    nagiosadmin
  * @subpackage form
  * @author     Your name here
  */
-class BaseServiceForm extends BaseFormPropel
+abstract class BaseServiceForm extends BaseFormPropel
 {
   public function setup()
   {
     $this->setWidgets(array(
       'id'                      => new sfWidgetFormInputHidden(),
-      'name'                    => new sfWidgetFormInput(),
-      'alias'                   => new sfWidgetFormInput(),
+      'name'                    => new sfWidgetFormInputText(),
+      'alias'                   => new sfWidgetFormInputText(),
       'command_id'              => new sfWidgetFormPropelChoice(array('model' => 'Command', 'add_empty' => false)),
-      'port'                    => new sfWidgetFormInput(),
+      'port'                    => new sfWidgetFormInputText(),
       'special'                 => new sfWidgetFormTextarea(),
       'created_at'              => new sfWidgetFormDateTime(),
       'updated_at'              => new sfWidgetFormDateTime(),
-      'host_service_param_list' => new sfWidgetFormPropelChoiceMany(array('model' => 'Host')),
-      'service_to_host_list'    => new sfWidgetFormPropelChoiceMany(array('model' => 'Host')),
+      'host_service_param_list' => new sfWidgetFormPropelChoice(array('multiple' => true, 'model' => 'Host')),
+      'service_to_host_list'    => new sfWidgetFormPropelChoice(array('multiple' => true, 'model' => 'Host')),
     ));
 
     $this->setValidators(array(
-      'id'                      => new sfValidatorPropelChoice(array('model' => 'Service', 'column' => 'id', 'required' => false)),
+      'id'                      => new sfValidatorChoice(array('choices' => array($this->getObject()->getId()), 'empty_value' => $this->getObject()->getId(), 'required' => false)),
       'name'                    => new sfValidatorString(array('max_length' => 255)),
       'alias'                   => new sfValidatorString(array('max_length' => 255)),
       'command_id'              => new sfValidatorPropelChoice(array('model' => 'Command', 'column' => 'id')),
-      'port'                    => new sfValidatorInteger(array('required' => false)),
+      'port'                    => new sfValidatorInteger(array('min' => -2147483648, 'max' => 2147483647, 'required' => false)),
       'special'                 => new sfValidatorString(array('required' => false)),
       'created_at'              => new sfValidatorDateTime(array('required' => false)),
       'updated_at'              => new sfValidatorDateTime(array('required' => false)),
-      'host_service_param_list' => new sfValidatorPropelChoiceMany(array('model' => 'Host', 'required' => false)),
-      'service_to_host_list'    => new sfValidatorPropelChoiceMany(array('model' => 'Host', 'required' => false)),
+      'host_service_param_list' => new sfValidatorPropelChoice(array('multiple' => true, 'model' => 'Host', 'required' => false)),
+      'service_to_host_list'    => new sfValidatorPropelChoice(array('multiple' => true, 'model' => 'Host', 'required' => false)),
     ));
 
     $this->widgetSchema->setNameFormat('service[%s]');
@@ -99,7 +101,7 @@ class BaseServiceForm extends BaseFormPropel
       return;
     }
 
-    if (is_null($con))
+    if (null === $con)
     {
       $con = $this->getConnection();
     }
@@ -134,7 +136,7 @@ class BaseServiceForm extends BaseFormPropel
       return;
     }
 
-    if (is_null($con))
+    if (null === $con)
     {
       $con = $this->getConnection();
     }

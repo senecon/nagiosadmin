@@ -1,7 +1,5 @@
 <?php
 
-require_once(sfConfig::get('sf_lib_dir').'/filter/base/BaseFormFilterPropel.class.php');
-
 /**
  * Contact filter form base class.
  *
@@ -9,17 +7,17 @@ require_once(sfConfig::get('sf_lib_dir').'/filter/base/BaseFormFilterPropel.clas
  * @subpackage filter
  * @author     Your name here
  */
-class BaseContactFormFilter extends BaseFormFilterPropel
+abstract class BaseContactFormFilter extends BaseFormFilterPropel
 {
   public function setup()
   {
     $this->setWidgets(array(
-      'name'                  => new sfWidgetFormFilterInput(),
-      'alias'                 => new sfWidgetFormFilterInput(),
-      'email'                 => new sfWidgetFormFilterInput(),
+      'name'                  => new sfWidgetFormFilterInput(array('with_empty' => false)),
+      'alias'                 => new sfWidgetFormFilterInput(array('with_empty' => false)),
+      'email'                 => new sfWidgetFormFilterInput(array('with_empty' => false)),
       'special'               => new sfWidgetFormFilterInput(),
-      'created_at'            => new sfWidgetFormFilterDate(array('from_date' => new sfWidgetFormDate(), 'to_date' => new sfWidgetFormDate(), 'with_empty' => true)),
-      'updated_at'            => new sfWidgetFormFilterDate(array('from_date' => new sfWidgetFormDate(), 'to_date' => new sfWidgetFormDate(), 'with_empty' => true)),
+      'created_at'            => new sfWidgetFormFilterDate(array('from_date' => new sfWidgetFormDate(), 'to_date' => new sfWidgetFormDate())),
+      'updated_at'            => new sfWidgetFormFilterDate(array('from_date' => new sfWidgetFormDate(), 'to_date' => new sfWidgetFormDate())),
       'group_to_contact_list' => new sfWidgetFormPropelChoice(array('model' => 'ContactGroup', 'add_empty' => true)),
     ));
 

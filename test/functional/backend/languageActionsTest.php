@@ -2,14 +2,18 @@
 
 include(dirname(__FILE__).'/../../bootstrap/functional.php');
 
-// create a new test browser
-$browser = new sfTestBrowser();
-$browser->initialize();
+$browser = new sfTestFunctional(new sfBrowser());
 
 $browser->
   get('/language/index')->
-  isStatusCode(200)->
-  isRequestParameter('module', 'language')->
-  isRequestParameter('action', 'index')->
-  checkResponseElement('body', '!/This is a temporary page/')
+
+  with('request')->begin()->
+    isParameter('module', 'language')->
+    isParameter('action', 'index')->
+  end()->
+
+  with('response')->begin()->
+    isStatusCode(200)->
+    checkElement('body', '!/This is a temporary page/')->
+  end()
 ;

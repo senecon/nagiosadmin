@@ -3,34 +3,36 @@
 /**
  * Contact form base class.
  *
+ * @method Contact getObject() Returns the current form's model object
+ *
  * @package    nagiosadmin
  * @subpackage form
  * @author     Your name here
  */
-class BaseContactForm extends BaseFormPropel
+abstract class BaseContactForm extends BaseFormPropel
 {
   public function setup()
   {
     $this->setWidgets(array(
       'id'                    => new sfWidgetFormInputHidden(),
-      'name'                  => new sfWidgetFormInput(),
-      'alias'                 => new sfWidgetFormInput(),
-      'email'                 => new sfWidgetFormInput(),
+      'name'                  => new sfWidgetFormInputText(),
+      'alias'                 => new sfWidgetFormInputText(),
+      'email'                 => new sfWidgetFormInputText(),
       'special'               => new sfWidgetFormTextarea(),
       'created_at'            => new sfWidgetFormDateTime(),
       'updated_at'            => new sfWidgetFormDateTime(),
-      'group_to_contact_list' => new sfWidgetFormPropelChoiceMany(array('model' => 'ContactGroup')),
+      'group_to_contact_list' => new sfWidgetFormPropelChoice(array('multiple' => true, 'model' => 'ContactGroup')),
     ));
 
     $this->setValidators(array(
-      'id'                    => new sfValidatorPropelChoice(array('model' => 'Contact', 'column' => 'id', 'required' => false)),
+      'id'                    => new sfValidatorChoice(array('choices' => array($this->getObject()->getId()), 'empty_value' => $this->getObject()->getId(), 'required' => false)),
       'name'                  => new sfValidatorString(array('max_length' => 255)),
       'alias'                 => new sfValidatorString(array('max_length' => 255)),
       'email'                 => new sfValidatorString(array('max_length' => 255)),
       'special'               => new sfValidatorString(array('required' => false)),
       'created_at'            => new sfValidatorDateTime(array('required' => false)),
       'updated_at'            => new sfValidatorDateTime(array('required' => false)),
-      'group_to_contact_list' => new sfValidatorPropelChoiceMany(array('model' => 'ContactGroup', 'required' => false)),
+      'group_to_contact_list' => new sfValidatorPropelChoice(array('multiple' => true, 'model' => 'ContactGroup', 'required' => false)),
     ));
 
     $this->widgetSchema->setNameFormat('contact[%s]');
@@ -83,7 +85,7 @@ class BaseContactForm extends BaseFormPropel
       return;
     }
 
-    if (is_null($con))
+    if (null === $con)
     {
       $con = $this->getConnection();
     }

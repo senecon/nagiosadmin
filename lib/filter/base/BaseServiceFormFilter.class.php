@@ -1,7 +1,5 @@
 <?php
 
-require_once(sfConfig::get('sf_lib_dir').'/filter/base/BaseFormFilterPropel.class.php');
-
 /**
  * Service filter form base class.
  *
@@ -9,18 +7,18 @@ require_once(sfConfig::get('sf_lib_dir').'/filter/base/BaseFormFilterPropel.clas
  * @subpackage filter
  * @author     Your name here
  */
-class BaseServiceFormFilter extends BaseFormFilterPropel
+abstract class BaseServiceFormFilter extends BaseFormFilterPropel
 {
   public function setup()
   {
     $this->setWidgets(array(
-      'name'                    => new sfWidgetFormFilterInput(),
-      'alias'                   => new sfWidgetFormFilterInput(),
+      'name'                    => new sfWidgetFormFilterInput(array('with_empty' => false)),
+      'alias'                   => new sfWidgetFormFilterInput(array('with_empty' => false)),
       'command_id'              => new sfWidgetFormPropelChoice(array('model' => 'Command', 'add_empty' => true)),
       'port'                    => new sfWidgetFormFilterInput(),
       'special'                 => new sfWidgetFormFilterInput(),
-      'created_at'              => new sfWidgetFormFilterDate(array('from_date' => new sfWidgetFormDate(), 'to_date' => new sfWidgetFormDate(), 'with_empty' => true)),
-      'updated_at'              => new sfWidgetFormFilterDate(array('from_date' => new sfWidgetFormDate(), 'to_date' => new sfWidgetFormDate(), 'with_empty' => true)),
+      'created_at'              => new sfWidgetFormFilterDate(array('from_date' => new sfWidgetFormDate(), 'to_date' => new sfWidgetFormDate())),
+      'updated_at'              => new sfWidgetFormFilterDate(array('from_date' => new sfWidgetFormDate(), 'to_date' => new sfWidgetFormDate())),
       'host_service_param_list' => new sfWidgetFormPropelChoice(array('model' => 'Host', 'add_empty' => true)),
       'service_to_host_list'    => new sfWidgetFormPropelChoice(array('model' => 'Host', 'add_empty' => true)),
     ));

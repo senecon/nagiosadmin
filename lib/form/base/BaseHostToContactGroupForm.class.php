@@ -3,11 +3,13 @@
 /**
  * HostToContactGroup form base class.
  *
+ * @method HostToContactGroup getObject() Returns the current form's model object
+ *
  * @package    nagiosadmin
  * @subpackage form
  * @author     Your name here
  */
-class BaseHostToContactGroupForm extends BaseFormPropel
+abstract class BaseHostToContactGroupForm extends BaseFormPropel
 {
   public function setup()
   {

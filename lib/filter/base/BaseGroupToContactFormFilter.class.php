@@ -1,7 +1,5 @@
 <?php
 
-require_once(sfConfig::get('sf_lib_dir').'/filter/base/BaseFormFilterPropel.class.php');
-
 /**
  * GroupToContact filter form base class.
  *
@@ -9,7 +7,7 @@ require_once(sfConfig::get('sf_lib_dir').'/filter/base/BaseFormFilterPropel.clas
  * @subpackage filter
  * @author     Your name here
  */
-class BaseGroupToContactFormFilter extends BaseFormFilterPropel
+abstract class BaseGroupToContactFormFilter extends BaseFormFilterPropel
 {
   public function setup()
   {

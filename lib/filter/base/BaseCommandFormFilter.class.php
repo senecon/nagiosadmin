@@ -1,7 +1,5 @@
 <?php
 
-require_once(sfConfig::get('sf_lib_dir').'/filter/base/BaseFormFilterPropel.class.php');
-
 /**
  * Command filter form base class.
  *
@@ -9,16 +7,16 @@ require_once(sfConfig::get('sf_lib_dir').'/filter/base/BaseFormFilterPropel.clas
  * @subpackage filter
  * @author     Your name here
  */
-class BaseCommandFormFilter extends BaseFormFilterPropel
+abstract class BaseCommandFormFilter extends BaseFormFilterPropel
 {
   public function setup()
   {
     $this->setWidgets(array(
-      'name'       => new sfWidgetFormFilterInput(),
-      'alias'      => new sfWidgetFormFilterInput(),
-      'command'    => new sfWidgetFormFilterInput(),
-      'created_at' => new sfWidgetFormFilterDate(array('from_date' => new sfWidgetFormDate(), 'to_date' => new sfWidgetFormDate(), 'with_empty' => true)),
-      'updated_at' => new sfWidgetFormFilterDate(array('from_date' => new sfWidgetFormDate(), 'to_date' => new sfWidgetFormDate(), 'with_empty' => true)),
+      'name'       => new sfWidgetFormFilterInput(array('with_empty' => false)),
+      'alias'      => new sfWidgetFormFilterInput(array('with_empty' => false)),
+      'command'    => new sfWidgetFormFilterInput(array('with_empty' => false)),
+      'created_at' => new sfWidgetFormFilterDate(array('from_date' => new sfWidgetFormDate(), 'to_date' => new sfWidgetFormDate())),
+      'updated_at' => new sfWidgetFormFilterDate(array('from_date' => new sfWidgetFormDate(), 'to_date' => new sfWidgetFormDate())),
     ));
 
     $this->setValidators(array(
